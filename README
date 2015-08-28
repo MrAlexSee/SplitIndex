@@ -1,0 +1,18 @@
+### To compile:
+1. Select the compiler (CC) in Makefile.inc (tested on clang version 3.4-1ubuntu3).
+2. Set the path to Boost (INCLUDE) in Makefile.inc (tested on Boost 1.57).
+3. Select the debug or release version (OPTFLAGS) in Makefile.inc.
+4. Tweak the parameters in src/main/params.hpp.
+5. Type make.
+
+### To use:
+1. The executable path is build/main.
+2. Usage: build/main [dict] [opt: queries]
+   The first parameter is a text file with the input (the database of keywords). Any whitespace is a default separator for words.
+   The second parameter is a text file with queries. If not supplied, queries are randomly generated from the input.
+
+### To test:
+1. Set the index you want to check in src/params.hpp.
+2. Set the same k in testing/naive_hamming.py.
+3. Set the paths in testing/run_and_compare.sh.
+4. Type testing/run_and_compare.sh.
