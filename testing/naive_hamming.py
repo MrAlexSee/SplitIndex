@@ -2,12 +2,12 @@
 
 ########
 # Performs an approximate search in a dictionary
-# using a Hamming distance and a naive algorithm.
+# using the Hamming distance and a naive algorithm.
 ########
 
 import sys
 
-minWordLength = 4
+minWordLength = 3
 maxNQueries   = -1 # -1 to turn off
 hamK          = 1  # Select the number of errors here.
 
@@ -32,9 +32,6 @@ def search(data, query):
     res = []
 
     for word in data:
-        if len(word) < minWordLength:
-            continue
-
         if len(word) == len(query):
             if calcHammingK(word, query, hamK):
                 res.append(word)
@@ -54,12 +51,25 @@ def main():
     data = [d for d in data.split("\n") if d]
     queries = [q for q in queries.split("\n") if q]
 
+    words = []
+    nIgnored = 0
+
+    for w in data:
+        if len(w) < minWordLength:
+            nIgnored += 1
+            continue
+
+        words.append(w)
+
+    if nIgnored > 0:
+        print("Ignored {0} words (len < {1})".format(nIgnored, minWordLength))
+
+    print("Calculating naive Hamming for k = {0}".format(hamK))
+
     if maxNQueries != -1:
         queries = queries[0 : maxNQueries]
     
     results = []
-
-    print("Calculating naive Hamming for k = {0}".format(hamK))
 
     for i in range(len(queries)):
         perc = round(100.0 * (i + 1) / len(queries))
@@ -67,7 +77,7 @@ def main():
         sys.stdout.write("\r{0}/{1} ({2}%)".format(i + 1, len(queries), perc))
         sys.stdout.flush()
 
-        res = search(data, queries[i])
+        res = search(words, queries[i])
         results.append([queries[i], res])
 
     if len(sys.argv) == 4:
