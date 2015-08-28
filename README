@@ -5,7 +5,7 @@ For more information consult a preprint at the following link: http://arxiv.org/
 2. Set the path to Boost (INCLUDE) in Makefile.inc (tested on Boost 1.57).
 3. Select the debug or release version (OPTFLAGS) in Makefile.inc.
 4. Tweak the parameters in src/main/params.hpp.
-5. Type make.
+5. Type "make".
 
 ### To use:
 1. The executable path is build/main.
@@ -19,5 +19,6 @@ For more information consult a preprint at the following link: http://arxiv.org/
 1. Set the index you want to check in src/main/params.hpp.
 2. Set the same k in testing/naive_hamming.py (hamK).
 3. Set the same minWordLength in testing/naive_hamming.py and src/main/params.hpp.
-4. Set the paths in testing/run_and_compare.sh.
-5. Type testing/run_and_compare.sh.
+4. Type "make".
+5. Set the paths in testing/run_and_compare.sh.
+6. Go to testing and type "./run_and_compare.sh".

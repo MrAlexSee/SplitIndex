@@ -1,7 +1,7 @@
 #include "dist.hpp"
 
 ////////////////////
-// We don't use any assembly magic here because the compiler with -O2 wins anyway (tested).
+// We don't use any assembly magic here because the compiler with -O3 wins anyway (tested).
 ////////////////////
 
 int Dist::calcHamming(const char *str1, const char *str2, size_t length)

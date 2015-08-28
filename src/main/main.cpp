@@ -107,7 +107,7 @@ string doSearch(const vector<string> &words,
 
         if (i != nIterations - 1)
         {
-            // We only want the results from the last call, but we save them in every call
+            // We only need the results from the last call, but we save them in every call
             // in order to have fair time measurements.
             results.clear();
         }

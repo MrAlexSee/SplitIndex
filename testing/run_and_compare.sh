@@ -16,6 +16,7 @@ naiveOutPath="out_naive.dat"
 # Followed by our index-based search.
 ../build/main "$dictPath" "$queriesPath"
 
+# And we compare the results for errors.
 ./comp_results.py "$naiveOutPath" "$indexOutPath"
 
 rm "$indexOutPath" "$naiveOutPath"
