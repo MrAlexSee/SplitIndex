@@ -15,5 +15,5 @@ OPTFLAGS =
 ### Release (If using -Ofast, note that it is not standard-compliant)
 OPTFLAGS += -O3 -m32 -DNDEBUG -DNO_ERROR_MSG
 
-# INPUT   = /home/alex/Documents/Textual/English\ dict/english-dict_filtered.txt
+INPUT   = /home/alex/Documents/Textual/English\ dict/english-dict_filtered.txt
 QUERIES = ./testing/english_typos.txt

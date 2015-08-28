@@ -3,14 +3,12 @@
 set -e
 
 dictPath="/home/alex/Documents/Textual/English dict/english-dict_filtered.txt"
-#dictPath="/home/alex/Documents/Textual/English dict/american-english-insane_filtered.txt"
-
 queriesPath="english_typos.txt"
 
-indexOutPath="search_ham.dat" # Must be the same as the output path of the index.
+indexOutPath="search_ham.dat" # Must be the same as the output path of the index (params.hpp : outFilePath)
 naiveOutPath="out_naive.dat"
 
-# Make sure that both programs are set for the same k value.
+# Make sure that both programs are set for the same k and min word length value.
 
 # First we run the naive hamming.
 ./naive_hamming.py "$dictPath" "$queriesPath" "$naiveOutPath"

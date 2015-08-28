@@ -1,3 +1,5 @@
+For more information consult a preprint at the following link: http://arxiv.org/abs/1501.04948 
+
 ### To compile:
 1. Select the compiler (CC) in Makefile.inc (tested on clang version 3.4-1ubuntu3).
 2. Set the path to Boost (INCLUDE) in Makefile.inc (tested on Boost 1.57).
@@ -10,9 +12,12 @@
 2. Usage: build/main [dict] [opt: queries]
    The first parameter is a text file with the input (the database of keywords). Any whitespace is a default separator for words.
    The second parameter is a text file with queries. If not supplied, queries are randomly generated from the input.
+3. Optionally, set INPUT and QUERIES in Makefile.inc and type "make run".
+4. The executable will print the sizes (input after filtering and index size) and the elapsed time.
 
-### To test:
-1. Set the index you want to check in src/params.hpp.
-2. Set the same k in testing/naive_hamming.py.
-3. Set the paths in testing/run_and_compare.sh.
-4. Type testing/run_and_compare.sh.
+### To test for error correctness:
+1. Set the index you want to check in src/main/params.hpp.
+2. Set the same k in testing/naive_hamming.py (hamK).
+3. Set the same minWordLength in testing/naive_hamming.py and src/main/params.hpp.
+4. Set the paths in testing/run_and_compare.sh.
+5. Type testing/run_and_compare.sh.
