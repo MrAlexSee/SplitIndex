@@ -7,7 +7,7 @@
 
 import sys
 
-minWordLength = 3
+minWordLength = 4
 maxNQueries   = -1 # -1 to turn off
 hamK          = 1  # Select the number of errors here.
 
