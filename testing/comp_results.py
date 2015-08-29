@@ -41,12 +41,13 @@ def matchAgainst(data1, data2):
 
                 if set(res1) == set(res2):
                     matched = True
+                    continue
 
-        if not matched and query1 not in errorQueries:
+        if (not matched) and (query1 not in errorQueries):
             nErrors += 1
             errorQueries.add(query1)
-
             print("\nERROR: {0} (appears = {1})".format(query1, appears))
+
     return nErrors
 
 def main():
