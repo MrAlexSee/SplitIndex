@@ -28,4 +28,4 @@ Also available as a preprint at the following link: http://arxiv.org/abs/1501.04
 1. Set the same `minWordLength` (minimum word length) in `testing/naive_hamming.py` and `src/main/params.hpp`.
 1. Type `make rebuild` in the main folder.
 1. Set the paths in `testing/run_and_compare.sh`.
-1. Go to testing and type `./run_and_compare.sh"`.
+1. Go to testing and type `./run_and_compare.sh`.
