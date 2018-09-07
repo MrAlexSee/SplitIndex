@@ -1,12 +1,18 @@
+ROOT_DIR = ../..
+
+include $(ROOT_DIR)/makefile.inc
+
 CPP_FILES = $(wildcard *.cpp)
-OBJ_FILES = $(addprefix $(OBJ_DIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
+OBJ_FILES = $(addprefix $(ROOT_DIR)/$(OBJ_DIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
 
-all: $(LIB_DIR)/$(HASH_FUNCTION_LIB)
+LIB = $(ROOT_DIR)/$(LIB_DIR)/$(HASH_FUNCTION_LIB)
 
-$(LIB_DIR)/$(HASH_FUNCTION_LIB): $(OBJ_FILES)
+all: $(LIB)
+
+$(LIB): $(OBJ_FILES)
 	ar rs $@ $(OBJ_FILES)
 
 -include $(OBJ_FILES:.o=.d)
 
-$(OBJ_DIR)/%.o: %.cpp 
+$(ROOT_DIR)/$(OBJ_DIR)/%.o: %.cpp
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -MMD -c $< -o $@
