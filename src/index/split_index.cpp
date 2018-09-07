@@ -35,6 +35,9 @@ string SplitIndex::toString() const
             % wordSet.size() % wordsSizeKB % map->toString()).str();
 }
 
+SplitIndex *initIndex(int indexType);
+
+
 void SplitIndex::construct()
 {
     int nWords = wordSet.size();

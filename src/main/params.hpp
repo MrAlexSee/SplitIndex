@@ -43,9 +43,6 @@ struct Params
     // Minumum word length in the input dictionary (shorter words are ignored).
     const int minWordLength = 4;
 
-    // Number of iterations, useful only for time measurements (averages the elapsed time).
-    const int nIterations = 1000;
-
     // Number of generated queries (used if no input file with queries is provided).
     const int nQueries = 5000;
 
@@ -66,6 +63,13 @@ struct Params
     std::string inDictFile = "";
     /** Input pattern file path (positional arg 2). */
     std::string inPatternFile = "";
+
+    /** Input data (dictionary and patterns) separator. */
+    std::string separator = "\n";
+
+    int nIterations = 1;
+
+    int indexType = 0;
 
     /*
      *** CONSTANTS

@@ -13,18 +13,9 @@
 #include <string>
 #include <vector>
 
-#include "../index/split_index.hpp"
-#include "../index/split_index_exact.hpp"
-#include "../index/split_index_1.hpp"
-#include "../index/split_index_1_comp.hpp"
-#include "../index/split_index_1_comp_double.hpp"
-#include "../index/split_index_1_comp_ext.hpp"
-#include "../index/split_index_1_comp_opt.hpp"
-#include "../index/split_index_k.hpp"
-
+#include "../index/split_index_factory.hpp"
 #include "../utils/file_io.hpp"
-#include "../utils/helpers.hpp"
-#include "../utils/query_utils.hpp"
+
 #include "params.hpp"
 
 using namespace split_index;
@@ -51,6 +42,8 @@ int handleParams(int argc, const char **argv);
 bool checkInputFiles(const char *execName);
 /** Runs the main program and returns the program exit code. */
 int run();
+
+void runSearch(const vector<string> &words, const vector<string> &queries);
 
 }
 
@@ -110,7 +103,7 @@ int handleParams(int argc, const char **argv)
 
         po::notify(vm);
     }
-    catch (const po::error& e)
+    catch (const po::error &e)
     {
         cerr << "Usage: " << argv[0] << " " << params.usageInfoString << endl << endl;
         cerr << options << endl;
@@ -124,46 +117,73 @@ int handleParams(int argc, const char **argv)
 
 bool checkInputFiles(const char *execName)
 {
-    // if (Helpers::isFileReadable(params.inDictFile) == false)
-    // {
-    //     cerr << "Cannot access input dictionary file (doesn't exist or insufficient permissions): " << params.inDictFile << endl;
-    //     cerr << "Run " << execName << " -h for more information" << endl << endl;
+    if (utils::FileIO::isFileReadable(params.inDictFile) == false)
+    {
+        cerr << "Cannot access input dictionary file (doesn't exist or insufficient permissions): " << params.inDictFile << endl;
+        cerr << "Run " << execName << " -h for more information" << endl << endl;
 
-    //     return false;
-    // }
+        return false;
+    }
 
-    // if (Helpers::isFileReadable(params.inPatternFile) == false)
-    // {
-    //     cerr << "Cannot access input patterns file (doesn't exist or insufficient permissions): " << params.inPatternFile << endl;
-    //     cerr << "Run " << execName << " -h for more information" << endl << endl;
+    if (utils::FileIO::isFileReadable(params.inPatternFile) == false)
+    {
+        cerr << "Cannot access input patterns file (doesn't exist or insufficient permissions): " << params.inPatternFile << endl;
+        cerr << "Run " << execName << " -h for more information" << endl << endl;
 
-    //     return false;
-    // }
+        return false;
+    }
 
     return true;
 }
 
 int run()
 {
-    // try
-    // {
-    //     vector<string> dict = Helpers::readWords(params.inDictFile, params.separator);
-    //     vector<string> patterns = Helpers::readWords(params.inPatternFile, params.separator);
+    try
+    {
+        vector<string> dict = utils::FileIO::readWords(params.inDictFile, params.separator);
+        vector<string> patterns = utils::FileIO::readWords(params.inPatternFile, params.separator);
        
-    //     filterInput(dict, patterns);
-
-    //     cout << "=====" << endl;
-    //     cout << boost::format("Read #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl;
+        cout << boost::format("Read #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl;
      
-    //     runFingerprints(dict, patterns);
-    // }
-    // catch (const exception &e)
-    // {
-    //     cerr << endl << "Fatal error occurred: " << e.what() << endl;
-    //     return params.errorExitCode;
-    // }
+        runSearch(dict, patterns);
+    }
+    catch (const exception &e)
+    {
+        cerr << endl << "Fatal error occurred: " << e.what() << endl;
+        return params.errorExitCode;
+    }
 
     return 0;
+}
+
+void runSearch(const vector<string> &words, const vector<string> &queries)
+{
+    SplitIndex *index = SplitIndexFactory::initIndex(words, params.minWordLength, params.indexType);
+    cout << endl << "Constructed the index: " << endl << index->toString() << endl << endl;
+
+    string results;
+    float elapsedUs = 0;
+
+    for (int i = 0; i < params.nIterations; ++i)
+    {
+        cout << boost::format("\rRunning queries, iter: %1%/%2%")
+                % (i + 1) % params.nIterations << flush;
+
+        elapsedUs += index->runQueries(queries, results);
+
+        if (i != params.nIterations - 1)
+        {
+            // We only need the results from the last call, but we save them in every call
+            // in order to have fair time measurements.
+            results.clear();
+        }
+    }
+
+    elapsedUs /= params.nIterations;
+    // cout << endl << utils::Helpers::getTimesStr(elapsedUs, queries.size()) << endl;
+
+    results = index->prettyResults(results);
+    delete index;
 }
 
 } // namespace split_index

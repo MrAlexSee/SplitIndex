@@ -15,7 +15,9 @@ class FileIO
 public:
     FileIO() = delete;
 
-    static std::vector<std::string> readFile(const std::string &filePath);
+    static bool isFileReadable(const std::string &filePath);
+    static std::vector<std::string> readWords(const std::string &filePath, const std::string &separator);
+
     static void writeFile(const std::string &data, const std::string &filePath);
 };
 

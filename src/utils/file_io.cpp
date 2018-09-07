@@ -1,3 +1,4 @@
+#include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <stdexcept>
 
@@ -11,32 +12,51 @@ namespace split_index
 namespace utils
 {
 
-vector<string> FileIO::readFile(const string &filePath)
+bool FileIO::isFileReadable(const string &filePath)
 {
-    ifstream stream(filePath);
+    ifstream inStream(filePath);
+    return inStream.good();
+}
 
-    if (!stream)
-        throw runtime_error("failed to read the file: " + filePath);
+vector<string> FileIO::readWords(const string &filePath, const string &separator)
+{
+    ifstream inStream(filePath);
 
-    vector<string> lines;
-    string line;
-
-    while (getline(stream, line))
+    if (!inStream)
     {
-        lines.push_back(line); // Newlines are discarded.
+        throw runtime_error("failed to read file (insufficient permisions?): " + filePath);
     }
 
-    return lines;
+    string text = static_cast<stringstream const&>(stringstream() << inStream.rdbuf()).str();
+
+    vector<string> words;
+    boost::split(words, text, boost::is_any_of(separator));
+
+    vector<string> filt;
+
+    for (string &word : words)
+    {
+        boost::trim(word);
+
+        if (word.empty() == false) 
+        {
+            filt.emplace_back(move(word));
+        }
+    }
+
+    return filt;
 }
 
 void FileIO::writeFile(const string &data, const string &filePath)
 {
-    ofstream stream(filePath);
+    ofstream outStream(filePath);
 
-    if (!stream)
-        throw runtime_error("failed to open the file: " + filePath);
+    if (!outStream)
+    {
+        throw std::runtime_error("failed to write file (insufficient permisions?): " + filePath);
+    }
 
-    stream << data;
+    outStream << data;
 }
 
 } // namespace utils
