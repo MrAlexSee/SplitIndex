@@ -61,6 +61,22 @@ struct Params
     // Max #errors for generated queries (each error appears with 50% probability).
     const int maxNErrors = 3;
     const std::string outFilePath = "search_ham.dat";
+
+    /** Input dictionary file path (positional arg 1). */
+    std::string inDictFile = "";
+    /** Input pattern file path (positional arg 2). */
+    std::string inPatternFile = "";
+
+    /*
+     *** CONSTANTS
+     */
+
+    /** Returned from main on failure. */
+    static constexpr int errorExitCode = 1;
+
+    /** Current version: major.minor.patch */
+    const std::string versionInfo = "split_index v0.1.0";
+    const std::string usageInfoString = "[options] <input dictionary file> <input pattern file>";
 };
 
 #endif // PARAMS_HPP

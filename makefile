@@ -7,7 +7,7 @@ LIBS = $(MAIN_LIB) $(INDEX_LIB) $(HASH_MAP_LIB) $(HASH_FUNCTION_LIB) $(UTILS_LIB
 LIBS := $(addprefix $(LIB_DIR)/,$(LIBS))
 
 build/$(EXE): libs
-	$(CC) $(LDFLAGS) $(OPTFLAGS) $(LIBS) $(AUXFLAGS) -o $@
+	$(CC) $(CCFLAGS) $(OPTFLAGS) $(LDFLAGS) $(LIBS) -o $@ $(LDLIBS)
 
 libs:
 	$(MAKE) -C src/hash_function

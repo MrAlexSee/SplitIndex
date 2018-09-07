@@ -1,6 +1,6 @@
 CC        = g++
 CCFLAGS   = -Wall -pedantic -funsigned-char -msse4.2 -std=c++11
-OPTFLAGS  = -O3 -m32 -DNDEBUG -DNO_ERROR_MSG
+OPTFLAGS  = -DNDEBUG -DNO_ERROR_MSG -O3
 
 BOOST_DIR = "/home/alex/boost_1_67_0"
 

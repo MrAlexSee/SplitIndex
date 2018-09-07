@@ -1,4 +1,11 @@
+/*
+ *** A practical index for approximate dictionary matching with few mismatches.
+ *** Authors: Aleksander Cisłak, Szymon Grabowski. License: GNU LGPL v3.
+ *** Set BOOST_DIR in makefile.inc and type "make" for optimized compile.
+ */
+
 #include <boost/format.hpp>
+#include <boost/program_options.hpp>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -23,166 +30,140 @@
 using namespace split_index;
 using namespace std;
 
+namespace po = boost::program_options;
+
+namespace split_index
+{
+
 namespace
 {
-    Params params;
+
+Params params;
+
+/** Indicates that program execution should continue after checking parameters. */
+constexpr int paramsResContinue = -1;
+
 }
 
-string doSearch(const vector<string> &words,
-                const vector<string> &queries, int nIterations);
-SplitIndex *initIndex(const vector<string> &words);
+/** Handles cmd-line parameters, returns -1 if program execution should continue. */
+int handleParams(int argc, const char **argv);
+/** Returns true if input files are readable, false otherwise. */
+bool checkInputFiles(const char *execName);
+/** Runs the main program and returns the program exit code. */
+int run();
 
-void checkAllQgrams(SplitIndex *index);
+}
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
-    if (argc != 2 and argc != 3)
+    int paramsRes = handleParams(argc, argv);
+    if (paramsRes != paramsResContinue)
     {
-        cerr << "Usage: ./main [dict] [opt: queries]" << endl;
-        return 1;
+        return paramsRes;
     }
+
+    if (checkInputFiles(argv[0]) == false)
+    {
+        return params.errorExitCode;
+    }
+
+    return run();
+}
+
+namespace split_index
+{
+
+int handleParams(int argc, const char **argv)
+{
+    po::options_description options("Parameters");
+    options.add_options()
+       ("help,h", "display help message")
+       ("in-dict-file,i", po::value<string>(&params.inDictFile)->required(), "input dictionary file path (positional arg 1)")
+       ("in-pattern-file,I", po::value<string>(&params.inPatternFile)->required(), "input pattern file path (positional arg 2)")
+       ("version,v", "display version info");
+
+    po::positional_options_description positionalOptions;
+
+    positionalOptions.add("in-dict-file", 1);
+    positionalOptions.add("in-pattern-file", 1);
+
+    po::variables_map vm;
 
     try
     {
-        vector<string> inputLines = utils::FileIO::readFile(argv[1]);
-        cout << boost::format("Read %1% lines")
-                % inputLines.size() << endl;
+        po::store(po::command_line_parser(argc, argv).
+                  options(options).
+                  positional(positionalOptions).run(), vm);
 
-        vector<string> queries;
-
-        if (argc != 3)
+        if (vm.count("help"))
         {
-            // No file with queries -> generate the queries.
-            queries = utils::QueryUtils::genQueries(inputLines, params.queryAlphabet, params.minWordLength,
-                                             params.nQueries, params.maxNErrors);        
-            cout << boost::format("Generated %1% queries")
-                    % params.nQueries << endl;
+            cout << "Usage: " << argv[0] << " " << params.usageInfoString << endl << endl;
+            cout << options << endl;
+
+            return 0;
         }
-        else
+        if (vm.count("version"))
         {
-            // Otherwise we read the queries from file.
-            queries = utils::FileIO::readFile(argv[2]);
-            cout << boost::format("Read %1% queries from file: %2%")
-                    % queries.size() % argv[2] << endl;
+            cout << params.versionInfo << endl;
+            return 0;
         }
 
-        string results = doSearch(inputLines, queries, params.nIterations);
-
-        if (results != "")
-        {
-            utils::FileIO::writeFile(results, params.outFilePath);
-        }
+        po::notify(vm);
     }
-    catch (std::exception &e)
+    catch (const po::error& e)
     {
-        cerr << "Aborting: " << e.what() << endl;
-        return EXIT_FAILURE;
+        cerr << "Usage: " << argv[0] << " " << params.usageInfoString << endl << endl;
+        cerr << options << endl;
+
+        cerr << "Error: " << e.what() << endl;
+        return params.errorExitCode;
     }
+
+    return paramsResContinue;
 }
 
-string doSearch(const vector<string> &words,
-                const vector<string> &queries, int nIterations)
+bool checkInputFiles(const char *execName)
 {
-    assert(nIterations > 0);
-    long long elapsedUs = 0;
+    // if (Helpers::isFileReadable(params.inDictFile) == false)
+    // {
+    //     cerr << "Cannot access input dictionary file (doesn't exist or insufficient permissions): " << params.inDictFile << endl;
+    //     cerr << "Run " << execName << " -h for more information" << endl << endl;
 
-    SplitIndex *index = initIndex(words);
+    //     return false;
+    // }
 
-#if CHECK_ALL_QGRAMS
-    checkAllQgrams(index);
-    return "";
-#endif
+    // if (Helpers::isFileReadable(params.inPatternFile) == false)
+    // {
+    //     cerr << "Cannot access input patterns file (doesn't exist or insufficient permissions): " << params.inPatternFile << endl;
+    //     cerr << "Run " << execName << " -h for more information" << endl << endl;
 
-    index->construct();
-    cout << endl << "Constructed the index: " << endl
-         << index->toString() << endl << endl;
+    //     return false;
+    // }
 
-    string results;
-
-    for (int i = 0; i < nIterations; ++i)
-    {
-        cout << boost::format("\rRunning queries, iter: %1%/%2%")
-                % (i + 1) % nIterations << flush;
-
-        elapsedUs += index->runQueries(queries, results);
-
-        if (i != nIterations - 1)
-        {
-            // We only need the results from the last call, but we save them in every call
-            // in order to have fair time measurements.
-            results.clear();
-        }
-    }
-
-    elapsedUs /= nIterations;
-    cout << endl << utils::Helpers::getTimesStr(elapsedUs, queries.size()) << endl;
-
-    results = index->prettyResults(results);
-
-    delete index;
-    return results;
+    return true;
 }
 
-SplitIndex *initIndex(const vector<string> &words)
+int run()
 {
-    SplitIndex *index;
+    // try
+    // {
+    //     vector<string> dict = Helpers::readWords(params.inDictFile, params.separator);
+    //     vector<string> patterns = Helpers::readWords(params.inPatternFile, params.separator);
+       
+    //     filterInput(dict, patterns);
 
-#if INDEX_TYPE == 0
-    index = new SplitIndex1(words, params.minWordLength);
-#elif INDEX_TYPE == 1
-    index = new SplitIndex1Comp(words, params.minWordLength);
-#elif INDEX_TYPE == 2
-    index = new SplitIndex1CompExt(words, params.minWordLength);
-#elif INDEX_TYPE == 3
-    index = new SplitIndex1CompDouble(words, params.minWordLength);
-#elif INDEX_TYPE == 4
-    index = new SplitIndex1CompOpt(words, params.minWordLength);
-#elif INDEX_TYPE == 5
-    index = new SplitIndexK<1>(words, params.minWordLength);
-#elif INDEX_TYPE == 6
-    index = new SplitIndexK<2>(words, params.minWordLength);
-#elif INDEX_TYPE == 7
-    index = new SplitIndexK<3>(words, params.minWordLength);
-#elif INDEX_TYPE == 8
-    index = new SplitIndexExact(words, params.minWordLength);
-#else
-    #error Bad INDEX_TYPE
-#endif
+    //     cout << "=====" << endl;
+    //     cout << boost::format("Read #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl;
+     
+    //     runFingerprints(dict, patterns);
+    // }
+    // catch (const exception &e)
+    // {
+    //     cerr << endl << "Fatal error occurred: " << e.what() << endl;
+    //     return params.errorExitCode;
+    // }
 
-    return index;
+    return 0;
 }
 
-void checkAllQgrams(SplitIndex *index)
-{
-    assert(index != nullptr and INDEX_TYPE == 4);
-    
-    SplitIndex1CompOpt *indexOpt = dynamic_cast<SplitIndex1CompOpt *>(index);
-    
-    if (indexOpt == nullptr)
-    {
-        throw runtime_error("Bad index type");
-    }
-
-    indexOpt->construct(); // Required to initially set the words set.
-
-    // Make sure this matches maxQgramSize.
-    vector<int> curCounts;
-
-    for (int i = 0; i <= 100; i += 2)
-    {
-        curCounts.clear();
-        curCounts.push_back(0); // 2-grams
-        curCounts.push_back(100 - i);       // 3-grams
-        curCounts.push_back(i);       // 4-grams
-
-        cout << endl << "Cur counts = (2-, 3-, 4-grams)" << utils::Helpers::vecToStr(curCounts) << endl;
-
-        indexOpt->setQGramCounts(curCounts);
-        indexOpt->construct();
-
-        double sizeKB = indexOpt->getTotalSizeB() / 1024.0;
-
-        // This is sent on stderr for easier output filtering.
-        cerr << i << " " << sizeKB << endl;
-    }
-}
+} // namespace split_index

@@ -10,7 +10,9 @@ Also available as a preprint at the following link: http://arxiv.org/abs/1501.04
 
 ## Compilation
 
-Add Boost library to the path for compilation by setting `BOOST_DIR` in `makefile.inc`. Requires Boost program options module to be compiled for static linking.
+Add Boost library to the path for compilation by setting `BOOST_DIR` in `makefile.inc`. 
+Requires Boost program options module to be compiled for static linking.
+Requires support for the C++11 standard.
 
 Type `make` for optimized compile.
 Comment out `OPTFLAGS` in `makefile.inc` in order to disable optimization.
