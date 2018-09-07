@@ -5,7 +5,6 @@
 #include <cstring>
 #include <iostream>
 
-#include "../utils/debug.hpp"
 #include "../utils/helpers.hpp"
 #include "hash_map_aligned.hpp"
 
@@ -29,10 +28,10 @@ string HashMapAligned::toString() const
     totalSizeKB = Helpers::round2Places(totalSizeKB);
     
     double avgBucketSize = static_cast<double>(getNEntries()) / nBuckets;
-    string formatStr = "Hash map (HF = %1%): %2% entries, lf = %3% (max = %4%), total size = %5% KB, avg bucket size = %6%";
+    string formatStr = "Hash map: %2% entries, lf = %3% (max = %4%), total size = %5% KB, avg bucket size = %6%";
 
     return (boost::format(formatStr)
-            % HASH_TYPE % getNEntries() % curLoadFactor % maxLoadFactor % totalSizeKB % avgBucketSize).str();
+            % getNEntries() % curLoadFactor % maxLoadFactor % totalSizeKB % avgBucketSize).str();
 }
 
 char **HashMapAligned::get(const char *key, size_t keySize) const
@@ -42,7 +41,6 @@ char **HashMapAligned::get(const char *key, size_t keySize) const
     if (buckets[index] == nullptr)
         return nullptr;
 
-    DEBUG_PRINT_VERBOSE(boost::format("Found bucket at index %1%") % index);
     char *bucket = buckets[index];
 
     // We traverse the bucket.
@@ -65,8 +63,6 @@ char **HashMapAligned::get(const char *key, size_t keySize) const
 
 void HashMapAligned::rehash()
 {
-    DEBUG_PRINT(boost::format("[rehash] start #avail = %1%") % nAvailable);
-
     char **oldBuckets = buckets;
     int oldNAvailable = nAvailable;
 
@@ -90,8 +86,6 @@ void HashMapAligned::rehash()
     }
     
     clearBuckets(oldBuckets, oldNAvailable);
-    DEBUG_PRINT(boost::format("[rehash] end #avail = %1%") % nAvailable);
-
     curLoadFactor = static_cast<double>(nBuckets) / nAvailable;
 
     if (curLoadFactor >= maxLoadFactor)
@@ -103,8 +97,6 @@ void HashMapAligned::rehash()
 void HashMapAligned::insertItem(const char *key, size_t keySize, char *entry)
 {
     size_t index = hash(key, keySize) % nAvailable;
-    DEBUG_PRINT_VERBOSE(boost::format("Inserting key = %1%, index = %2%") % key % index);
- 
     char *newEntry = copyEntry(entry);
 
     if (buckets[index] == nullptr)

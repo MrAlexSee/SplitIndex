@@ -1,10 +1,12 @@
-#include "dist.hpp"
+#include "distance.hpp"
 
-////////////////////
-// We don't use any assembly magic here because the compiler with -O3 wins anyway (tested).
-////////////////////
+namespace split_index
+{
 
-int Dist::calcHamming(const char *str1, const char *str2, size_t length)
+namespace utils
+{
+
+int Distance::calcHamming(const char *str1, const char *str2, size_t length)
 {
     int nErrors = 0;
 
@@ -19,7 +21,7 @@ int Dist::calcHamming(const char *str1, const char *str2, size_t length)
     return nErrors;
 }
 
-bool Dist::isExactMatch(const char *str1, const char *str2, size_t length)
+bool Distance::isExactMatch(const char *str1, const char *str2, size_t length)
 {
     for (size_t i = 0; i < length; ++i)
     {
@@ -31,3 +33,7 @@ bool Dist::isExactMatch(const char *str1, const char *str2, size_t length)
 
     return true;
 }
+
+} // namespace utils
+
+} // namespace fingerprints

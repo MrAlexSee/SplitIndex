@@ -1,19 +1,25 @@
-#ifndef DIST_HPP
-#define DIST_HPP
+#ifndef DISTANCE_HPP
+#define DISTANCE_HPP
 
 #include <cstddef>
 
-class Dist
+namespace split_index
+{
+
+namespace utils
+{
+
+class Distance
 {
 public:
-    Dist() = delete;
+    Distance() = delete;
 
     static bool isExactMatch(const char *str1, const char *str2, size_t length);
 
     static int calcHamming(const char *str1, const char *str2, size_t length);
 
-    template<int k> // #errors <= k
-    static bool isHammingK(const char *str1, const char *str2, size_t length)
+    template<int k>
+    static bool isHammingAtMostK(const char *str1, const char *str2, size_t length)
     {
         int nErrors = 0;
 
@@ -22,7 +28,9 @@ public:
             if (str1[i] != str2[i])
             {
                 if (++nErrors > k)
+                {
                     return false;
+                }
             }
         }
 
@@ -30,4 +38,8 @@ public:
     }
 };
 
-#endif // DIST_HPP
+} // namespace utils
+
+} // namespace fingerprints
+
+#endif // DISTANCE_HPP

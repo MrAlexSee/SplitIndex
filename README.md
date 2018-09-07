@@ -3,6 +3,7 @@
 This software is called **SplitIndex**.
 It can be used for dictionary matching with mismatches.
 It is based on the Dirichlet principle, which is realized by storing substrings of words from the dictionary.
+Authors: Aleksander Cisłak, Szymon Grabowski.
 
 Published as *A Practical Index for Approximate Dictionary Matching with Few Mismatches* (Cisłak and Grabowski), Computing and Informatics, 05/2017.
 Also available as a preprint at the following link: http://arxiv.org/abs/1501.04948.
@@ -18,12 +19,12 @@ Tested with gcc 64-bit 7.2.0 and Boost 1.67.0 (the latter is not performance-cri
 
 ## Usage
 
-The default executable path is `build/main`.
+The default executable path is `build/split_index`.
 Basic usage: `./split_index [options] <input dictionary file> <input pattern file>`
 
 Input dictionary file (positional parameter 1 or named parameter `-i` or `--in-dict-file`) should contain the list of words, separated with newline characters.
 Input pattern file (positional parameter 2 or named parameter `-I` or `--in-pattern-file`) should contain the list of patterns, separated with newline characters.
-Attached as part of this package is a script `test_all.sh` for testing on all available dictionaries.
+Attached as part of this package is a script `test_all.sh` for processing multiple dictionaries.
 
 #### Command-line parameter description
 

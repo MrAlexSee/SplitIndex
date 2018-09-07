@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "split_index.hpp"
-#include "../utils/debug.hpp"
 #include "../utils/helpers.hpp"
 
 using namespace std;
@@ -75,8 +74,6 @@ long long SplitIndex::runQueries(const vector<string> &queries, string &results)
 
     for (size_t iQ = 0; iQ < queries.size(); ++iQ)
     {
-        DEBUG_PRINT(boost::format("Running query %1%/%2% (%3%)")
-                    % (iQ + 1) % queries.size() % queries[iQ]);
         processQuery(queries[iQ], results);
     }
 

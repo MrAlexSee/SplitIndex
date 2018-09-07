@@ -6,11 +6,12 @@
 #include <iostream>
 
 #include "../hash_map/hash_map_aligned.hpp"
-#include "../utils/dist.hpp"
+#include "../utils/distance.hpp"
 #include "../utils/helpers.hpp"
 
 #include "split_index_1.hpp"
 
+using namespace split_index;
 using namespace std;
 
 SplitIndex1::SplitIndex1(const vector<string> &words, int minWordLength)
@@ -340,7 +341,7 @@ bool SplitIndex1::searchPartPref(const char *keyPart, size_t keySize,
 
             if (entry[0] == cMatchSize)
             {
-                if (Dist::isHammingK<1>(entry + 1, matchPart, matchSize))
+                if (utils::Distance::isHammingAtMostK<1>(entry + 1, matchPart, matchSize))
                 {
                     addResult(entry + 1, matchSize, results, '0');
                     hasResults = true;
@@ -357,7 +358,7 @@ bool SplitIndex1::searchPartPref(const char *keyPart, size_t keySize,
         {       
             if (entry[0] == cMatchSize)
             {
-                if (Dist::isHammingK<1>(entry + 1, matchPart, matchSize))
+                if (utils::Distance::isHammingAtMostK<1>(entry + 1, matchPart, matchSize))
                 {
                     addResult(entry + 1, matchSize, results, '0');
                     hasResults = true;
@@ -396,7 +397,7 @@ bool SplitIndex1::searchPartSuf(const char *keyPart, size_t keySize,
     {
         if (entry[0] == cMatchSize)
         {
-            if (Dist::isHammingK<1>(entry + 1, matchPart, matchSize))
+            if (utils::Distance::isHammingAtMostK<1>(entry + 1, matchPart, matchSize))
             {
                 addResult(entry + 1, matchSize, results, '1');
                 hasResults = true;

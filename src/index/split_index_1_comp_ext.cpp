@@ -3,11 +3,12 @@
 #include <iostream>
 #include <utility>
 
-#include "../utils/dist.hpp"
+#include "../utils/distance.hpp"
 #include "../utils/helpers.hpp"
 
 #include "split_index_1_comp_ext.hpp"
 
+using namespace split_index;
 using namespace std;
 
 SplitIndex1CompExt::SplitIndex1CompExt(const vector<string> &words, int minWordLength)
@@ -205,7 +206,7 @@ bool SplitIndex1CompExt::searchPartPref(const char *keyPart, size_t keySize,
                 size_t decSize = decode(entry + 2, entry[0], matchSize);
 
                 if (decSize == matchSize and
-                    Dist::isHammingK<1>(codingBuf, matchPart, matchSize))
+                    utils::Distance::isHammingAtMostK<1>(codingBuf, matchPart, matchSize))
                 {
                     addResult(codingBuf, matchSize, results, '0');
                     hasResults = true;
@@ -225,7 +226,7 @@ bool SplitIndex1CompExt::searchPartPref(const char *keyPart, size_t keySize,
                 size_t decSize = decode(entry + 2, entry[0], matchSize);
 
                 if (decSize == matchSize and
-                    Dist::isHammingK<1>(codingBuf, matchPart, matchSize))
+                    utils::Distance::isHammingAtMostK<1>(codingBuf, matchPart, matchSize))
                 {
                     addResult(codingBuf, matchSize, results, '0');
                     hasResults = true;
@@ -267,7 +268,7 @@ bool SplitIndex1CompExt::searchPartSuf(const char *keyPart, size_t keySize,
             size_t decSize = decode(entry + 2, entry[0], matchSize);
 
             if (decSize == matchSize and
-                Dist::isHammingK<1>(codingBuf, matchPart, matchSize))
+                utils::Distance::isHammingAtMostK<1>(codingBuf, matchPart, matchSize))
             {
                 addResult(codingBuf, matchSize, results, '1');
                 hasResults = true;

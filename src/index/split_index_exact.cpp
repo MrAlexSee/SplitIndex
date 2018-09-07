@@ -3,11 +3,12 @@
 #include <cstring>
 #include <iostream>
 
-#include "../utils/dist.hpp"
+#include "../utils/distance.hpp"
 #include "../utils/helpers.hpp"
 
 #include "split_index_exact.hpp"
 
+using namespace split_index;
 using namespace std;
 
 SplitIndexExact::SplitIndexExact(const vector<string> &words, int minWordLength)
@@ -63,7 +64,7 @@ bool SplitIndexExact::searchPartPref(const char *keyPart, size_t keySize,
 
             if (entry[0] == cMatchSize)
             {
-                if (Dist::isExactMatch(entry + 1, matchPart, matchSize))
+                if (utils::Distance::isExactMatch(entry + 1, matchPart, matchSize))
                 {
                     addResult(entry + 1, matchSize, results, false);
                     hasResults = true;
@@ -80,7 +81,7 @@ bool SplitIndexExact::searchPartPref(const char *keyPart, size_t keySize,
         {       
             if (entry[0] == cMatchSize)
             {
-                if (Dist::isExactMatch(entry + 1, matchPart, matchSize))
+                if (utils::Distance::isExactMatch(entry + 1, matchPart, matchSize))
                 {
                     addResult(entry + 1, matchSize, results, false);
                     hasResults = true;
@@ -119,7 +120,7 @@ bool SplitIndexExact::searchPartSuf(const char *keyPart, size_t keySize,
     {
         if (entry[0] == cMatchSize)
         {
-            if (Dist::isExactMatch(entry + 1, matchPart, matchSize))
+            if (utils::Distance::isExactMatch(entry + 1, matchPart, matchSize))
             {
                 addResult(entry + 1, matchSize, results, true);
                 hasResults = true;

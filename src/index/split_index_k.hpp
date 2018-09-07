@@ -8,8 +8,10 @@
 
 #include "../hash_map/hash_map_aligned.hpp"
 #include "../utils/bit_utils.hpp"
-#include "../utils/dist.hpp"
+#include "../utils/distance.hpp"
 #include "split_index.hpp"
+
+using namespace split_index;
 
 template<int k>
 class SplitIndexK : public SplitIndex
@@ -395,18 +397,18 @@ void SplitIndexK<k>::setPartBit(char *entry, size_t iWord, size_t iPart)
         case 1:
             // Won't overflow because we have multiples of 2 mod 8.
             bit += 1;
-            BitUtils::setBit(entry, bit);
+            utils::BitUtils::setBit(entry, bit);
             break;
         case 2:
             assert(k >= 2);
-            BitUtils::setBit(entry, bit);
+            utils::BitUtils::setBit(entry, bit);
             break;
         case 3:
             assert(k == 3);
-            BitUtils::setBit(entry, bit);
+            utils::BitUtils::setBit(entry, bit);
        
             bit += 1;
-            BitUtils::setBit(entry, bit);
+            utils::BitUtils::setBit(entry, bit);
             break;
         default:
             assert(false);
@@ -427,10 +429,10 @@ int SplitIndexK<k>::getPartBit(const char *entry, size_t iWord)
     entry += sizeof(uint16_t); // Go to the first byte
     entry += byte;
 
-    bool first = BitUtils::isBitSet(*entry, bit);
+    bool first = utils::BitUtils::isBitSet(*entry, bit);
 
     bit += 1; // Won't overflow because we have multiples of 2 mod 8.
-    bool second = BitUtils::isBitSet(*entry, bit);
+    bool second = utils::BitUtils::isBitSet(*entry, bit);
 
     if (first)
     {
@@ -529,7 +531,7 @@ bool SplitIndexK<k>::tryMatchPart(const std::string &query, const char *entry,
     switch (iPart)
     {
         case 0:
-            if (Dist::isHammingK<k>(entry, query.c_str() + parts[iPart].size(), matchSize))
+            if (utils::Distance::isHammingAtMostK<k>(entry, query.c_str() + parts[iPart].size(), matchSize))
             {
                 addResult(entry, matchSize, results, '0');
                 hasResults = true;
@@ -539,7 +541,7 @@ bool SplitIndexK<k>::tryMatchPart(const std::string &query, const char *entry,
             switch (k)
             {
                 case 1: // k == 1
-                    if (Dist::isHammingK<k>(entry, query.c_str(), matchSize))
+                    if (utils::Distance::isHammingAtMostK<k>(entry, query.c_str(), matchSize))
                     {
                         addResult(entry, matchSize, results, '1');
                         hasResults = true;
@@ -562,7 +564,7 @@ bool SplitIndexK<k>::tryMatchPart(const std::string &query, const char *entry,
             switch (k)
             {
                 case 2: // k == 2
-                    if (Dist::isHammingK<k>(entry, query.c_str(), matchSize))
+                    if (utils::Distance::isHammingAtMostK<k>(entry, query.c_str(), matchSize))
                     {
                         addResult(entry, matchSize, results, '2');
                         hasResults = true;
@@ -583,7 +585,7 @@ bool SplitIndexK<k>::tryMatchPart(const std::string &query, const char *entry,
         case 3:
             assert(k == 3);
 
-            if (Dist::isHammingK<3>(entry, query.c_str(), matchSize))
+            if (utils::Distance::isHammingAtMostK<3>(entry, query.c_str(), matchSize))
             {
                 addResult(entry, matchSize, results, '3');
                 hasResults = true;
@@ -633,8 +635,8 @@ bool SplitIndexK<k>::tryMatchParts(const std::string &query, const char *entry,
 
     assert(partSize1 + parts[iPart].size() + partSize2 == query.size());
     
-    int nErrors = Dist::calcHamming(entry, query.c_str(), partSize1);
-    nErrors += Dist::calcHamming(entry + partSize1, query.c_str() + query.size() - partSize2, partSize2);
+    int nErrors = utils::Distance::calcHamming(entry, query.c_str(), partSize1);
+    nErrors += utils::Distance::calcHamming(entry + partSize1, query.c_str() + query.size() - partSize2, partSize2);
 
     if (nErrors <= k)
     {
