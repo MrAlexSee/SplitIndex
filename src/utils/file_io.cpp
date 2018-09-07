@@ -5,6 +5,12 @@
 
 using namespace std;
 
+namespace split_index
+{
+
+namespace utils
+{
+
 vector<string> FileIO::readFile(const string &filePath)
 {
     ifstream stream(filePath);
@@ -32,3 +38,7 @@ void FileIO::writeFile(const string &data, const string &filePath)
 
     stream << data;
 }
+
+} // namespace utils
+
+} // namespace split_index

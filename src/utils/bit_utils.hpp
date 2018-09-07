@@ -20,6 +20,6 @@ public:
 
 } // namespace utils
 
-} // namespace fingerprints
+} // namespace split_index
 
 #endif // BIT_UTILS_HPP

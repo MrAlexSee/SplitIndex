@@ -20,6 +20,7 @@
 #include "../utils/query_utils.hpp"
 #include "params.hpp"
 
+using namespace split_index;
 using namespace std;
 
 namespace
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
 
     try
     {
-        vector<string> inputLines = FileIO::readFile(argv[1]);
+        vector<string> inputLines = utils::FileIO::readFile(argv[1]);
         cout << boost::format("Read %1% lines")
                 % inputLines.size() << endl;
 
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
         if (argc != 3)
         {
             // No file with queries -> generate the queries.
-            queries = QueryUtils::genQueries(inputLines, params.queryAlphabet, params.minWordLength,
+            queries = utils::QueryUtils::genQueries(inputLines, params.queryAlphabet, params.minWordLength,
                                              params.nQueries, params.maxNErrors);        
             cout << boost::format("Generated %1% queries")
                     % params.nQueries << endl;
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
         else
         {
             // Otherwise we read the queries from file.
-            queries = FileIO::readFile(argv[2]);
+            queries = utils::FileIO::readFile(argv[2]);
             cout << boost::format("Read %1% queries from file: %2%")
                     % queries.size() % argv[2] << endl;
         }
@@ -69,7 +70,7 @@ int main(int argc, char **argv)
 
         if (results != "")
         {
-            FileIO::writeFile(results, params.outFilePath);
+            utils::FileIO::writeFile(results, params.outFilePath);
         }
     }
     catch (std::exception &e)
@@ -114,7 +115,7 @@ string doSearch(const vector<string> &words,
     }
 
     elapsedUs /= nIterations;
-    cout << endl << Helpers::getTimesStr(elapsedUs, queries.size()) << endl;
+    cout << endl << utils::Helpers::getTimesStr(elapsedUs, queries.size()) << endl;
 
     results = index->prettyResults(results);
 
@@ -174,7 +175,7 @@ void checkAllQgrams(SplitIndex *index)
         curCounts.push_back(100 - i);       // 3-grams
         curCounts.push_back(i);       // 4-grams
 
-        cout << endl << "Cur counts = (2-, 3-, 4-grams)" << Helpers::vecToStr(curCounts) << endl;
+        cout << endl << "Cur counts = (2-, 3-, 4-grams)" << utils::Helpers::vecToStr(curCounts) << endl;
 
         indexOpt->setQGramCounts(curCounts);
         indexOpt->construct();

@@ -25,7 +25,7 @@ string SplitIndexExact::toString() const
     }
 
     double wordsSizeKB = getWordsSizeB() / 1024.0;
-    wordsSizeKB = Helpers::round2Places(wordsSizeKB);
+    wordsSizeKB = utils::Helpers::round2Places(wordsSizeKB);
 
     return (boost::format("Exact (k = 0), #words = %1%, words size = %2%kB\n%3%")
             % wordSet.size() % wordsSizeKB % map->toString()).str();

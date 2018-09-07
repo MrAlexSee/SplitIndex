@@ -5,6 +5,12 @@
 #include <string>
 #include <vector>
 
+namespace split_index
+{
+
+namespace utils
+{
+
 class Helpers
 {
 public:
@@ -83,5 +89,9 @@ public:
         return res + "]";
     }
 };
+
+} // namespace utils
+
+} // namespace split_index
 
 #endif // HELPERS_HPP

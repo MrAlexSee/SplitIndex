@@ -5,6 +5,7 @@
 #include "split_index.hpp"
 #include "../utils/helpers.hpp"
 
+using namespace split_index;
 using namespace std;
 
 SplitIndex::SplitIndex(const vector<string> &words, int minWordLength)
@@ -28,7 +29,7 @@ string SplitIndex::toString() const
     }
 
     double wordsSizeKB = getWordsSizeB() / 1024.0;
-    wordsSizeKB = Helpers::round2Places(wordsSizeKB);
+    wordsSizeKB = utils::Helpers::round2Places(wordsSizeKB);
 
     return (boost::format("k = 1, #words = %1%, words size = %2% KB\n%3%")
             % wordSet.size() % wordsSizeKB % map->toString()).str();
@@ -102,7 +103,7 @@ void SplitIndex::initMap()
 
     for (const string &word : wordSet)
     {
-        Helpers::printProgress("Initializing the hash map", i++, wordSet.size());
+        utils::Helpers::printProgress("Initializing the hash map", i++, wordSet.size());
         
         assert(word.size() > 0 and word.size() <= maxWordSize);
         initEntry(word);

@@ -28,4 +28,4 @@ bool BitUtils::isBitSet(char bits, size_t pos)
 
 } // namespace utils
 
-} // namespace fingerprints
+} // namespace split_index

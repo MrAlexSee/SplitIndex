@@ -8,6 +8,7 @@
 #include "../utils/helpers.hpp"
 #include "hash_map_aligned.hpp"
 
+using namespace split_index;
 using namespace std;
 
 HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEntrySize,
@@ -25,7 +26,7 @@ HashMapAligned::~HashMapAligned()
 string HashMapAligned::toString() const
 {
     double totalSizeKB = this->getTotalSizeB() / 1024.0;
-    totalSizeKB = Helpers::round2Places(totalSizeKB);
+    totalSizeKB = utils::Helpers::round2Places(totalSizeKB);
     
     double avgBucketSize = static_cast<double>(getNEntries()) / nBuckets;
     string formatStr = "Hash map: %2% entries, lf = %3% (max = %4%), total size = %5% KB, avg bucket size = %6%";

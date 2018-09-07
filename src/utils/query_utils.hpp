@@ -1,8 +1,14 @@
-#ifndef GEN_QUERIES_HPP
-#define GEN_QUERIES_HPP
+#ifndef QUERY_UTILS_HPP
+#define QUERY_UTILS_HPP
 
 #include <string>
 #include <vector>
+
+namespace split_index
+{
+
+namespace utils
+{
 
 class QueryUtils
 {
@@ -14,4 +20,8 @@ public:
                                                int minWordLength, int nQueries, int maxNErrors);
 };
 
-#endif // GEN_QUERIES_HPP
+} // namespace utils
+
+} // namespace split_index
+
+#endif // QUERY_UTILS_HPP

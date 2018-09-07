@@ -9,6 +9,12 @@
 
 using namespace std;
 
+namespace split_index
+{
+
+namespace utils
+{
+
 string Helpers::getTimesStr(long long elapsedUs, int nQueries)
 {
     string countStr;
@@ -40,3 +46,7 @@ void Helpers::printProgress(const string &info, int count, int size)
     cout << boost::format("\r%1%: %2%/%3% (%4%%%)")
             % info % count % size % round(perc) << flush;
 }
+
+} // namespace utils
+
+} // namespace split_index

@@ -40,6 +40,6 @@ public:
 
 } // namespace utils
 
-} // namespace fingerprints
+} // namespace split_index
 
 #endif // DISTANCE_HPP

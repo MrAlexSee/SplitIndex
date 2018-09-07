@@ -36,4 +36,4 @@ bool Distance::isExactMatch(const char *str1, const char *str2, size_t length)
 
 } // namespace utils
 
-} // namespace fingerprints
+} // namespace split_index

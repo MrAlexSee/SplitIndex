@@ -10,6 +10,7 @@
 #include "split_index_1_comp_opt.hpp"
 #include "../utils/helpers.hpp"
 
+using namespace split_index;
 using namespace std;
 
 SplitIndex1CompOpt::SplitIndex1CompOpt(const vector<string> &words, int minWordLength)
@@ -31,7 +32,7 @@ string SplitIndex1CompOpt::toString() const
         return "Index not constructed";
     }
     
-    string out = (boost::format("\nQ-gram counts: %1%") % Helpers::vecToStr(qgramCounts)).str();
+    string out = (boost::format("\nQ-gram counts: %1%") % utils::Helpers::vecToStr(qgramCounts)).str();
     return SplitIndex1::toString() + out;
 }
 
@@ -97,7 +98,7 @@ void SplitIndex1CompOpt::setOptQgramFeatures()
 
         cout << boost::format("Checked q-gram compression: %1%/%2% %3% (S = %4$.1f KB)")
                 % (i + 1) % qgramCountsList.size()
-                % Helpers::vecToStr(qgramCountsList[i]) % (curSize / 1024.0) << endl;
+                % utils::Helpers::vecToStr(qgramCountsList[i]) % (curSize / 1024.0) << endl;
 
         if (minSize == 0 or curSize < minSize)
         {
@@ -109,7 +110,7 @@ void SplitIndex1CompOpt::setOptQgramFeatures()
     this->qgramCounts = qgramCountsList[iBest];
 
     cout << endl << boost::format("Best counts = %1%, compr. size = %2$.1f KB")
-                    % Helpers::vecToStr(qgramCounts) % (minSize / 1024.0) << endl;
+                    % utils::Helpers::vecToStr(qgramCounts) % (minSize / 1024.0) << endl;
 }
 
 vector<vector<int>> SplitIndex1CompOpt::constructQgramCands()
@@ -123,7 +124,7 @@ vector<vector<int>> SplitIndex1CompOpt::constructQgramCands()
     cout << boost::format("Created a range: [%1%, %2%] of size %3%")
             % int(qRangeStart) % int(maxNGrams) % range.size() << endl;
 
-    vector<vector<int>> qgramCountsList = Helpers::countCartProd(range, maxQgramSize - 1);
+    vector<vector<int>> qgramCountsList = utils::Helpers::countCartProd(range, maxQgramSize - 1);
     size_t cartProdSize = qgramCountsList.size();
 
     cout << "Created Cart. product, size = " << cartProdSize << endl;

@@ -7,6 +7,12 @@
 
 using namespace std;
 
+namespace split_index
+{
+
+namespace utils
+{
+
 vector<string> QueryUtils::genQueries(const vector<string> &words,
                                       const string &alphabet,
                                       int minWordLength, int nQueries, int maxNErrors)
@@ -64,3 +70,7 @@ vector<string> QueryUtils::genQueries(const vector<string> &words,
     assert(queries.size() == nQueries);
     return queries;
 }
+
+} // namespace utils
+
+} // namespace split_index
