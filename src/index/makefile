@@ -1,9 +1,11 @@
 ROOT_DIR = ../..
 
+include $(ROOT_DIR)/makefile.inc
+
 CPP_FILES = $(wildcard *.cpp)
 OBJ_FILES = $(addprefix $(ROOT_DIR)/$(OBJ_DIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
 
-LIB = $(ROOT_DIR)/$(LIB_DIR)/$(INDEX_MAP_LIB)
+LIB = $(ROOT_DIR)/$(LIB_DIR)/$(INDEX_LIB)
 
 all: $(LIB)
 

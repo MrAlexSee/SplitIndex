@@ -1,6 +1,6 @@
 include makefile.inc
 
-all: dirs $(BUILD_DIR)/$(EXE)
+all: create_dirs $(BUILD_DIR)/$(EXE)
 
 # The order here is based on library dependencies (left depends on right).
 LIBS = $(MAIN_LIB) $(INDEX_LIB) $(HASH_MAP_LIB) $(HASH_FUNCTION_LIB) $(UTILS_LIB)
@@ -11,13 +11,13 @@ build/$(EXE): libs
 
 libs:
 	$(MAKE) -C src/hash_function
-	# $(MAKE) -C src/hash_map
-	# $(MAKE) -C src/index
-	# $(MAKE) -C src/main
-	# $(MAKE) -C src/utils
+	$(MAKE) -C src/hash_map
+	$(MAKE) -C src/index
+	$(MAKE) -C src/main
+	$(MAKE) -C src/utils
 
 .PHONY: dirs
-dirs:
+create_dirs:
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(LIB_DIR)
 	mkdir -p $(OBJ_DIR)
