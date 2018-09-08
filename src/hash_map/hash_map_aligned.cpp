@@ -12,8 +12,8 @@ using namespace split_index;
 using namespace std;
 
 HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEntrySize,
-                               double maxLoadFactor, int sizeHint)
-    :HashMap(calcEntrySize, maxLoadFactor, sizeHint)
+                               double maxLoadFactor, int sizeHint, const std::string &hashType)
+    :HashMap(calcEntrySize, maxLoadFactor, sizeHint, hashType)
 {
 
 }

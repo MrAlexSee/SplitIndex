@@ -11,7 +11,7 @@ class HashMapAligned : public HashMap
 {
 public:
     HashMapAligned(const std::function<size_t(const char *)> &calcEntrySize,
-                   double maxLoadFactor, int sizeHint);
+                   double maxLoadFactor, int sizeHint, const std::string &hashType);
     ~HashMapAligned();
 
     std::string toString() const override;

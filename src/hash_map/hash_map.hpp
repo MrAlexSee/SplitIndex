@@ -2,6 +2,7 @@
 #define HASH_MAP
 
 #include <functional>
+#include <string>
 
 #include "../hash_function/hash_functions.hpp"
 
@@ -11,7 +12,7 @@ class HashMap
 {
 public:
     HashMap(const std::function<size_t(const char *)> &calcEntrySize,
-            double maxLoadFactor, int sizeHint = 1000);
+            double maxLoadFactor, int sizeHint, const std::string &hashType);
     virtual ~HashMap() { }
 
     virtual std::string toString() const = 0;
@@ -29,7 +30,7 @@ public:
     double getMaxLoadFactor() const { return maxLoadFactor; }
 
 protected:
-    void initHash();
+    void initHash(const std::string &hashType);
     void initBuckets();
 
     virtual void rehash() = 0;

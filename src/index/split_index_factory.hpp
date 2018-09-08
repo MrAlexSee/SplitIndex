@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "split_index_1.hpp"
+#include "split_index_1_comp.hpp"
 
 namespace split_index
 {
@@ -25,6 +26,8 @@ SplitIndex *SplitIndexFactory::initIndex(const std::vector<std::string> &words, 
         case 0:
             index = new SplitIndex1(words, minWordLength);
             break;
+        case 1:
+            index = new SplitIndex1Comp(words, minWordLength);
         default:
             throw std::invalid_argument("bad index type: " + std::to_string(indexType));
     }

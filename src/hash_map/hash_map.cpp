@@ -1,14 +1,13 @@
 #include <boost/format.hpp>
 #include <iostream>
-
-#include "../main/params.hpp"
+#include <stdexcept>
 
 #include "hash_map.hpp"
 
 using namespace std;
 
 HashMap::HashMap(const std::function<size_t(const char *)> &calcEntrySize,
-                 double maxLoadFactor, int sizeHint)
+                 double maxLoadFactor, int sizeHint, const std::string &hashType)
     :calcEntrySize(calcEntrySize),
      maxLoadFactor(maxLoadFactor),
      nAvailable(sizeHint)
@@ -16,7 +15,7 @@ HashMap::HashMap(const std::function<size_t(const char *)> &calcEntrySize,
     assert(spaceIncrement > 1.0);
     assert(sizeHint >= 0);
 
-    initHash();
+    initHash(hashType);
     initBuckets();
 }
 
@@ -77,31 +76,52 @@ long HashMap::getTotalSizeB() const
     return total;
 }
 
-void HashMap::initHash()
+void HashMap::initHash(const std::string &hashType)
 {
-#if HASH_TYPE == 0
-    hash = &HashFunctions::F_City;
-#elif HASH_TYPE == 1
-    hash = &HashFunctions::F_FNV1;
-#elif HASH_TYPE == 2
-    hash = &HashFunctions::F_FNV1a;
-#elif HASH_TYPE == 3
-    hash = &HashFunctions::F_Murmur3;
-#elif HASH_TYPE == 4
-    hash = &HashFunctions::F_sdbm;
-#elif HASH_TYPE == 5
-    hash = &HashFunctions::F_SpookyV2;
-#elif HASH_TYPE == 6
-    hash = &HashFunctions::F_SuperFast;
-#elif HASH_TYPE == 7
-    hash = &HashFunctions::F_xxHash;
-#elif HASH_TYPE == 8
-    hash = &HashFunctions::F_farsh;
-#elif HASH_TYPE == 9
-    hash = &HashFunctions::F_Farm;
-#else
-    #error Bad HASH_TYPE
-#endif 
+    if (hashType == "city")
+    {
+        hash = &HashFunctions::F_City;
+    }
+    else if (hashType == "farm")
+    {
+        hash = &HashFunctions::F_Farm;
+    }
+    else if (hashType == "farsh")
+    {
+        hash = &HashFunctions::F_farsh;
+    }
+    else if (hashType == "fnv1")
+    {
+        hash = &HashFunctions::F_FNV1;
+    }
+    else if (hashType == "fnv1a")
+    {
+        hash = &HashFunctions::F_FNV1a;
+    }
+    else if (hashType == "murmur3")
+    {
+        hash = &HashFunctions::F_Murmur3;
+    }
+    else if (hashType == "sdbm")
+    {
+        hash = &HashFunctions::F_sdbm;
+    }
+    else if (hashType == "spookyv2")
+    {
+        hash = &HashFunctions::F_SpookyV2;
+    }
+    else if (hashType == "superfast")
+    {
+        hash = &HashFunctions::F_SuperFast;
+    }
+    else if (hashType == "xxhash")
+    {
+        hash = &HashFunctions::F_xxHash;
+    }
+    else
+    {
+        throw invalid_argument("bad hash type = " + hashType);
+    }
 }
 
 void HashMap::initBuckets()

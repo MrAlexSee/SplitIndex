@@ -71,9 +71,14 @@ int handleParams(int argc, const char **argv)
 {
     po::options_description options("Parameters");
     options.add_options()
+       ("hash-type", po::value<string>(&params.hashType), "hash type used by the split index: city, farm, farsh, fnv1, fvn1a, murmur3, sdbm, spookyv2, superfast, xxhash (default = xxHash)")
        ("help,h", "display help message")
+       ("index-type", po::value<int>(&params.indexType), "split index type: 0 -> for k=1, 1 -> for k=1 with compression (default = 1)")
        ("in-dict-file,i", po::value<string>(&params.inDictFile)->required(), "input dictionary file path (positional arg 1)")
        ("in-pattern-file,I", po::value<string>(&params.inPatternFile)->required(), "input pattern file path (positional arg 2)")
+       ("iter", po::value<int>(&params.nIter), "number of iterations per pattern lookup (default = 1)")
+       ("min-word-length", po::value<int>(&params.minWordLength), "minimum word length from the input dictionary (shorter words are ignored) (default = 4)")
+       ("separator,s", po::value<string>(&params.separator), "input data (dictionary and patterns) separator")
        ("version,v", "display version info");
 
     po::positional_options_description positionalOptions;
