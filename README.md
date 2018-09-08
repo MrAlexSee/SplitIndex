@@ -1,7 +1,7 @@
 ## Basic information
 
 This software is called **SplitIndex**.
-It can be used for dictionary matching with mismatches.
+It can be used for dictionary matching with mismatches (Hamming distance).
 It is based on the Dirichlet principle, which is realized by storing substrings of words from the dictionary.
 Authors: Aleksander Cisłak, Szymon Grabowski.
 
