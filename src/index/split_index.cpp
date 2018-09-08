@@ -61,7 +61,7 @@ void SplitIndex::construct()
     constructed = true;
 }
 
-long long SplitIndex::runQueries(const vector<string> &queries, string &results)
+long long SplitIndex::search(const vector<string> &queries, string &results)
 {
     assert(constructed);
     int totalQSize = 0;

@@ -19,12 +19,14 @@ public:
     virtual void construct();
 
     // Returns the elapsed time in microseconds (us).
-    long long runQueries(const std::vector<std::string> &queries, std::string &results);
+    long long search(const std::vector<std::string> &queries, std::string &results);
 
     long getWordsSizeB() const;
     virtual std::string prettyResults(const std::string &results) const = 0;
 
     long getTotalSizeB() const { return map->getTotalSizeB(); }
+
+    float getElapsedUs() const { return 0.0; }
 
 protected:
     void initMap();

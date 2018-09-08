@@ -36,13 +36,14 @@ constexpr int paramsResContinue = -1;
 
 }
 
-/** Handles cmd-line parameters, returns -1 if program execution should continue. */
+/** Handles cmd-line parameters, returns paramsResContinue if program execution should continue. */
 int handleParams(int argc, const char **argv);
 /** Returns true if input files are readable, false otherwise. */
 bool checkInputFiles(const char *execName);
 /** Runs the main program and returns the program exit code. */
 int run();
 
+/** Searches for [queries] in [words] using a split index. */
 void runSearch(const vector<string> &words, const vector<string> &queries);
 
 }
@@ -144,7 +145,6 @@ int run()
         vector<string> patterns = utils::FileIO::readWords(params.inPatternFile, params.separator);
        
         cout << boost::format("Read #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl;
-     
         runSearch(dict, patterns);
     }
     catch (const exception &e)
@@ -158,31 +158,18 @@ int run()
 
 void runSearch(const vector<string> &words, const vector<string> &queries)
 {
-    SplitIndex *index = SplitIndexFactory::initIndex(words, params.minWordLength, params.indexType);
-    cout << endl << "Constructed the index: " << endl << index->toString() << endl << endl;
+    SplitIndex *index = SplitIndexFactory::initIndex(words, params.indexType, params.minWordLength);
+    cout << "Index constructed" << endl;
 
     string results;
-    float elapsedUs = 0;
+    int nMatches = index->search(queries, results);
 
-    for (int i = 0; i < params.nIterations; ++i)
-    {
-        cout << boost::format("\rRunning queries, iter: %1%/%2%")
-                % (i + 1) % params.nIterations << flush;
+    cout << "#matches = " << nMatches << endl;
 
-        elapsedUs += index->runQueries(queries, results);
+    float elapsedTotalUs = index->getElapsedUs();
+    float elapsedPerIterUs = elapsedTotalUs / static_cast<float>(params.nIter);
 
-        if (i != params.nIterations - 1)
-        {
-            // We only need the results from the last call, but we save them in every call
-            // in order to have fair time measurements.
-            results.clear();
-        }
-    }
-
-    elapsedUs /= params.nIterations;
-    // cout << endl << utils::Helpers::getTimesStr(elapsedUs, queries.size()) << endl;
-
-    results = index->prettyResults(results);
+    cout << boost::format("Elapsed: %1% us") % elapsedPerIterUs << endl;
     delete index;
 }
 

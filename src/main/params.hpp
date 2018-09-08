@@ -67,7 +67,7 @@ struct Params
     /** Input data (dictionary and patterns) separator. */
     std::string separator = "\n";
 
-    int nIterations = 1;
+    int nIter = 1;
 
     int indexType = 0;
 
