@@ -22,6 +22,7 @@ Tested with gcc 64-bit 7.2.0 and Boost 1.67.0 (the latter is not performance-cri
 ## Usage
 
 The default executable path is `build/split_index`.
+
 Basic usage: `./split_index [options] <input dictionary file> <input pattern file>`
 
 Input dictionary file (positional parameter 1 or named parameter `-i` or `--in-dict-file`) should contain the list of words, separated with newline characters.
