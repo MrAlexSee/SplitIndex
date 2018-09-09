@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -46,7 +47,9 @@ int run();
 /** Searches for [queries] in [words] using a split index. */
 void runSearch(const vector<string> &words, const vector<string> &queries);
 
-}
+void initSplitIndexParams(SplitIndexFactory::HashType &hashType, SplitIndexFactory::IndexType &indexType);
+
+} // namespace split_index
 
 int main(int argc, const char **argv)
 {
@@ -71,14 +74,16 @@ int handleParams(int argc, const char **argv)
 {
     po::options_description options("Parameters");
     options.add_options()
-       ("hash-type", po::value<string>(&params.hashType), "hash type used by the split index: city, farm, farsh, fnv1, fvn1a, murmur3, sdbm, spookyv2, superfast, xxhash (default = xxHash)")
+       ("hash-type", po::value<string>(&params.hashType)->default_value("xxhash"), "hash type used by the split index: city, farm, farsh, fnv1, fnv1a, murmur3, sdbm, spookyv2, superfast, xxhash")
        ("help,h", "display help message")
-       ("index-type", po::value<int>(&params.indexType), "split index type: 0 -> for k=1, 1 -> for k=1 with compression (default = 1)")
+       ("index-type", po::value<string>(&params.indexType)->default_value("k1"), "split index type: k1, k1comp")
        ("in-dict-file,i", po::value<string>(&params.inDictFile)->required(), "input dictionary file path (positional arg 1)")
        ("in-pattern-file,I", po::value<string>(&params.inPatternFile)->required(), "input pattern file path (positional arg 2)")
-       ("iter", po::value<int>(&params.nIter), "number of iterations per pattern lookup (default = 1)")
-       ("min-word-length", po::value<int>(&params.minWordLength), "minimum word length from the input dictionary (shorter words are ignored) (default = 4)")
-       ("separator,s", po::value<string>(&params.separator), "input data (dictionary and patterns) separator")
+       ("iter", po::value<int>(&params.nIter)->default_value(1), "number of iterations per pattern lookup")
+       ("min-word-length", po::value<int>(&params.minWordLength)->default_value(4), "minimum word length from the input dictionary (shorter words are ignored)")
+       ("out-file,o", po::value<string>(&params.outFile)->default_value("res.txt"), "output file path")
+       // Not using a default value from Boost for separator because it literally prints a newline.
+       ("separator,s", po::value<string>(&params.separator), "input data (dictionary and patterns) separator (default = newline)")
        ("version,v", "display version info");
 
     po::positional_options_description positionalOptions;
@@ -163,7 +168,12 @@ int run()
 
 void runSearch(const vector<string> &words, const vector<string> &queries)
 {
-    SplitIndex *index = SplitIndexFactory::initIndex(words, params.indexType, params.minWordLength);
+    SplitIndexFactory::HashType hashType;
+    SplitIndexFactory::IndexType indexType;
+
+    initSplitIndexParams(hashType, indexType);
+
+    SplitIndex *index = SplitIndexFactory::initIndex(words, hashType, indexType, params.minWordLength);
     cout << "Index constructed" << endl;
 
     string results;
@@ -176,6 +186,41 @@ void runSearch(const vector<string> &words, const vector<string> &queries)
 
     cout << boost::format("Elapsed: %1% us") % elapsedPerIterUs << endl;
     delete index;
+}
+
+void initSplitIndexParams(SplitIndexFactory::HashType &hashType, SplitIndexFactory::IndexType &indexType)
+{
+    map<string, SplitIndexFactory::HashType> hashTypeMap {
+        { "city", SplitIndexFactory::HashType::City },
+        { "farm", SplitIndexFactory::HashType::Farm },
+        { "farsh", SplitIndexFactory::HashType::Farsh },
+        { "fnv1", SplitIndexFactory::HashType::FNV1 },
+        { "fnv1a", SplitIndexFactory::HashType::FNV1a },
+        { "murmur3", SplitIndexFactory::HashType::Murmur3 },
+        { "sdbm", SplitIndexFactory::HashType::Sdbm },
+        { "spookyv2", SplitIndexFactory::HashType::SpookyV2 },
+        { "superfast", SplitIndexFactory::HashType::SuperFast },
+        { "xxhash", SplitIndexFactory::HashType::XxHash }
+    };
+
+    if (hashTypeMap.count(params.hashType) == 0)
+    {
+        throw invalid_argument("bad hash type: " + params.hashType);
+    }
+
+    hashType = hashTypeMap[params.hashType];
+
+    map<string, SplitIndexFactory::IndexType> indexTypeMap { 
+        { "k1", SplitIndexFactory::IndexType::K1 },
+        { "k1comp", SplitIndexFactory::IndexType::K1Comp }
+    };
+
+    if (indexTypeMap.count(params.indexType) == 0)
+    {
+        throw invalid_argument("bad index type: " + params.indexType);
+    }
+
+    indexType = indexTypeMap[params.indexType];
 }
 
 } // namespace split_index

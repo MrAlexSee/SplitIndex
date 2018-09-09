@@ -16,24 +16,27 @@ struct Params
     // These parameters are set by handleParams() in main.cpp after parsing command line args.
 
     /** Hash type used by the split index. */
-    std::string hashType = "xxHash";
+    std::string hashType;
 
     /** Split index type. */
-    int indexType = 0;
+    std::string indexType = 0;
+
+    /** Number of iterations per pattern lookup. */
+    int nIter;
 
     /** Minumum word length in the input dictionary (shorter words are ignored). */
-    int minWordLength = 4;
- 
-    /** Number of iterations per pattern lookup. */
-    int nIter = 1;
-
-    /** Input dictionary file path (positional arg 1). */
-    std::string inDictFile = "";
-    /** Input pattern file path (positional arg 2). */
-    std::string inPatternFile = "";
+    int minWordLength;
 
     /** Input data (dictionary and patterns) separator. */
     std::string separator = "\n";
+
+    /** Input dictionary file path (positional arg 1). */
+    std::string inDictFile;
+    /** Input pattern file path (positional arg 2). */
+    std::string inPatternFile;
+
+    /** Output file path. */
+    std::string outFile;
 
     /*
      *** CONSTANTS
