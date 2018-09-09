@@ -33,3 +33,13 @@ Attached as part of this package is a script `test_all.sh` for processing multip
 
 Short name | Long name                | Parameter description
 ---------- | ------------------------ | ---------------------
+&nbsp;     | `--hash-type`            | hash type used by the split index: city, farm, farsh, fnv1, fnv1a, murmur3, sdbm, spookyv2, superfast, xxhash (default = xxhash)
+`-h`       | `--help`                 | display help message
+&nbsp;     | `--index-type`           | split index type: k1, k1comp (default = k1)
+`-i`       | `--in-dict-file arg`     | input dictionary file path (positional arg 1)
+`-I`       | `--in-pattern-file arg`  | input pattern file path (positional arg 2)
+&nbsp;     | `--iter arg`             | number of iterations per pattern lookup (default = 1)
+&nbsp;     | `--min-word-length arg`  | minimum word length from the input dictionary (shorter words are ignored) (default = 4)
+`-o`       | `--out-file arg`         | output file path (default = res.txt)
+`-s`       | `--separator arg`        | input data (dictionary and patterns) separator (default = newline)
+`-v`       | `--version`              | display version info
