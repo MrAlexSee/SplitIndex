@@ -1,18 +1,18 @@
 ## Basic information
 
-This software is called **SplitIndex**.
-It can be used for dictionary matching with mismatches (Hamming distance).
+This software is called **SplitIndex** (split index).
+It can be used for dictionary matching with mismatches (using Hamming distance).
 It is based on the Dirichlet principle, which is realized by storing substrings of words from the dictionary.
 Authors: Aleksander Cisłak, Szymon Grabowski.
 
-Published as *A Practical Index for Approximate Dictionary Matching with Few Mismatches* (Cisłak and Grabowski), Computing and Informatics, 05/2017.
+Published as *A Practical Index for Approximate Dictionary Matching with Few Mismatches* (Cisłak and Grabowski), Computing and Informatics, 05/2017, pp. 1088–1106.
 Also available as a preprint at the following link: http://arxiv.org/abs/1501.04948.
 
 ## Compilation
 
 Add Boost library to the path for compilation by setting `BOOST_DIR` in `makefile.inc`. 
 Requires Boost program options module to be compiled for static linking.
-Requires support for the C++11 standard.
+Requires support for the C++11 standard and SSE 4.2 instruction set.
 
 Type `make` for optimized compile.
 Comment out `OPTFLAGS` in `makefile.inc` in order to disable optimization.
