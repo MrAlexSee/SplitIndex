@@ -1,5 +1,8 @@
 // https://github.com/Bulat-Ziganshin/FARSH
 
+namespace farsh_hash
+{
+
 /* Hash the buffer with the user-supplied 16byte-aligned 1024-byte key material */
 unsigned farsh_keyed (const void *data, size_t bytes, const void *key);
 
@@ -11,3 +14,5 @@ void farsh_n (const void *data, size_t bytes, int k, int n, void *hash);
 
 /* Hash the buffer */
 unsigned farsh (const void *data, size_t bytes);
+
+} // namespace farsh_hash

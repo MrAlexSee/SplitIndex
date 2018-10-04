@@ -1,25 +1,33 @@
 #ifndef HASH_FUNCTIONS_HPP
 #define HASH_FUNCTIONS_HPP
 
-#include <cstddef>
+#include <functional>
 
-class HashFunctions
+namespace split_index
 {
-public:
-    typedef size_t (*HashFunctionType)(const char *, size_t length);
 
+namespace hash_functions
+{
+
+struct HashFunctions
+{
+    using HashFunctionType = std::function<size_t>(const char *, size_t length);
     HashFunctions() = delete;
 
-    static size_t F_City     (const char *str, size_t length);
-    static size_t F_FNV1     (const char *str, size_t length);
-    static size_t F_FNV1a    (const char *str, size_t length);
-    static size_t F_Murmur3  (const char *str, size_t length);
-    static size_t F_sdbm     (const char *str, size_t length);
-    static size_t F_SpookyV2 (const char *str, size_t length);
-    static size_t F_SuperFast(const char *str, size_t length);
-    static size_t F_xxHash   (const char *str, size_t length);
-    static size_t F_farsh    (const char *str, size_t length);
-    static size_t F_Farm     (const char *str, size_t length);
+    inline static size_t city     (const char *str, size_t length);
+    inline static size_t farm     (const char *str, size_t length);
+    inline static size_t farsh    (const char *str, size_t length);
+    inline static size_t fnv1     (const char *str, size_t length);
+    inline static size_t fnv1a    (const char *str, size_t length);
+    inline static size_t murmur3  (const char *str, size_t length);
+    inline static size_t sdbm     (const char *str, size_t length);
+    inline static size_t spookyV2 (const char *str, size_t length);
+    inline static size_t superFast(const char *str, size_t length);
+    inline static size_t xxHash   (const char *str, size_t length);
 };
+
+} // namespace hash_functions
+
+} // namespace split_index
 
 #endif // HASH_FUNCTIONS_HPP
