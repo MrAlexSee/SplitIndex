@@ -130,7 +130,8 @@ bool checkInputFiles(const char *execName)
 {
     if (utils::FileIO::isFileReadable(params.inDictFile) == false)
     {
-        cerr << "Cannot access input dictionary file (doesn't exist or insufficient permissions): " << params.inDictFile << endl;
+        cerr << "Cannot access input dictionary file (doesn't exist or insufficient permissions): " << 
+            params.inDictFile << endl;
         cerr << "Run " << execName << " -h for more information" << endl << endl;
 
         return false;
@@ -138,7 +139,8 @@ bool checkInputFiles(const char *execName)
 
     if (utils::FileIO::isFileReadable(params.inPatternFile) == false)
     {
-        cerr << "Cannot access input patterns file (doesn't exist or insufficient permissions): " << params.inPatternFile << endl;
+        cerr << "Cannot access input patterns file (doesn't exist or insufficient permissions): " << 
+            params.inPatternFile << endl;
         cerr << "Run " << execName << " -h for more information" << endl << endl;
 
         return false;
@@ -151,8 +153,8 @@ int run()
 {
     try
     {
-        vector<string> dict = utils::FileIO::readWords(params.inDictFile, params.separator);
-        vector<string> patterns = utils::FileIO::readWords(params.inPatternFile, params.separator);
+        const vector<string> dict = utils::FileIO::readWords(params.inDictFile, params.separator);
+        const vector<string> patterns = utils::FileIO::readWords(params.inPatternFile, params.separator);
        
         cout << boost::format("Read #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl;
         runSearch(dict, patterns);
@@ -177,12 +179,12 @@ void runSearch(const vector<string> &words, const vector<string> &queries)
     cout << "Index constructed" << endl;
 
     string results;
-    int nMatches = index->search(queries, results);
+    const int nMatches = index->search(queries, results);
 
     cout << "#matches = " << nMatches << endl;
 
-    float elapsedTotalUs = index->getElapsedUs();
-    float elapsedPerIterUs = elapsedTotalUs / static_cast<float>(params.nIter);
+    const float elapsedTotalUs = index->getElapsedUs();
+    const float elapsedPerIterUs = elapsedTotalUs / static_cast<float>(params.nIter);
 
     cout << boost::format("Elapsed: %1% us") % elapsedPerIterUs << endl;
     delete index;
@@ -190,7 +192,7 @@ void runSearch(const vector<string> &words, const vector<string> &queries)
 
 void initSplitIndexParams(SplitIndexFactory::HashType &hashType, SplitIndexFactory::IndexType &indexType)
 {
-    map<string, SplitIndexFactory::HashType> hashTypeMap {
+    const map<string, SplitIndexFactory::HashType> hashTypeMap {
         { "city", SplitIndexFactory::HashType::City },
         { "farm", SplitIndexFactory::HashType::Farm },
         { "farsh", SplitIndexFactory::HashType::Farsh },
@@ -205,19 +207,19 @@ void initSplitIndexParams(SplitIndexFactory::HashType &hashType, SplitIndexFacto
 
     if (hashTypeMap.count(params.hashType) == 0)
     {
-        throw invalid_argument("bad hash type: " + params.hashType);
+        throw runtime_error("bad hash type: " + params.hashType);
     }
 
     hashType = hashTypeMap[params.hashType];
 
-    map<string, SplitIndexFactory::IndexType> indexTypeMap { 
+    const map<string, SplitIndexFactory::IndexType> indexTypeMap {
         { "k1", SplitIndexFactory::IndexType::K1 },
         { "k1comp", SplitIndexFactory::IndexType::K1Comp }
     };
 
     if (indexTypeMap.count(params.indexType) == 0)
     {
-        throw invalid_argument("bad index type: " + params.indexType);
+        throw runtime_error("bad index type: " + params.indexType);
     }
 
     indexType = indexTypeMap[params.indexType];

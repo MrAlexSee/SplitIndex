@@ -16,10 +16,13 @@ class Helpers
 public:
     Helpers() = delete;
 
-    static std::string getTimesStr(long long elapsedUs, int nQueries);
+    static std::string getElapsedStr(long long elapsedUs, int nQueries);
     static void printProgress(const std::string &info, int count, int size);
 
-    static inline double round2Places(double d) { return round(d * 100.0) / 100.0; }
+    static inline double round2Places(double d)
+    {
+        return round(d * 100.0) / 100.0;
+    }
 
     template<typename T>
     static std::vector<std::vector<T>> countCartProd(const std::vector<T> &vec, int repeat)
@@ -54,7 +57,9 @@ public:
             }
 
             if (finished)
+            {
                 break;
+            }
 
             curI[i] += 1;
             i -= 1;
@@ -64,7 +69,6 @@ public:
                 curI[i] = 0;
                 i -= 1;
             }
-
         }
 
         assert(res.size() == std::pow(vec.size(), repeat));
@@ -72,7 +76,7 @@ public:
     }
 
     template<typename T>
-    static std::string vecToStr(std::vector<T> vec)
+    static std::string vecToStr(std::vector<T> vec, std::string separator = ",")
     {
         std::string res = "[";
 
@@ -82,7 +86,7 @@ public:
 
             if (i != vec.size() - 1)
             {
-                res += ", ";
+                res += separator + " ";
             }
         }
 

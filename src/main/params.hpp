@@ -6,7 +6,7 @@
 namespace split_index
 {
 
-// This struct is used by main/main.cpp.
+// This struct is used in main.cpp.
 struct Params
 {
     /*
@@ -19,7 +19,7 @@ struct Params
     std::string hashType;
 
     /** Split index type. */
-    std::string indexType = 0;
+    std::string indexType;
 
     /** Number of iterations per pattern lookup. */
     int nIter;

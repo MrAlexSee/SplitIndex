@@ -27,7 +27,7 @@ vector<string> FileIO::readWords(const string &filePath, const string &separator
         throw runtime_error("failed to read file (insufficient permisions?): " + filePath);
     }
 
-    string text = static_cast<stringstream const&>(stringstream() << inStream.rdbuf()).str();
+    const string text = static_cast<stringstream const&>(stringstream() << inStream.rdbuf()).str();
 
     vector<string> words;
     boost::split(words, text, boost::is_any_of(separator));
