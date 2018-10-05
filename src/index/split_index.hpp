@@ -24,7 +24,7 @@ public:
     long getWordsSizeB() const;
     virtual std::string prettyResults(const std::string &results) const = 0;
 
-    long getTotalSizeB() const { return map->getTotalSizeB(); }
+    long getTotalSizeB() const { return map->calcTotalSizeB(); }
 
     float getElapsedUs() const { return 0.0; }
 
@@ -52,7 +52,7 @@ protected:
     std::unordered_set<std::string> wordSet;
 
     int minWordLength;
-    HashMap *map = nullptr;
+    split_index::hash_map::HashMap *map = nullptr;
 
     // The number of words is multiplied by this factor and fed as a size hint to the hash map.
     static constexpr double sizeHintFactor = 0.05;

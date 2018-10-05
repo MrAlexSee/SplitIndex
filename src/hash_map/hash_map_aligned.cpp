@@ -1,9 +1,10 @@
 #include <boost/format.hpp>
 #include <cassert>
-#include <cstdlib>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <new>
 
 #include "../utils/helpers.hpp"
 #include "hash_map_aligned.hpp"
@@ -11,93 +12,84 @@
 using namespace split_index;
 using namespace std;
 
-HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEntrySize,
-                               double maxLoadFactor, int sizeHint, const std::string &hashType)
-    :HashMap(calcEntrySize, maxLoadFactor, sizeHint, hashType)
+namespace split_index
 {
 
-}
+namespace hash_map
+{
+
+HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEntrySize,
+                               double maxLoadFactor, 
+                               int nBucketsHint,
+                               const std::string &hashType)
+    :HashMap(calcEntrySize, maxLoadFactor, nBucketsHint, hashType)
+{ }
 
 HashMapAligned::~HashMapAligned()
 {
-    clearBuckets(this->buckets, this->nAvailable);
+    clearBuckets(buckets, nBuckets);
 }
 
 string HashMapAligned::toString() const
 {
-    double totalSizeKB = this->getTotalSizeB() / 1024.0;
+    double totalSizeKB = calcTotalSizeB() / 1024.0;
     totalSizeKB = utils::Helpers::round2Places(totalSizeKB);
     
-    double avgBucketSize = static_cast<double>(getNEntries()) / nBuckets;
-    string formatStr = "Hash map: %2% entries, lf = %3% (max = %4%), total size = %5% KB, avg bucket size = %6%";
+    const double avgBucketSize = static_cast<double>(nEntries) / nBuckets;
+    const string formatStr = "Hash map: %1% entries, LF = %2% (max = %3%), total size = %4% KB, avg bucket size = %5%";
 
-    return (boost::format(formatStr)
-            % getNEntries() % curLoadFactor % maxLoadFactor % totalSizeKB % avgBucketSize).str();
+    return (boost::format(formatStr) % nEntries % curLoadFactor % maxLoadFactor 
+        % totalSizeKB % avgBucketSize).str();
 }
 
-char **HashMapAligned::get(const char *key, size_t keySize) const
+char **HashMapAligned::retrieve(const char *key, size_t keySize) const
 {
-    size_t index = hash(key, keySize) % nAvailable;
+    assert(keySize > 0 and keySize < 128);
+    const size_t index = hash(key, keySize) % nBuckets;
 
     if (buckets[index] == nullptr)
+    {
         return nullptr;
+    }
 
     char *bucket = buckets[index];
 
-    // We traverse the bucket.
-    while (bucket[0] != 0)
+    while (*bucket != 0)
     {
-        if (static_cast<size_t>(bucket[0]) == keySize)
+        const size_t keyInBucketSize = *bucket;
+
+        if (keySize == keyInBucketSize)
         {
             if (strncmp(bucket + 1, key, keySize) == 0)
             {
-                // We return the pointer to the value.
-                return reinterpret_cast<char **>(bucket + 1 + bucket[0]);
+                return reinterpret_cast<char **>(bucket + 1 + keyInBucketSize);
             }
         }
 
-        bucket += 1 + bucket[0] + sizeof(char *);
+        bucket += 1 + keyInBucketSize + sizeof(char *);
     }
 
     return nullptr;
 }
 
-void HashMapAligned::rehash()
+void HashMapAligned::clearBucket(char *bucket)
 {
-    char **oldBuckets = buckets;
-    int oldNAvailable = nAvailable;
+    assert(bucket != nullptr);
 
-    nAvailable *= spaceIncrement;
-    initBuckets();
-
-    nBuckets = 0;
-
-    for (int i = 0; i < oldNAvailable; ++i)
+    while (*bucket != 0)
     {
-        if (oldBuckets[i] != nullptr)
-        {
-            char *bucket = oldBuckets[i];
+        const size_t keyInBucketSize = *bucket;
 
-            while (bucket[0] != 0)
-            {
-                insertItem(bucket + 1, bucket[0], *reinterpret_cast<char **>(bucket + 1 + bucket[0]));
-                bucket += 1 + bucket[0] + sizeof(char *);
-            }
-        }
+        free(*reinterpret_cast<void **>(bucket + 1 + keyInBucketSize));
+        bucket += 1 + keyInBucketSize + sizeof(char *);
     }
-    
-    clearBuckets(oldBuckets, oldNAvailable);
-    curLoadFactor = static_cast<double>(nBuckets) / nAvailable;
 
-    if (curLoadFactor >= maxLoadFactor)
-    {
-        rehash();
-    }
+    free(bucket);
 }
 
-void HashMapAligned::insertItem(const char *key, size_t keySize, char *entry)
+void HashMapAligned::insertEntry(const char *key, size_t keySize, char *entry)
 {
-    size_t index = hash(key, keySize) % nAvailable;
+    const size_t index = hash(key, keySize) % nBuckets;
     char *newEntry = copyEntry(entry);
 
     if (buckets[index] == nullptr)
@@ -107,20 +99,86 @@ void HashMapAligned::insertItem(const char *key, size_t keySize, char *entry)
     }
     else
     {
-        addToBucket(index, key, keySize, newEntry);
+        addToBucket(buckets + index, key, keySize, newEntry);
     }
+}
+
+void HashMapAligned::rehash()
+{
+    char **oldBuckets = buckets;
+    const int oldNBuckets = nBuckets;
+
+    nBuckets *= bucketRehashFactor;
+    initBuckets();
+
+    nBuckets = 0;
+
+    for (int i = 0; i < oldNBuckets; ++i)
+    {
+        if (oldBuckets[i] != nullptr)
+        {
+            char *bucket = oldBuckets[i];
+
+            while (*bucket != 0)
+            {
+                const size_t keyInBucketSize = *bucket;
+
+                insertEntry(bucket + 1, keyInBucketSize, *reinterpret_cast<char **>(bucket + 1 + keyInBucketSize));
+                bucket += 1 + keyInBucketSize + sizeof(char *);
+            }
+        }
+    }
+    
+    clearBuckets(oldBuckets, oldNBuckets);
+    curLoadFactor = static_cast<double>(nEntries) / nBuckets;
+
+    if (curLoadFactor >= maxLoadFactor)
+    {
+        rehash();
+    }
+}
+
+long HashMapAligned::calcBucketTotalSizeB(const char *bucket) const
+{
+    long ret = 0;
+    const char *start = bucket;
+
+    while (*bucket != 0)
+    {
+        const size_t keyInBucketSize = *bucket;
+
+        ret += calcEntrySizeB(*reinterpret_cast<const char * const*>(bucket + 1 + keyInBucketSize));
+        bucket += 1 + keyInBucketSize + sizeof(char *);
+    }
+
+    ret += (bucket - start + 1); // Includes the terminating '\0'.
+    return ret;
+}
+
+long HashMapAligned::calcBucketSizeB(const char *bucket) const
+{
+    const char *start = bucket;
+
+    while (*bucket != 0)
+    {
+        bucket += 1 + *bucket + sizeof(char *);
+    }
+
+    return (bucket - start + 1); // Includes the terminating '\0'.
 }
 
 char *HashMapAligned::copyEntry(const char *entry)
 {
-    // Don't use strdup here because there might be zeros inside the entry.
-    size_t entrySize = calcEntrySize(entry);
+    // We do not use strdup here because there might be zeros inside the entry.
+    const size_t entrySize = calcEntrySizeB(entry);
     char *newEntry = static_cast<char *>(malloc(entrySize));
 
-    for (size_t i = 0; i < entrySize; ++i)
+    if (newEntry == NULL)
     {
-        newEntry[i] = entry[i];
+        throw bad_alloc();
     }
+
+    memcpy(newEntry, entry, entrySize);
 
     assert(newEntry[entrySize - 1] == '\0');
     return newEntry;
@@ -128,108 +186,45 @@ char *HashMapAligned::copyEntry(const char *entry)
 
 char *HashMapAligned::createBucket(const char *key, size_t keySize, char *entry)
 {
-    size_t newSize = 1 + keySize + sizeof(char *) + 1;
-    char *bucket = static_cast<char *>(malloc(newSize));
+    const size_t bucketSize = 1 + keySize + sizeof(char *) + 1;
+    char *bucket = static_cast<char *>(malloc(bucketSize));
 
-    bucket[0] = keySize;
-
-    for (size_t i = 0; i < keySize; ++i)
+    if (bucket == NULL)
     {
-        bucket[1 + i] = key[i];
+        throw bad_alloc();
     }
 
-    *reinterpret_cast<char **>(bucket + 1 + keySize) = entry;
-    bucket[newSize - 1] = '\0';
+    *bucket = keySize;
+    memcpy(bucket + 1, key, keySize);
 
-    assert(newSize - 1 == 1 + keySize + sizeof(char *));
+    *reinterpret_cast<char **>(bucket + 1 + keySize) = entry;
+    bucket[bucketSize - 1] = '\0';
+
+    assert(bucketSize == 2 + keySize + sizeof(char *));
     return bucket;
 }
 
-void HashMapAligned::addToBucket(int iBucket, const char *key, size_t keySize, char *entry)
+void HashMapAligned::addToBucket(char **bucket, const char *key, size_t keySize, char *entry)
 {
-    size_t oldSize = getBucketSizeB(buckets[iBucket]); // This includes the terminating '\0'.
-    size_t newSize = oldSize + keySize + sizeof(char *) + 1;
+    const size_t oldSize = calcBucketSizeB(*bucket);
+    const size_t newSize = oldSize + keySize + sizeof(char *) + 1; // This includes the terminating '\0'.
 
-    buckets[iBucket] = static_cast<char *>(realloc(buckets[iBucket], newSize));
+    void *ptr = realloc(*bucket, newSize);
 
-    buckets[iBucket][oldSize - 1] = keySize;
-
-    for (size_t i = 0; i < keySize; ++i)
+    if (ptr == NULL)
     {
-        buckets[iBucket][oldSize + i] = key[i];
+        throw bad_alloc();
     }
 
-    *reinterpret_cast<char **>(buckets[iBucket] + oldSize + keySize) = entry;
-    buckets[iBucket][newSize - 1] = '\0';
+    *bucket = static_cast<char *>(ptr);
+    
+    (*bucket)[oldSize - 1] = keySize;
+    memcpy((*bucket) + oldSize, key, keySize);
+
+    *reinterpret_cast<char **>(*bucket + oldSize + keySize) = entry;
+    (*bucket)[newSize - 1] = '\0';
 }
 
-int HashMapAligned::getNBucketEntries(const char *bucket) const
-{
-    int total = 0;
+} // namespace hash_map
 
-    while (bucket[0] != 0)
-    {                
-        total += 1;
-        bucket += 1 + bucket[0] + sizeof(char *);
-    }
-
-    return total;
-}
-
-long HashMapAligned::getBucketSizeB(const char *bucket) const
-{
-    const char *start = bucket;
-
-    while (bucket[0] != 0)
-    {
-        bucket += 1 + bucket[0] + sizeof(char *);
-    }
-
-    return (bucket - start + 1); // Including the terminating '\0'.
-}
-
-long HashMapAligned::getBucketTotalSizeB(const char *bucket) const
-{
-    long total = 0;
-    const char *start = bucket;
-
-    while (bucket[0] != 0)
-    {
-        total += calcEntrySize(*reinterpret_cast<const char * const*>(bucket + 1 + bucket[0]));
-        bucket += 1 + bucket[0] + sizeof(char *);
-    }
-
-    total += (bucket - start + 1); // Including the terminating '\0'.
-    return total;
-}
-
-void HashMapAligned::clearBucket(char *bucket)
-{
-    assert(bucket != nullptr);
-
-    while (bucket[0] != 0)
-    {
-        free(*reinterpret_cast<void **>(bucket + 1 + bucket[0]));
-        bucket += 1 + bucket[0] + sizeof(char *);
-    }
-}
-
-string HashMapAligned::bucketToString(const char *bucket)
-{
-    string out = "|";
-
-    while (bucket[0] != 0)
-    {
-        out += to_string(static_cast<int>(bucket[0]));
-
-        for (size_t i = 0; i < static_cast<size_t>(bucket[0]); ++i)
-        {
-            out += bucket[i + 1];
-        }
-
-        out += "P";
-        bucket += 1 + bucket[0] + sizeof(char *);
-    }
-
-    return out + "|";
-}
+} // namespace split_index

@@ -8,55 +8,74 @@
 
 #include "hash_map.hpp"
 
+namespace split_index
+{
+
+namespace hash_map
+{
+
 class HashMap
 {
 public:
-    HashMap(const std::function<size_t(const char *)> &calcEntrySize,
-            double maxLoadFactor, int sizeHint, const std::string &hashType);
+    HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
+            double maxLoadFactorArg,
+            int nBucketsHint,
+            const std::string &hashType);
     virtual ~HashMap() { }
 
     virtual std::string toString() const = 0;
 
+    /** Clears the hash map, setting new bucket count to [nBucketsHint]. */
+    virtual void clear(int nBucketsHint);
+
+    /** Inserts a pair [key] (of size [keySize]) -> [entry]. */
     void insert(const char *key, size_t keySize, char *entry);
-    virtual char **get(const char *key, size_t keySize) const = 0;
+    /** Returns all entries associated with a [key] of size [keySize]. */
+    virtual char **retrieve(const char *key, size_t keySize) const = 0;
 
-    virtual void clear(int sizeHint);
-
-    virtual int getNEntries() const; // Number of entries.
-    virtual long getTotalSizeB() const; // Total size (including the entries) in bytes.
+    /** Returns the total size in bytes, i.e. including both buckets and entries. */
+    virtual long calcTotalSizeB() const;
 
     int getNBuckets() const { return nBuckets; }
-    double getLoadFactor() const { return curLoadFactor; }
+    double getCurLoadFactor() const { return curLoadFactor; }
     double getMaxLoadFactor() const { return maxLoadFactor; }
 
 protected:
     void initHash(const std::string &hashType);
     void initBuckets();
 
-    virtual void rehash() = 0;
-    virtual void insertItem(const char *key, size_t keySize, char *entry) = 0;
-
-    virtual int getNBucketEntries(const char *bucket) const = 0;
-    
-    virtual long getBucketSizeB(const char *bucket) const = 0; // Only the bucket.
-    virtual long getBucketTotalSizeB(const char *bucket) const = 0; // Including entry sizes.
-
-    void clearBuckets(char **buckets, int size);
+    void clearBuckets(char **buckets, int nBuckets);
     virtual void clearBucket(char *bucket) = 0;
 
-    HashFunctions::HashFunctionType hash;
-    std::function<size_t(const char *)> calcEntrySize;
+    virtual void insertEntry(const char *key, size_t keySize, char *entry) = 0;
+    virtual void rehash() = 0;
 
+    /** Returns the size of bucket including stored entries in bytes. */
+    virtual long calcBucketTotalSizeB(const char *bucket) const = 0;
+
+    hash_functions::HashFunctions::HashFunctionType hash;
+
+    /** Returns the size of a stored entry in bytes. */
+    std::function<size_t(const char *)> calcEntrySizeB;
+
+    /** Current load factor. */
     double curLoadFactor;
+    /** A maximum load factor which causes rehashing when crossed. */
     double maxLoadFactor;
 
-    int nEntries   = 0;
-    int nBuckets   = 0;
-    int nAvailable = 0;
+    /** Total number of entries (values). */
+    int nEntries = 0;
+    /** Total number of buckets (length of array buckets). */
+    int nBuckets = 0;
 
     char **buckets = nullptr;
 
-    static constexpr double spaceIncrement = 1.2;
+    /** A factor used for increasing the number of available buckets when rehashing. */
+    static constexpr double bucketRehashFactor = 1.25;
 };
+
+} // namespace hash_map
+
+} // namespace split_index
 
 #endif // HASH_MAP

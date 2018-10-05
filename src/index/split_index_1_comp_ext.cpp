@@ -35,7 +35,7 @@ void SplitIndex1CompExt::initEntry(const string &word)
     splitWord(word);
 
     // Part - suffix
-    char **entryPtr = map->get(part1Buf, part1Size);
+    char **entryPtr = map->retrieve(part1Buf, part1Size);
     size_t encSize = encode(part2Buf, part2Size);
 
     if (entryPtr == nullptr)
@@ -51,7 +51,7 @@ void SplitIndex1CompExt::initEntry(const string &word)
     }
 
     // Part - prefix
-    entryPtr = map->get(part2Buf, part2Size);
+    entryPtr = map->retrieve(part2Buf, part2Size);
     encSize = encode(part1Buf, part1Size);
 
     if (entryPtr == nullptr)
@@ -173,7 +173,7 @@ void SplitIndex1CompExt::appendToEntryExt(char *entry, size_t oldSize, const cha
 bool SplitIndex1CompExt::searchPartPref(const char *keyPart, size_t keySize,
                                         const char *matchPart, size_t matchSize, string &results)
 {
-    char **entryPtr = map->get(keyPart, keySize);
+    char **entryPtr = map->retrieve(keyPart, keySize);
 
     if (entryPtr == nullptr)
         return false;
@@ -243,7 +243,7 @@ bool SplitIndex1CompExt::searchPartPref(const char *keyPart, size_t keySize,
 bool SplitIndex1CompExt::searchPartSuf(const char *keyPart, size_t keySize,
                                        const char *matchPart, size_t matchSize, string &results)
 {
-    char **entryPtr = map->get(keyPart, keySize);
+    char **entryPtr = map->retrieve(keyPart, keySize);
 
     if (entryPtr == nullptr)
         return false;

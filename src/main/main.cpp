@@ -159,9 +159,9 @@ int run()
         cout << boost::format("Read #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl;
         runSearch(dict, patterns);
     }
-    catch (const exception &e)
+    catch (const exception &ex)
     {
-        cerr << endl << "Fatal error occurred: " << e.what() << endl;
+        cerr << endl << "Fatal error occurred: " << ex.what() << endl;
         return params.errorExitCode;
     }
 
@@ -210,7 +210,7 @@ void initSplitIndexParams(SplitIndexFactory::HashType &hashType, SplitIndexFacto
         throw runtime_error("bad hash type: " + params.hashType);
     }
 
-    hashType = hashTypeMap[params.hashType];
+    hashType = hashTypeMap.at(params.hashType);
 
     const map<string, SplitIndexFactory::IndexType> indexTypeMap {
         { "k1", SplitIndexFactory::IndexType::K1 },
@@ -222,7 +222,7 @@ void initSplitIndexParams(SplitIndexFactory::HashType &hashType, SplitIndexFacto
         throw runtime_error("bad index type: " + params.indexType);
     }
 
-    indexType = indexTypeMap[params.indexType];
+    indexType = indexTypeMap.at(params.indexType);
 }
 
 } // namespace split_index

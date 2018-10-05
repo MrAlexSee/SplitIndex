@@ -20,7 +20,7 @@ SplitIndex1::SplitIndex1(const vector<string> &words, int minWordLength)
     int sizeHint = wordSet.size() * sizeHintFactor;
 
     auto fun = std::bind(&SplitIndex1::calcEntrySize, this, std::placeholders::_1);
-    map = new HashMapAligned(fun, maxLoadFactor, sizeHint);
+    map = new split_index::hash_map::HashMapAligned(fun, maxLoadFactor, sizeHint, "xxhash");
 
     part1Buf = new char[maxWordSize];
     part2Buf = new char[maxWordSize];
@@ -110,7 +110,7 @@ void SplitIndex1::initEntry(const string &word)
     splitWord(word);
 
     // Part - suffix
-    char **entryPtr = map->get(part1Buf, part1Size);
+    char **entryPtr = map->retrieve(part1Buf, part1Size);
 
     if (entryPtr == nullptr)
     {
@@ -125,7 +125,7 @@ void SplitIndex1::initEntry(const string &word)
     }
 
     // Part - prefix
-    entryPtr = map->get(part2Buf, part2Size);
+    entryPtr = map->retrieve(part2Buf, part2Size);
 
     if (entryPtr == nullptr)
     {
@@ -311,7 +311,7 @@ void SplitIndex1::processQuery(const string &query, string &results)
 bool SplitIndex1::searchPartPref(const char *keyPart, size_t keySize,
                                  const char *matchPart, size_t matchSize, string &results)
 {
-    char **entryPtr = map->get(keyPart, keySize);
+    char **entryPtr = map->retrieve(keyPart, keySize);
 
     if (entryPtr == nullptr)
         return false;
@@ -375,7 +375,7 @@ bool SplitIndex1::searchPartPref(const char *keyPart, size_t keySize,
 bool SplitIndex1::searchPartSuf(const char *keyPart, size_t keySize,
                                 const char *matchPart, size_t matchSize, string &results)
 {
-    char **entryPtr = map->get(keyPart, keySize);
+    char **entryPtr = map->retrieve(keyPart, keySize);
 
     if (entryPtr == nullptr)
         return false;

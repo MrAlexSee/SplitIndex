@@ -34,7 +34,7 @@ string SplitIndexExact::toString() const
 bool SplitIndexExact::searchPartPref(const char *keyPart, size_t keySize,
                                      const char *matchPart, size_t matchSize, string &results)
 {
-    char **entryPtr = map->get(keyPart, keySize);
+    char **entryPtr = map->retrieve(keyPart, keySize);
 
     if (entryPtr == nullptr)
         return false;
@@ -98,7 +98,7 @@ bool SplitIndexExact::searchPartPref(const char *keyPart, size_t keySize,
 bool SplitIndexExact::searchPartSuf(const char *keyPart, size_t keySize,
                                     const char *matchPart, size_t matchSize, string &results)
 {
-    char **entryPtr = map->get(keyPart, keySize);
+    char **entryPtr = map->retrieve(keyPart, keySize);
 
     if (entryPtr == nullptr)
         return false;
