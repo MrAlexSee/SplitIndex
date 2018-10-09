@@ -12,14 +12,17 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "../index/split_index_factory.hpp"
 #include "../utils/file_io.hpp"
+#include "../utils/string_utils.hpp"
 
 #include "params.hpp"
 
 using namespace split_index;
+using namespace split_index::hash_functions;
 using namespace std;
 
 namespace po = boost::program_options;
@@ -47,7 +50,7 @@ int run();
 /** Searches for [queries] in [words] using a split index. */
 void runSearch(const vector<string> &words, const vector<string> &queries);
 
-void initSplitIndexParams(SplitIndexFactory::HashType &hashType, SplitIndexFactory::IndexType &indexType);
+void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType, SplitIndexFactory::IndexType &indexType);
 
 } // namespace split_index
 
@@ -153,9 +156,12 @@ int run()
 {
     try
     {
-        const vector<string> dict = utils::FileIO::readWords(params.inDictFile, params.separator);
-        const vector<string> patterns = utils::FileIO::readWords(params.inPatternFile, params.separator);
+        vector<string> dict = utils::FileIO::readWords(params.inDictFile, params.separator);
+        vector<string> patterns = utils::FileIO::readWords(params.inPatternFile, params.separator);
        
+        utils::StringUtils::filterWords(dict, params.minWordLength);
+        utils::StringUtils::filterWords(patterns, params.minWordLength);
+
         cout << boost::format("Read #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl;
         runSearch(dict, patterns);
     }
@@ -170,17 +176,18 @@ int run()
 
 void runSearch(const vector<string> &words, const vector<string> &queries)
 {
-    SplitIndexFactory::HashType hashType;
+    HashFunctions::HashType hashType;
     SplitIndexFactory::IndexType indexType;
 
     initSplitIndexParams(hashType, indexType);
+    unordered_set<string> wordSet(words.begin(), words.end());
 
-    SplitIndex *index = SplitIndexFactory::initIndex(words, hashType, indexType, params.minWordLength);
+    SplitIndex *index = SplitIndexFactory::initIndex(wordSet, hashType, indexType);
     cout << "Index constructed" << endl;
 
     string results;
-    const int nMatches = index->search(queries, results);
 
+    const int nMatches = index->search(queries, results, params.nIter);
     cout << "#matches = " << nMatches << endl;
 
     const float elapsedTotalUs = index->getElapsedUs();
@@ -190,19 +197,21 @@ void runSearch(const vector<string> &words, const vector<string> &queries)
     delete index;
 }
 
-void initSplitIndexParams(SplitIndexFactory::HashType &hashType, SplitIndexFactory::IndexType &indexType)
+void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType, SplitIndexFactory::IndexType &indexType)
 {
-    const map<string, SplitIndexFactory::HashType> hashTypeMap {
-        { "city", SplitIndexFactory::HashType::City },
-        { "farm", SplitIndexFactory::HashType::Farm },
-        { "farsh", SplitIndexFactory::HashType::Farsh },
-        { "fnv1", SplitIndexFactory::HashType::FNV1 },
-        { "fnv1a", SplitIndexFactory::HashType::FNV1a },
-        { "murmur3", SplitIndexFactory::HashType::Murmur3 },
-        { "sdbm", SplitIndexFactory::HashType::Sdbm },
-        { "spookyv2", SplitIndexFactory::HashType::SpookyV2 },
-        { "superfast", SplitIndexFactory::HashType::SuperFast },
-        { "xxhash", SplitIndexFactory::HashType::XxHash }
+    using namespace hash_functions;
+
+    const map<string, HashFunctions::HashType> hashTypeMap {
+        { "city", HashFunctions::HashType::City },
+        { "farm", HashFunctions::HashType::Farm },
+        { "farsh", HashFunctions::HashType::Farsh },
+        { "fnv1", HashFunctions::HashType::FNV1 },
+        { "fnv1a", HashFunctions::HashType::FNV1a },
+        { "murmur3", HashFunctions::HashType::Murmur3 },
+        { "sdbm", HashFunctions::HashType::Sdbm },
+        { "spookyv2", HashFunctions::HashType::SpookyV2 },
+        { "superfast", HashFunctions::HashType::SuperFast },
+        { "xxhash", HashFunctions::HashType::XxHash }
     };
 
     if (hashTypeMap.count(params.hashType) == 0)

@@ -15,10 +15,10 @@ namespace hash_map
 class HashMapAligned : public HashMap
 {
 public:
-    HashMapAligned(const std::function<size_t(const char *)> &calcEntrySize,
+    HashMapAligned(const std::function<size_t(const char *)> &calcEntrySizeB,
                    double maxLoadFactor, 
                    int nBucketsHint,
-                   const std::string &hashType);
+                   hash_functions::HashFunctions::HashType hashType);
     ~HashMapAligned();
 
     std::string toString() const override;

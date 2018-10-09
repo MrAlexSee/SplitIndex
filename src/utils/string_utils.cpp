@@ -43,6 +43,26 @@ void StringUtils::printProgress(const string &info, int count, int size)
         % info % count % size % round(perc) << flush;
 }
 
+void StringUtils::filterWords(vector<string> &words, int minWordLength)
+{
+    cout << boost::format("Filtering #words = %1%, min length = %2%")
+        % words.size() % minWordLength << endl;
+
+    for (auto it = words.begin(); it != words.end(); )
+    {
+        if (it->size() < minWordLength)
+        {
+            it = words.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    cout << "Filtered to #words = " << words.size() << endl;
+}
+
 } // namespace utils
 
 } // namespace split_index

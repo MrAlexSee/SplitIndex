@@ -14,16 +14,19 @@ using namespace std;
 namespace split_index
 {
 
-SplitIndex1::SplitIndex1(const vector<string> &words, int minWordLength)
-    :SplitIndex(words, minWordLength)
+SplitIndex1::SplitIndex1(const unordered_set<string> &wordSet,
+    hash_functions::HashFunctions::HashType hashType)
+    :SplitIndex(wordSet)
 {
-    int sizeHint = wordSet.size() * sizeHintFactor;
+    auto calcEntrySizeB = std::bind(&SplitIndex1::calcEntrySizeB, this, std::placeholders::_1);
+    const int nBucketsHint = wordSet.size() * nBucketsHintFactor;
 
-    auto fun = std::bind(&SplitIndex1::calcEntrySize, this, std::placeholders::_1);
-    map = new split_index::hash_map::HashMapAligned(fun, maxLoadFactor, sizeHint, "xxhash");
+    hashMap = new hash_map::HashMapAligned(calcEntrySizeB, maxLoadFactor, nBucketsHint, hashType);
 
     part1Buf = new char[maxWordSize];
     part2Buf = new char[maxWordSize];
+
+    partSizeLUT = new size_t[maxWordSize + 1];
 }
 
 SplitIndex1::~SplitIndex1()
@@ -36,73 +39,18 @@ SplitIndex1::~SplitIndex1()
 
 string SplitIndex1::toString() const
 {
-    return SplitIndex::toString();
+    string ret = "k = 1\n";
+    return ret + SplitIndex::toString();
 }
 
 void SplitIndex1::construct()
 {
-    partSizeLUT = new size_t[maxWordSize];
-
     for (size_t i = 0; i <= maxWordSize; ++i)
     {
-        // partSizeLUT[i] = round(static_cast<double>(i) / 2.0);
         partSizeLUT[i] = i / 2;
     }
 
     SplitIndex::construct();
-}
-
-string SplitIndex1::prettyResults(const string &results) const
-{
-    string finalRes = "";
-
-    vector<string> lines;
-    boost::split(lines, results, boost::is_any_of("\n"));
-
-    vector<string> parts;
-
-    for (const string &line : lines)
-    {
-        if (line == "" or line == "\n")
-            continue;
-
-        boost::split(parts, line, boost::is_any_of(" "));
-        string query = parts.back();
-
-        finalRes += query + ": [";
-
-        for (int i = 0; i < parts.size() - 1; ++i)
-        {
-            size_t partSize = getPartSize(query.size());
-            finalRes += "\"";
-
-            if (parts[i].back() == '0')
-            // Part is a prefix.
-            {
-                finalRes += query.substr(0, partSize);
-                finalRes += parts[i].substr(0, parts[i].size() - 1);
-            }
-            else
-            // Part is a suffix.
-            {
-                assert(parts[i].back() == '1');
-
-                finalRes += parts[i].substr(0, parts[i].size() - 1);
-                finalRes += query.substr(partSize, string::npos);
-            }
-            
-            finalRes += "\"";
-
-            if (i != parts.size() - 2)
-            {
-                finalRes += ", ";
-            }
-        }
-
-        finalRes += "]\n";
-    }
-
-    return finalRes;
 }
 
 void SplitIndex1::initEntry(const string &word)
@@ -110,12 +58,12 @@ void SplitIndex1::initEntry(const string &word)
     splitWord(word);
 
     // Part - suffix
-    char **entryPtr = map->retrieve(part1Buf, part1Size);
+    char **entryPtr = hashMap->retrieve(part1Buf, part1Size);
 
     if (entryPtr == nullptr)
     {
         char *entry = createEntry(part2Buf, part2Size, true);
-        map->insert(part1Buf, part1Size, entry);
+        hashMap->insert(part1Buf, part1Size, entry);
 
         free(entry); // Copied inside the map.
     }
@@ -125,12 +73,12 @@ void SplitIndex1::initEntry(const string &word)
     }
 
     // Part - prefix
-    entryPtr = map->retrieve(part2Buf, part2Size);
+    entryPtr = hashMap->retrieve(part2Buf, part2Size);
 
     if (entryPtr == nullptr)
     {
         char *entry = createEntry(part1Buf, part1Size, false);
-        map->insert(part2Buf, part2Size, entry);
+        hashMap->insert(part2Buf, part2Size, entry);
 
         free(entry); // Copied inside the map.
     }
@@ -188,7 +136,7 @@ char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPar
 void SplitIndex1::addToEntry(char **entryPtr, const char *wordPart, size_t partSize, bool isPartSuffix) const
 {
     assert(partSize > 0 and partSize <= maxWordSize);
-    size_t oldSize = calcEntrySize(*entryPtr);
+    size_t oldSize = calcEntrySizeB(*entryPtr);
     
     size_t newSize = oldSize + partSize + 1;
     
@@ -207,7 +155,8 @@ void SplitIndex1::addToEntry(char **entryPtr, const char *wordPart, size_t partS
         size_t offset = prefStart - newEntry;
         assert(oldSize - offset >= 0);
 
-        moveToRight(prefStart, partSize + 1, oldSize - offset);
+        //memmove(dest, partSize + 1, oldSize - offset); // TODO??
+        //moveToRight(prefStart, partSize + 1, oldSize - offset);
 
         // We put the new word (suffix) in the place where old prefixes used to begin.
         prefStart[0] = static_cast<char>(partSize);
@@ -274,18 +223,10 @@ const char *SplitIndex1::advanceByWords(const char *entry, uint16_t nWords) cons
     return entry;
 }
 
-void SplitIndex1::processQuery(const string &query, string &results)
+int SplitIndex1::processQuery(const string &query, string &results)
 {
     assert(constructed);
-
-    if (query.size() <= 1 or query.size() > maxWordSize)
-    {
-    #ifndef NO_ERROR_MSG
-        cout << boost::format("Ignoring invalid query: %1%, size = %2%")
-                              % query % query.size() << endl;
-    #endif
-        return;
-    }
+    assert(query.size() >= 1 and query.size() <= maxWordSize);
 
     splitWord(query);
 
@@ -306,12 +247,14 @@ void SplitIndex1::processQuery(const string &query, string &results)
         results.append(query);
         results.append(1, '\n');
     }
+
+    return 0; // TODO
 }
 
 bool SplitIndex1::searchPartPref(const char *keyPart, size_t keySize,
                                  const char *matchPart, size_t matchSize, string &results)
 {
-    char **entryPtr = map->retrieve(keyPart, keySize);
+    char **entryPtr = hashMap->retrieve(keyPart, keySize);
 
     if (entryPtr == nullptr)
         return false;
@@ -375,7 +318,7 @@ bool SplitIndex1::searchPartPref(const char *keyPart, size_t keySize,
 bool SplitIndex1::searchPartSuf(const char *keyPart, size_t keySize,
                                 const char *matchPart, size_t matchSize, string &results)
 {
-    char **entryPtr = map->retrieve(keyPart, keySize);
+    char **entryPtr = hashMap->retrieve(keyPart, keySize);
 
     if (entryPtr == nullptr)
         return false;
@@ -410,7 +353,7 @@ bool SplitIndex1::searchPartSuf(const char *keyPart, size_t keySize,
     return hasResults;
 }
 
-size_t SplitIndex1::calcEntrySize(const char *entry) const
+size_t SplitIndex1::calcEntrySizeB(const char *entry) const
 {
     const char *start = entry;
     entry += 2; // Prefix index (uint16_t)
@@ -421,6 +364,12 @@ size_t SplitIndex1::calcEntrySize(const char *entry) const
     }
 
     return entry - start + 1; // Including the terminating '\0'.
+}
+
+size_t SplitIndex1::getPartSize(size_t wordSize) const
+{
+    assert(wordSize <= maxWordSize and partSizeLUT != nullptr);
+    return partSizeLUT[wordSize];
 }
 
 int SplitIndex1::calcEntryNWords(const char *entry) const

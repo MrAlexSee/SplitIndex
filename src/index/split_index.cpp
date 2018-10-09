@@ -1,6 +1,8 @@
 #include <boost/format.hpp>
 #include <cassert>
+#include <chrono>
 #include <iostream>
+#include <stdexcept>
 
 #include "split_index.hpp"
 #include "../utils/string_utils.hpp"
@@ -10,85 +12,85 @@ using namespace std;
 namespace split_index
 {
 
-SplitIndex::SplitIndex(const vector<string> &words, int minWordLength)
-    :wordSet(words.begin(), words.end()),
-     minWordLength(minWordLength)
+SplitIndex::SplitIndex(const unordered_set<string> &wordSetArg)
+    :wordSet(wordSetArg)
 {
-    assert(minWordLength > 0);
-    assert(wordSet.size() > 0);
+    assert(words.empty() == false);
 }
 
 SplitIndex::~SplitIndex()
 {
-    delete map;  
+    delete hashMap;
+}
+
+void SplitIndex::construct()
+{
+    const double nBucketsHint = nBucketsHintFactor * wordSet.size();
+    hashMap->clear(nBucketsHint);
+
+    int i = 1;
+
+    for (const string &word : wordSet)
+    {
+        utils::StringUtils::printProgress("Constructing the hash map", i++, wordSet.size());
+
+        assert(word.size() > 0 and word.size() <= maxWordSize);
+        initEntry(word);
+    }
+
+    constructed = true;
 }
 
 string SplitIndex::toString() const
 {
     if (not constructed)
     {
-        return "Index not constructed";
+        throw runtime_error("index not constructed");
     }
 
-    const double wordsSizeKB = getWordsSizeB() / 1024.0;
+    const double wordsSizeKB = calcWordsSizeB() / 1024.0;
+    string ret = (boost::format("#words = %1%, words size = %2% KB")
+        % wordSet.size() % wordsSizeKB).str();
 
-    return (boost::format("k = 1, #words = %1%, words size = %2% KB\n%3%")
-            % wordSet.size() % wordsSizeKB % map->toString()).str();
+    ret += "\n" + hashMap->toString();
+    return ret;
 }
 
-SplitIndex *initIndex(int indexType);
-
-
-void SplitIndex::construct()
-{
-    int nWords = wordSet.size();
-
-    for (auto it = wordSet.begin(); it != wordSet.end(); )
-    {
-        if (static_cast<int>(it->size()) < minWordLength)
-        {
-            it = wordSet.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
-
-    cout << boost::format("Filtered from %1% to %2% words (length >= %3%)")
-            % nWords % wordSet.size() % minWordLength << endl;
-
-    initMap();
-    constructed = true;
-}
-
-long long SplitIndex::search(const vector<string> &queries, string &results)
+int SplitIndex::search(const vector<string> &queries, string &results, int nIter)
 {
     assert(constructed);
-    int totalQSize = 0;
+    size_t totalQueriesSize = 0;
 
     for (const string &query : queries)
     {
-        totalQSize += query.size();
+        totalQueriesSize += query.size();
     }
 
-    results.reserve(totalQSize);
+    results.reserve(totalQueriesSize);
 
-    struct timespec start, end;
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+    clock_t start = std::clock();
+    int nMatches;
 
-    for (size_t iQ = 0; iQ < queries.size(); ++iQ)
+    for (int i = 0; i < nIter; ++i)
     {
-        processQuery(queries[iQ], results);
+        nMatches = 0;
+        results.clear();
+
+        for (const string &query : queries)
+        {
+            nMatches += processQuery(query, results);
+        }
     }
 
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
+    clock_t end = std::clock();
 
-    return (end.tv_sec  - start.tv_sec)  * 1000000.0 +
-           (end.tv_nsec - start.tv_nsec) / 1000.0;
+    const float elapsedS = (end - start) / static_cast<float>(CLOCKS_PER_SEC);
+    elapsedUs = elapsedS * 1000000.0f;
+
+    return nMatches;
 }
 
-long SplitIndex::getWordsSizeB() const
+long SplitIndex::calcWordsSizeB() const
 {
     long total = 0;
 
@@ -100,38 +102,13 @@ long SplitIndex::getWordsSizeB() const
     return total;
 }
 
-void SplitIndex::initMap()
-{
-    map->clear(wordSet.size() * sizeHintFactor);
-    int i = 1;
-
-    for (const string &word : wordSet)
-    {
-        utils::StringUtils::printProgress("Initializing the hash map", i++, wordSet.size());
-        
-        assert(word.size() > 0 and word.size() <= maxWordSize);
-        initEntry(word);
-    }
-}
-
 void SplitIndex::addResult(const char *str, size_t size,
-                           string &results, char iPart)
-{   
-    results.append(str, size);
-
-    results.append(1, iPart);
-    results.append(1, ' ');
-}
-
-void SplitIndex::moveToRight(char *str, size_t nPlaces, size_t size)
+    string &results,
+    char iPart, char separator)
 {
-    // We start from the right in order to avoid overwriting.
-    for (int i = size - 1; i >= 0; --i)
-    {
-        str[i + nPlaces] = str[i];
-    }
-
-    assert(str[size - 1 + nPlaces] == '\0');
+    results.append(str, size);
+    results.append(1, iPart);
+    results.append(1, separator);
 }
 
 } // namespace split_index

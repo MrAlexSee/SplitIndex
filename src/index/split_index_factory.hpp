@@ -3,40 +3,37 @@
 
 #include <stdexcept>
 #include <string>
-#include <vector>
+#include <unordered_set>
 
+#include "../hash_function/hash_functions.hpp"
 #include "split_index_1.hpp"
-#include "split_index_1_comp.hpp"
 
 namespace split_index
 {
 
 struct SplitIndexFactory
 {
-    enum class HashType { City, Farm, Farsh, FNV1, FNV1a, Murmur3, Sdbm, SpookyV2, SuperFast, XxHash };
     enum class IndexType { K1, K1Comp };
 
-    inline static SplitIndex *initIndex(const std::vector<std::string> &words, 
-        HashType hashType, 
-        IndexType indexType, 
-        int minWordLength);
+    inline static SplitIndex *initIndex(const std::unordered_set<std::string> &words, 
+        hash_functions::HashFunctions::HashType hashType, 
+        IndexType indexType);
 };
 
-SplitIndex *SplitIndexFactory::initIndex(const std::vector<std::string> &words, 
-    HashType hashType, 
-    IndexType indexType, 
-    int minWordLength)
+SplitIndex *SplitIndexFactory::initIndex(const std::unordered_set<std::string> &words, 
+    hash_functions::HashFunctions::HashType hashType, 
+    IndexType indexType)
 {
     SplitIndex *index;
     
     switch (indexType)
     {
         case IndexType::K1:
-            index = new SplitIndex1(words, minWordLength);
+            index = new SplitIndex1(words, hashType);
             break;
-        case IndexType::K1Comp:
-            index = new SplitIndex1Comp(words, minWordLength);
-            break;
+        // case IndexType::K1Comp:
+            // index = new SplitIndex1Comp(words, hashType);
+            // break;
         default:
             throw std::invalid_argument("bad index type: " + std::to_string(static_cast<int>(indexType)));
     }

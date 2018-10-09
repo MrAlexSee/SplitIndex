@@ -16,7 +16,7 @@ namespace hash_map
 HashMap::HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
                  double maxLoadFactorArg,
                  int nBucketsHint,
-                 const std::string &hashType)
+                 hash_functions::HashFunctions::HashType hashType)
     :calcEntrySizeB(calcEntrySizeBArg),
      maxLoadFactor(maxLoadFactorArg),
      nBuckets(nBucketsHint)
@@ -24,7 +24,7 @@ HashMap::HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
     static_assert(bucketRehashFactor > 1.0, "bucket rehash factor must be greater than 1.0");
     assert(nBuckets >= 0);
 
-    initHash(hashType);
+    hash = hash_functions::HashFunctions::getHashFunction(hashType);
     initBuckets();
 }
 
@@ -69,56 +69,6 @@ long HashMap::calcTotalSizeB() const
     }
 
     return ret;
-}
-
-void HashMap::initHash(const std::string &hashType)
-{
-    using namespace hash_functions;
-
-    if (hashType == "city")
-    {
-        hash = &HashFunctions::city;
-    }
-    else if (hashType == "farm")
-    {
-        hash = &HashFunctions::farm;
-    }
-    else if (hashType == "farsh")
-    {
-        hash = &HashFunctions::farsh;
-    }
-    else if (hashType == "fnv1")
-    {
-        hash = &HashFunctions::fnv1;
-    }
-    else if (hashType == "fnv1a")
-    {
-        hash = &HashFunctions::fnv1a;
-    }
-    else if (hashType == "murmur3")
-    {
-        hash = &HashFunctions::murmur3;
-    }
-    else if (hashType == "sdbm")
-    {
-        hash = &HashFunctions::sdbm;
-    }
-    else if (hashType == "spookyv2")
-    {
-        hash = &HashFunctions::spookyV2;
-    }
-    else if (hashType == "superfast")
-    {
-        hash = &HashFunctions::superFast;
-    }
-    else if (hashType == "xxhash")
-    {
-        hash = &HashFunctions::xxHash;
-    }
-    else
-    {
-        throw runtime_error("bad hash type = " + hashType);
-    }
 }
 
 void HashMap::initBuckets()

@@ -6,8 +6,6 @@
 
 #include "../hash_function/hash_functions.hpp"
 
-#include "hash_map.hpp"
-
 namespace split_index
 {
 
@@ -20,7 +18,7 @@ public:
     HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
             double maxLoadFactorArg,
             int nBucketsHint,
-            const std::string &hashType);
+            hash_functions::HashFunctions::HashType hashType);
     virtual ~HashMap() { }
 
     virtual std::string toString() const = 0;
@@ -41,7 +39,6 @@ public:
     double getMaxLoadFactor() const { return maxLoadFactor; }
 
 protected:
-    void initHash(const std::string &hashType);
     void initBuckets();
 
     void clearBuckets(char **buckets, int nBuckets);
@@ -53,6 +50,7 @@ protected:
     /** Returns the size of bucket including stored entries in bytes. */
     virtual long calcBucketTotalSizeB(const char *bucket) const = 0;
 
+    /** A hash function used for hashing keys. */
     hash_functions::HashFunctions::HashFunctionType hash;
 
     /** Returns the size of a stored entry in bytes. */
@@ -65,7 +63,7 @@ protected:
 
     /** Total number of entries (values). */
     int nEntries = 0;
-    /** Total number of buckets (length of array buckets). */
+    /** Total number of buckets (length of buckets array). */
     int nBuckets = 0;
 
     char **buckets = nullptr;

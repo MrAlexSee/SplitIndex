@@ -17,11 +17,14 @@ namespace split_index
 namespace hash_map
 {
 
-HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEntrySize,
+HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEntrySizeB,
                                double maxLoadFactor, 
                                int nBucketsHint,
-                               const std::string &hashType)
-    :HashMap(calcEntrySize, maxLoadFactor, nBucketsHint, hashType)
+                               hash_functions::HashFunctions::HashType hashType)
+    :HashMap(calcEntrySizeB,
+        maxLoadFactor,
+        nBucketsHint,
+        hashType)
 { }
 
 HashMapAligned::~HashMapAligned()

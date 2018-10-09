@@ -17,6 +17,8 @@ struct StringUtils
     static std::string getElapsedInfo(long long elapsedUs, int nQueries);
     static void printProgress(const std::string &info, int count, int size);
     
+    static void filterWords(std::vector<std::string> &words, int minWordLength);
+
     template<typename T>
     static std::string vecToStr(const std::vector<T> &vec, const std::string &separator = ",")
     {

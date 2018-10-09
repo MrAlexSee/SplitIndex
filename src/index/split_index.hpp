@@ -5,62 +5,65 @@
 #include <unordered_set>
 #include <vector>
 
+#include "../hash_function/hash_functions.hpp"
 #include "../hash_map/hash_map.hpp"
 
 namespace split_index
 {
 
+/** Abstract base split index class. */
 class SplitIndex
 {
 public:
-    // Use -1 to ignore the minimum word length.
-    SplitIndex(const std::vector<std::string> &words, int minWordLength = -1);
+    SplitIndex(const std::unordered_set<std::string> &wordSetArg);
     virtual ~SplitIndex();
 
-    virtual std::string toString() const;
     virtual void construct();
+    virtual std::string toString() const;
 
-    // Returns the elapsed time in microseconds (us).
-    long long search(const std::vector<std::string> &queries, std::string &results);
+    /** Performs a search and returns the number of matches. Stores all results in [results], iterates [nIter] times. 
+     * Results contain parts of matching words together with an index identifying the position of the part.
+     * Only the result of the last iteration is stored. */
+    int search(const std::vector<std::string> &queries, std::string &results, int nIter = 1);
 
-    long getWordsSizeB() const;
-    virtual std::string prettyResults(const std::string &results) const = 0;
+    /** Returns the total size of stored words in bytes. */
+    long calcWordsSizeB() const;
+    /* Returns the size of the underlying hash map in bytes. */
+    long calcHashMapSizeB() const { return hashMap->calcTotalSizeB(); }
 
-    long getTotalSizeB() const { return map->calcTotalSizeB(); }
-
-    float getElapsedUs() const { return 0.0; }
+    /** Returns the time elapsed during the search in microseconds (us). */
+    float getElapsedUs() const { return elapsedUs; }
 
 protected:
-    void initMap();
-
     virtual void initEntry(const std::string &word) = 0;
-    virtual void splitWord(const std::string &word) = 0;
 
-    virtual void processQuery(const std::string &query, std::string &results) = 0;
+    /** Processes a query, filling [results] if necessary. Returns the number of matches. */
+    virtual int processQuery(const std::string &query, std::string &results) = 0;
+
+    /** Returns the size of an entry in bytes, including the terminating '\0' if present. */
+    virtual size_t calcEntrySizeB(const char *entry) const = 0;
+    /** Returns the size of a single part of a word, which depends on k for an approximate search. */
+    virtual inline size_t getPartSize(size_t wordSize) const = 0;
 
     static void addResult(const char *str, size_t size,
-                          std::string &results, char iPart);
+        std::string &results,
+        char iPart, char separator = 0x1);
 
-    // The returned size should include the terminating '\0'.
-    virtual size_t calcEntrySize(const char *entry) const = 0;
-
-    virtual size_t getPartSize(size_t wordSize) const = 0;
-
-    // The old size should include the terminating '\0'.
-    static void moveToRight(char *str, size_t nPlaces, size_t size);
-
+    /** True if index has been constructed, false otherwise. */
     bool constructed = false;
 
+    /** Elapsed time during the search in microseconds. */
+    float elapsedUs = 0.0f;
+
+    hash_map::HashMap *hashMap = nullptr;
     std::unordered_set<std::string> wordSet;
 
-    int minWordLength;
-    split_index::hash_map::HashMap *map = nullptr;
-
-    // The number of words is multiplied by this factor and fed as a size hint to the hash map.
-    static constexpr double sizeHintFactor = 0.05;
-
+    /** The number of words is multiplied by this factor and passed as a bucket count hint to the hash map. */
+    static constexpr double nBucketsHintFactor = 0.05;
+    /** Maximum load factor passed to the hash map. */
     static constexpr double maxLoadFactor = 2.0;
-    static constexpr size_t maxWordSize = 255; // We use 8-bit (char) counters.
+    /** Maximum word size, set to 127 because we use 8-bit counters. */
+    static constexpr size_t maxWordSize = 127;
 };
 
 } // namespace split_index
