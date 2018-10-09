@@ -10,9 +10,8 @@ namespace split_index
 namespace utils
 {
 
-class FileIO
+struct FileIO
 {
-public:
     FileIO() = delete;
 
     static bool isFileReadable(const std::string &filePath);

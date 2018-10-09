@@ -9,9 +9,8 @@ namespace split_index
 namespace utils
 {
 
-class BitUtils
+struct BitUtils
 {
-public:
     BitUtils() = delete;
 
     static bool isBitSet(char bits, size_t pos);

@@ -6,7 +6,6 @@
 #include <iostream>
 #include <new>
 
-#include "../utils/helpers.hpp"
 #include "hash_map_aligned.hpp"
 
 using namespace split_index;
@@ -32,8 +31,7 @@ HashMapAligned::~HashMapAligned()
 
 string HashMapAligned::toString() const
 {
-    double totalSizeKB = calcTotalSizeB() / 1024.0;
-    totalSizeKB = utils::Helpers::round2Places(totalSizeKB);
+    const double totalSizeKB = calcTotalSizeB() / 1024.0;
     
     const double avgBucketSize = static_cast<double>(nEntries) / nBuckets;
     const string formatStr = "Hash map: %1% entries, LF = %2% (max = %3%), total size = %4% KB, avg bucket size = %5%";

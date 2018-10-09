@@ -4,7 +4,6 @@
 #include <utility>
 
 #include "../utils/distance.hpp"
-#include "../utils/helpers.hpp"
 
 #include "split_index_1_comp.hpp"
 

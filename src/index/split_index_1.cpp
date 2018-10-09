@@ -7,7 +7,6 @@
 
 #include "../hash_map/hash_map_aligned.hpp"
 #include "../utils/distance.hpp"
-#include "../utils/helpers.hpp"
 
 #include "split_index_1.hpp"
 

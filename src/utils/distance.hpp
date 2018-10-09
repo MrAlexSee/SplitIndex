@@ -9,9 +9,8 @@ namespace split_index
 namespace utils
 {
 
-class Distance
+struct Distance
 {
-public:
     Distance() = delete;
 
     static bool isExactMatch(const char *str1, const char *str2, size_t length);

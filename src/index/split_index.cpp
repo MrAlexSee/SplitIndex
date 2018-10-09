@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "split_index.hpp"
-#include "../utils/helpers.hpp"
+#include "../utils/string_utils.hpp"
 
 using namespace split_index;
 using namespace std;
@@ -28,8 +28,7 @@ string SplitIndex::toString() const
         return "Index not constructed";
     }
 
-    double wordsSizeKB = getWordsSizeB() / 1024.0;
-    wordsSizeKB = utils::Helpers::round2Places(wordsSizeKB);
+    const double wordsSizeKB = getWordsSizeB() / 1024.0;
 
     return (boost::format("k = 1, #words = %1%, words size = %2% KB\n%3%")
             % wordSet.size() % wordsSizeKB % map->toString()).str();
@@ -106,7 +105,7 @@ void SplitIndex::initMap()
 
     for (const string &word : wordSet)
     {
-        utils::Helpers::printProgress("Initializing the hash map", i++, wordSet.size());
+        utils::StringUtils::printProgress("Initializing the hash map", i++, wordSet.size());
         
         assert(word.size() > 0 and word.size() <= maxWordSize);
         initEntry(word);

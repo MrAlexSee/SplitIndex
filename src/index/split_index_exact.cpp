@@ -3,10 +3,8 @@
 #include <cstring>
 #include <iostream>
 
-#include "../utils/distance.hpp"
-#include "../utils/helpers.hpp"
-
 #include "split_index_exact.hpp"
+#include "../utils/distance.hpp"
 
 using namespace split_index;
 using namespace std;
@@ -24,9 +22,7 @@ string SplitIndexExact::toString() const
         return "Index not constructed";
     }
 
-    double wordsSizeKB = getWordsSizeB() / 1024.0;
-    wordsSizeKB = utils::Helpers::round2Places(wordsSizeKB);
-
+    const double wordsSizeKB = getWordsSizeB() / 1024.0;
     return (boost::format("Exact (k = 0), #words = %1%, words size = %2%kB\n%3%")
             % wordSet.size() % wordsSizeKB % map->toString()).str();
 }
