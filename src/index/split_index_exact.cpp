@@ -6,8 +6,10 @@
 #include "split_index_exact.hpp"
 #include "../utils/distance.hpp"
 
-using namespace split_index;
 using namespace std;
+
+namespace split_index
+{
 
 SplitIndexExact::SplitIndexExact(const vector<string> &words, int minWordLength)
     :SplitIndex1(words, minWordLength)
@@ -128,3 +130,5 @@ bool SplitIndexExact::searchPartSuf(const char *keyPart, size_t keySize,
 
     return hasResults;
 }
+
+} // namespace split_index

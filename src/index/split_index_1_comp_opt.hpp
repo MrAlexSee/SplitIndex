@@ -7,7 +7,10 @@
 #include "split_index_1_comp.hpp"
 
 #define USE_FIXED_QGRAMS false
-#define FIXED_QGRAMS {16, 66, 18}
+#define FIXED_QGRAMS { 16, 66, 18 }
+
+namespace split_index
+{
 
 class SplitIndex1CompOpt : public SplitIndex1Comp
 {
@@ -55,4 +58,6 @@ protected:
 #endif
 };
 
-#endif // SPLIT_INDEX_1_COMP_DOUBLE_HPP
+} // namespace split_index
+
+#endif // SPLIT_INDEX_1_COMP_OPT_HPP

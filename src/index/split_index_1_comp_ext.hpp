@@ -3,6 +3,9 @@
 
 #include "split_index_1_comp.hpp"
 
+namespace split_index
+{
+
 class SplitIndex1CompExt : public SplitIndex1Comp
 {
 public:
@@ -34,5 +37,7 @@ protected:
 
     std::string entryToString(const char *entry) const override;
 };
+
+} // namespace split_index
 
 #endif // SPLIT_INDEX_1_COMP_EXT_HPP

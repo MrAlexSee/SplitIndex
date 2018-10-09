@@ -5,6 +5,9 @@
 
 #include "split_index_1.hpp"
 
+namespace split_index
+{
+
 class SplitIndexExact : public SplitIndex1
 {
 public:
@@ -19,7 +22,8 @@ protected:
     // The part is a suffix.
     bool searchPartSuf(const char *keyPart, size_t keySize,
                        const char *matchPart, size_t matchSize, std::string &results) override;
-
 };
+
+} // namespace split_index
 
 #endif // SPLIT_INDEX_EXACT_HPP

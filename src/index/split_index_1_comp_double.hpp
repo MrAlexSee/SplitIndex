@@ -5,6 +5,9 @@
 
 #include "split_index_1_comp.hpp"
 
+namespace split_index
+{
+
 class SplitIndex1CompDouble : public SplitIndex1Comp
 {
 public:
@@ -23,5 +26,7 @@ protected:
 
     char *tmpBuf = nullptr;
 };
+
+} // namespace split_index
 
 #endif // SPLIT_INDEX_1_COMP_DOUBLE_HPP

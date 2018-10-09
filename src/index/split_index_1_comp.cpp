@@ -3,12 +3,13 @@
 #include <iostream>
 #include <utility>
 
+#include "split_index_1_comp.hpp"
 #include "../utils/distance.hpp"
 
-#include "split_index_1_comp.hpp"
-
-using namespace split_index;
 using namespace std;
+
+namespace split_index
+{
 
 SplitIndex1Comp::SplitIndex1Comp(const vector<string> &words, int minWordLength)
     :SplitIndex1(words, minWordLength)
@@ -336,3 +337,5 @@ size_t SplitIndex1Comp::decodeToBuf(const char *word, size_t wordSize, char *buf
 
     return iBuf;
 }
+
+} // namespace split_index

@@ -7,6 +7,9 @@
 
 using namespace std;
 
+namespace split_index
+{
+
 SplitIndex1CompDouble::SplitIndex1CompDouble(const vector<string> &words, int minWordLength)
     :SplitIndex1Comp(words, minWordLength)
 {
@@ -52,3 +55,5 @@ size_t SplitIndex1CompDouble::encode(const char *word, size_t wordSize)
     size_t newSize = encodeToBuf(word, wordSize, this->tmpBuf, this->qgramSize1);
     return encodeToBuf(this->tmpBuf, newSize, this->codingBuf, this->qgramSize2);
 }
+
+} // namespace split_index

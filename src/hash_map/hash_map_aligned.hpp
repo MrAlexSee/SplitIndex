@@ -1,5 +1,5 @@
-#ifndef HASH_MAP_ALIGNED
-#define HASH_MAP_ALIGNED
+#ifndef HASH_MAP_ALIGNED_HPP
+#define HASH_MAP_ALIGNED_HPP
 
 #include <utility>
 #include <vector>
@@ -49,4 +49,4 @@ protected:
 
 } // namespace split_index
 
-#endif // HASH_MAP_ALIGNED
+#endif // HASH_MAP_ALIGNED_HPP

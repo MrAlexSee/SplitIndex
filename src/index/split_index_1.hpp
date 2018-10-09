@@ -5,6 +5,9 @@
 
 #include "split_index.hpp"
 
+namespace split_index
+{
+
 class SplitIndex1 : public SplitIndex
 {
 public:
@@ -54,5 +57,7 @@ protected:
     size_t *partSizeLUT = nullptr;
     static constexpr size_t maxWordSize = 128;
 };
+
+} // namespace split_index
 
 #endif // SPLIT_INDEX_1_HPP

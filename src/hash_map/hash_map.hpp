@@ -1,5 +1,5 @@
-#ifndef HASH_MAP
-#define HASH_MAP
+#ifndef HASH_MAP_HPP
+#define HASH_MAP_HPP
 
 #include <functional>
 #include <string>
@@ -78,4 +78,4 @@ protected:
 
 } // namespace split_index
 
-#endif // HASH_MAP
+#endif // HASH_MAP_HPP

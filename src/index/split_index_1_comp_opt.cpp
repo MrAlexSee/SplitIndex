@@ -11,8 +11,10 @@
 #include "../utils/math_utils.hpp"
 #include "../utils/string_utils.hpp"
 
-using namespace split_index;
 using namespace std;
+
+namespace split_index
+{
 
 SplitIndex1CompOpt::SplitIndex1CompOpt(const vector<string> &words, int minWordLength)
     :SplitIndex1Comp(words, minWordLength)
@@ -220,3 +222,5 @@ size_t SplitIndex1CompOpt::encode(const char *word, size_t wordSize)
 #if USE_FIXED_QGRAMS
 const int SplitIndex1CompOpt::fixedQgramCounts[maxQgramSize - 1] = FIXED_QGRAMS;
 #endif
+
+} // namespace split_index

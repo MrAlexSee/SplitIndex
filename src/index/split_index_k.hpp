@@ -6,12 +6,13 @@
 #include <cmath>
 #include <unordered_map>
 
+#include "split_index.hpp"
 #include "../hash_map/hash_map_aligned.hpp"
 #include "../utils/bit_utils.hpp"
 #include "../utils/distance.hpp"
-#include "split_index.hpp"
 
-using namespace split_index;
+namespace split_index
+{
 
 template<int k>
 class SplitIndexK : public SplitIndex
@@ -678,5 +679,7 @@ int SplitIndexK<k>::calcEntryNWords(const char *entry) const
 
     return nWords;
 }
+
+} // namespace split_index
 
 #endif // SPLIT_INDEX_K_HPP

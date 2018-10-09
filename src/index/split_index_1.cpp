@@ -5,13 +5,14 @@
 #include <functional>
 #include <iostream>
 
+#include "split_index_1.hpp"
 #include "../hash_map/hash_map_aligned.hpp"
 #include "../utils/distance.hpp"
 
-#include "split_index_1.hpp"
-
-using namespace split_index;
 using namespace std;
+
+namespace split_index
+{
 
 SplitIndex1::SplitIndex1(const vector<string> &words, int minWordLength)
     :SplitIndex(words, minWordLength)
@@ -459,3 +460,5 @@ string SplitIndex1::entryToString(const char *entry) const
 
     return out + "|";
 }
+
+} // namespace split_index

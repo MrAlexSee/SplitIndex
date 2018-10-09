@@ -7,6 +7,9 @@
 
 #include "split_index_1.hpp"
 
+namespace split_index
+{
+
 class SplitIndex1Comp : public SplitIndex1
 {
 public:
@@ -57,5 +60,7 @@ protected:
     // Make sure that chars are unsigned.
     const char firstChar = 128;
 };
+
+} // namespace split_index
 
 #endif // SPLIT_INDEX_1_COMP_HPP

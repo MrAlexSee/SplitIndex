@@ -15,11 +15,6 @@ struct MathUtils
 {
     MathUtils() = delete;
 
-    // static inline double round2Places(double d)
-    // {
-    //     return round(d * 100.0) / 100.0;
-    // }
-
     template<typename T>
     static std::vector<std::vector<T>> countCartProd(const std::vector<T> &vec, int repeat)
     {

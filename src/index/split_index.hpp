@@ -6,7 +6,9 @@
 #include <vector>
 
 #include "../hash_map/hash_map.hpp"
-#include "../main/params.hpp"
+
+namespace split_index
+{
 
 class SplitIndex
 {
@@ -60,5 +62,7 @@ protected:
     static constexpr double maxLoadFactor = 2.0;
     static constexpr size_t maxWordSize = 255; // We use 8-bit (char) counters.
 };
+
+} // namespace split_index
 
 #endif // SPLIT_INDEX_HPP

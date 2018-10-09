@@ -5,8 +5,10 @@
 #include "split_index.hpp"
 #include "../utils/string_utils.hpp"
 
-using namespace split_index;
 using namespace std;
+
+namespace split_index
+{
 
 SplitIndex::SplitIndex(const vector<string> &words, int minWordLength)
     :wordSet(words.begin(), words.end()),
@@ -131,3 +133,5 @@ void SplitIndex::moveToRight(char *str, size_t nPlaces, size_t size)
 
     assert(str[size - 1 + nPlaces] == '\0');
 }
+
+} // namespace split_index
