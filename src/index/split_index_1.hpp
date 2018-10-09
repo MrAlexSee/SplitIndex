@@ -38,7 +38,10 @@ protected:
         const char *wordPart, size_t partSize,
         bool isPartSuffix) const;
 
-    virtual void appendToEntry(char *entry, size_t oldSize, const char *wordPart, size_t partSize) const;
+    /** A helper function for adding a word at the end of an existing entry. */
+    virtual void appendToEntry(char *entry, 
+        const char *wordPart, size_t partSize,
+        size_t oldEntrySize) const;
 
     virtual int searchWithPrefixAsKey(std::string &results);
     virtual int searchWithSuffixAsKey(std::string &results);

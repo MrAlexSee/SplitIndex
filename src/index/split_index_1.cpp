@@ -180,32 +180,28 @@ void SplitIndex1::addToEntry(char **entryPtr,
 
     if (isPartSuffix and (*prefixIndex) != 0)
     {
-        // We determine where the prefixes start.
-        char *prefStart = advanceInEntryByWordCount(newEntry + 2, (*prefixIndex) - 1);
+        // We want to insert a suffix and there exist some prefixes.
+        // Hence, we need to move the prefixes to the right and insert a suffix somewhere in the middle.
+        char *prefixesStart = advanceInEntryByWordCount(newEntry + 2, (*prefixIndex) - 1);
 
-        // We move all prefixes to the right and thus make space for the new suffix.
-        size_t offset = prefStart - newEntry;
-        assert(oldEntrySize - offset >= 0);
+        const size_t prefixesListSize = oldEntrySize - (prefixesStart - newEntry) + 1;
+        assert(newEntrySize == prefixesStart - newEntry + partSize + 1 + prefixesListSize);
 
-        memmove(prefStart + partSize + 1, prefStart, oldEntrySize - offset);
+        memmove(prefixesStart + partSize + 1, prefixesStart, prefixesListSize);
 
-        // We put the new word (suffix) in the place where old prefixes used to begin.
-        prefStart[0] = static_cast<char>(partSize);
+        // After moving, we can insert the suffix where old prefixes used to begin.
+        *prefixesStart = static_cast<char>(partSize);
+        memcpy(prefixesStart + 1, wordPart, partSize);
 
-        for (size_t i = 0; i < partSize; ++i)
-        {
-            prefStart[1 + i] = wordPart[i];
-        }
-
-        // We added a suffix (to the 1st part), so now the prefixes (the 2nd part) start one word further.
+        // We have added a suffix (1st part of the entry), so now the prefixes (2nd part of the entry) start one word further.
         *prefixIndex += 1;
     }
     else
-    // We append in two cases:
-    // 1. a prefix (to the 2nd part of the list)
-    // 2. a suffix and there are no prefixes (to the 1st part of the list)
     {
-        appendToEntry(newEntry, oldEntrySize, wordPart, partSize);
+        // Otherwise we append the word part to the entry. This is one of the two following cases:
+        // a) we are adding a prefix (i.e. adding to the 2nd part of the entry),
+        // b) we are adding a suffix and there are no prefix (i.e. we are adding to the 1st part of the entry).
+        appendToEntry(newEntry, wordPart, partSize, oldEntrySize);
 
         // This is true only if we add a prefix for the first time (there were only suffixes before).
         if (isPartSuffix == false and *prefixIndex == 0)
@@ -220,16 +216,18 @@ void SplitIndex1::addToEntry(char **entryPtr,
     assert(newEntry[newSize - 1] == '\0');
 }
 
-void SplitIndex1::appendToEntry(char *entry, size_t oldSize, const char *wordPart, size_t partSize) const
+void SplitIndex1::appendToEntry(char *entry,
+    const char *wordPart, size_t partSize,
+    size_t oldEntrySize) const
 {
-    entry[oldSize - 1] = static_cast<char>(partSize);
+    entry[oldEntrySize - 1] = static_cast<char>(partSize);
 
     for (size_t i = 0; i < partSize; ++i)
     {
-        entry[oldSize + i] = wordPart[i];
+        entry[oldEntrySize + i] = wordPart[i];
     }
 
-    entry[oldSize + partSize] = '\0';
+    entry[oldEntrySize + partSize] = '\0';
 }
 
 char *SplitIndex1::advanceInEntryByWordCount(char *entry, uint16_t nWords) const
@@ -267,7 +265,7 @@ int SplitIndex1::searchWithPrefixAsKey(string &results)
     // We search with the query's prefix as key, so we shall try to match suffixes.
     const uint16_t *prefIndex = reinterpret_cast<const uint16_t *>(entry);
 
-    // This check whether the list contains only prefixes (i.e. no suffixes that we are looking for)
+    // This check whether the entry contains only prefixes (i.e. no suffixes that we are looking for)
     // is likely to provide some speedup.
     if (*prefIndex == 1)
     {
@@ -335,7 +333,7 @@ int SplitIndex1::searchWithSuffixAsKey(string &results)
     // We search with the query's suffix as key, so we shall try to match prefixes.
     const uint16_t *prefIndex = reinterpret_cast<const uint16_t *>(entry);
 
-    // This check whether the list contains only suffixes (i.e. no prefixes that we are looking for)
+    // This check whether the entry contains only suffixes (i.e. no prefixes that we are looking for)
     // is likely to provide some speedup.
     if (*prefIndex == 0)
     {
