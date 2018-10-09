@@ -174,11 +174,6 @@ char *HashMapAligned::copyEntry(const char *entry)
     const size_t entrySize = calcEntrySizeB(entry);
     char *newEntry = static_cast<char *>(malloc(entrySize));
 
-    if (newEntry == NULL)
-    {
-        throw bad_alloc();
-    }
-
     memcpy(newEntry, entry, entrySize);
 
     assert(newEntry[entrySize - 1] == '\0');

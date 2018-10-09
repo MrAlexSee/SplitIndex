@@ -93,7 +93,7 @@ void SplitIndex1::initEntry(const string &word)
 int SplitIndex1::processQuery(const string &query, string &results)
 {
     assert(constructed);
-    assert(query.size() >= 1 and query.size() <= maxWordSize);
+    assert(query.size() > 0 and query.size() <= maxWordSize);
 
     storePrefixSuffixInBuffers(query);
 
@@ -115,14 +115,14 @@ int SplitIndex1::processQuery(const string &query, string &results)
 size_t SplitIndex1::calcEntrySizeB(const char *entry) const
 {
     const char *start = entry;
-    entry += 2; // Prefix index (uint16_t)
+    entry += 2; // We jump over the prefix index (uint16_t = 2 bytes).
 
-    while (entry[0] != 0)
+    while (*entry != 0)
     {
-        entry += 1 + entry[0];
+        entry += 1 + *entry;
     }
 
-    return entry - start + 1; // Including the terminating '\0'.
+    return entry - start + 1; // This includes the terminating '\0'.
 }
 
 void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
@@ -142,55 +142,52 @@ void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
 
 char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPartSuffix) const
 {
-    size_t newSize = 3 + partSize + 1;
+    const size_t newSize = 3 + partSize + 1;
     char *entry = static_cast<char *>(malloc(newSize));
 
-    // The index is a 1-based index to the first prefix part.
+    // We set the index which points to the first prefix in the entry.
+    // It is a 1-based index over the word count.
     if (isPartSuffix == false)
     {
-        *reinterpret_cast<uint16_t *>(entry) = 0x1;
+        *reinterpret_cast<uint16_t *>(entry) = 1u;
     }
     else
     {
-        *reinterpret_cast<uint16_t *>(entry) = 0x0;
+        *reinterpret_cast<uint16_t *>(entry) = 0u;
     }
 
     entry[2] = static_cast<char>(partSize);
+    memcpy(entry + 3, wordPart, partSize);
 
-    for (size_t i = 0; i < partSize; ++i)
-    {
-        entry[3 + i] = wordPart[i];
-    }
-    
-    assert(3 + partSize == newSize - 1);
     entry[newSize - 1] = '\0';
-
     return entry;
 }
 
-void SplitIndex1::addToEntry(char **entryPtr, const char *wordPart, size_t partSize, bool isPartSuffix) const
+void SplitIndex1::addToEntry(char **entryPtr,
+    const char *wordPart, size_t partSize,
+    bool isPartSuffix) const
 {
     assert(partSize > 0 and partSize <= maxWordSize);
-    size_t oldSize = calcEntrySizeB(*entryPtr);
     
-    size_t newSize = oldSize + partSize + 1;
+    const size_t oldEntrySize = calcEntrySizeB(*entryPtr);
+    const size_t newEntrySize = oldEntrySize + partSize + 1;
     
-    char *newEntry = static_cast<char *>(realloc(*entryPtr, newSize));
-    assert(newEntry != nullptr);
+    char *newEntry = static_cast<char *>(realloc(*entryPtr, newEntrySize));
 
-    // The index is a 1-based index to the first prefix part.
-    uint16_t *prefIndex = reinterpret_cast<uint16_t *>(newEntry);
+    // We act depending on the value of the prefix index.
+    // It is a 1-based index over the word count.
+    uint16_t *prefixIndex = reinterpret_cast<uint16_t *>(newEntry);
 
-    if (isPartSuffix and (*prefIndex) != 0)
+    if (isPartSuffix and (*prefixIndex) != 0)
     {
         // We determine where the prefixes start.
-        char *prefStart = advanceInEntryByWordCount(newEntry + 2, (*prefIndex) - 1);
+        char *prefStart = advanceInEntryByWordCount(newEntry + 2, (*prefixIndex) - 1);
 
         // We move all prefixes to the right and thus make space for the new suffix.
         size_t offset = prefStart - newEntry;
-        assert(oldSize - offset >= 0);
+        assert(oldEntrySize - offset >= 0);
 
-        memmove(prefStart + partSize + 1, prefStart, oldSize - offset);
+        memmove(prefStart + partSize + 1, prefStart, oldEntrySize - offset);
 
         // We put the new word (suffix) in the place where old prefixes used to begin.
         prefStart[0] = static_cast<char>(partSize);
@@ -201,20 +198,20 @@ void SplitIndex1::addToEntry(char **entryPtr, const char *wordPart, size_t partS
         }
 
         // We added a suffix (to the 1st part), so now the prefixes (the 2nd part) start one word further.
-        *prefIndex += 1;
+        *prefixIndex += 1;
     }
     else
     // We append in two cases:
     // 1. a prefix (to the 2nd part of the list)
     // 2. a suffix and there are no prefixes (to the 1st part of the list)
     {
-        appendToEntry(newEntry, oldSize, wordPart, partSize);
+        appendToEntry(newEntry, oldEntrySize, wordPart, partSize);
 
         // This is true only if we add a prefix for the first time (there were only suffixes before).
-        if (isPartSuffix == false and *prefIndex == 0)
+        if (isPartSuffix == false and *prefixIndex == 0)
         {
             // Old number of words + 1, no need for "+1" since we already inserted a new word.
-            *prefIndex = calcEntryNWords(newEntry);
+            *prefixIndex = calcEntryNWords(newEntry);
         }
     }
 

@@ -32,18 +32,20 @@ protected:
      * Part is either a prefix or a suffix, indicated by [isPartSuffix]. */
     virtual char *createEntry(const char *wordPart, size_t partSize, bool isPartSuffix) const;
 
-    /** Adds a [wordPart] of size [partSize] to entry pointed to by [entryPtr].
+    /** Adds a [wordPart] of size [partSize] to an existing entry pointed to by [entryPtr].
      * Part is either a prefix or a suffix, indicated by [isPartSuffix]. */
-    virtual void addToEntry(char **entryPtr, const char *wordPart, size_t partSize, bool isPartSuffix) const;
+    virtual void addToEntry(char **entryPtr,
+        const char *wordPart, size_t partSize,
+        bool isPartSuffix) const;
 
     virtual void appendToEntry(char *entry, size_t oldSize, const char *wordPart, size_t partSize) const;
+
+    virtual int searchWithPrefixAsKey(std::string &results);
+    virtual int searchWithSuffixAsKey(std::string &results);
 
     virtual char *advanceInEntryByWordCount(char *entry, uint16_t nWords) const;
     virtual const char *advanceInEntryByWordCount(const char *entry, uint16_t nWords) const;
 
-    virtual int searchWithPrefixAsKey(std::string &results);
-    virtual int searchWithSuffixAsKey(std::string &results);
-    
     virtual int calcEntryNWords(const char *entry) const;
 
     virtual std::string entryToString(const char *entry) const;

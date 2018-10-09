@@ -199,7 +199,7 @@ void runSearch(const vector<string> &words, const vector<string> &queries)
     delete index;
 }
 
-void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType, 
+void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType,
     SplitIndexFactory::IndexType &indexType)
 {
     using namespace hash_functions;
