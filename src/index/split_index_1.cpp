@@ -23,18 +23,18 @@ SplitIndex1::SplitIndex1(const unordered_set<string> &wordSet,
 
     hashMap = new hash_map::HashMapAligned(calcEntrySizeB, maxLoadFactor, nBucketsHint, hashType);
 
-    part1Buf = new char[maxWordSize];
-    part2Buf = new char[maxWordSize];
+    prefixBuf = new char[maxWordSize + 1];
+    suffixBuf = new char[maxWordSize + 1];
 
-    partSizeLUT = new size_t[maxWordSize + 1];
+    prefixSizeLUT = new size_t[maxWordSize + 1];
 }
 
 SplitIndex1::~SplitIndex1()
 {
-    delete[] part1Buf;
-    delete[] part2Buf;
+    delete[] prefixBuf;
+    delete[] suffixBuf;
 
-    delete[] partSizeLUT;
+    delete[] prefixSizeLUT;
 }
 
 string SplitIndex1::toString() const
@@ -47,7 +47,7 @@ void SplitIndex1::construct()
 {
     for (size_t i = 0; i <= maxWordSize; ++i)
     {
-        partSizeLUT[i] = i / 2;
+        prefixSizeLUT[i] = i / 2;
     }
 
     SplitIndex::construct();
@@ -55,54 +55,89 @@ void SplitIndex1::construct()
 
 void SplitIndex1::initEntry(const string &word)
 {
-    splitWord(word);
+    storePrefixSuffixInBuffers(word);
 
-    // Part - suffix
-    char **entryPtr = hashMap->retrieve(part1Buf, part1Size);
-
-    if (entryPtr == nullptr)
-    {
-        char *entry = createEntry(part2Buf, part2Size, true);
-        hashMap->insert(part1Buf, part1Size, entry);
-
-        free(entry); // Copied inside the map.
-    }
-    else
-    {
-        addToEntry(entryPtr, part2Buf, part2Size, true);
-    }
-
-    // Part - prefix
-    entryPtr = hashMap->retrieve(part2Buf, part2Size);
+    // 1. We store the pair [prefix] -> [suffix].
+    char **entryPtr = hashMap->retrieve(prefixBuf, prefixSize);
 
     if (entryPtr == nullptr)
     {
-        char *entry = createEntry(part1Buf, part1Size, false);
-        hashMap->insert(part2Buf, part2Size, entry);
+        char *newEntry = createEntry(suffixBuf, suffixSize, true);
+        hashMap->insert(prefixBuf, prefixSize, newEntry);
 
-        free(entry); // Copied inside the map.
+        // The entry is copied inside the map, so it can be freed here.
+        free(newEntry);
     }
     else
     {
-        addToEntry(entryPtr, part1Buf, part1Size, false);
+        addToEntry(entryPtr, suffixBuf, suffixSize, true);
+    }
+
+    // 2. We store the pair [suffix] -> [prefix].
+    entryPtr = hashMap->retrieve(suffixBuf, suffixSize);
+
+    if (entryPtr == nullptr)
+    {
+        char *newEntry = createEntry(prefixBuf, prefixSize, false);
+        hashMap->insert(suffixBuf, suffixSize, newEntry);
+
+        // The entry is copied inside the map, so it can be freed here.
+        free(newEntry);
+    }
+    else
+    {
+        addToEntry(entryPtr, prefixBuf, prefixSize, false);
     }
 }
 
-void SplitIndex1::splitWord(const string &word)
+int SplitIndex1::processQuery(const string &query, string &results)
 {
-    size_t partSize = getPartSize(word.size());
-    assert(partSize > 0 and partSize <= word.size() - 1);
+    assert(constructed);
+    assert(query.size() >= 1 and query.size() <= maxWordSize);
 
-    part1Size = partSize;
-    part2Size = word.size() - partSize;
+    storePrefixSuffixInBuffers(query);
 
-    strncpy(part1Buf, word.c_str(), partSize);
-    part1Buf[partSize] = '\0';
+    int nMatches = 0;
 
-    strcpy(part2Buf, word.c_str() + partSize);
+    nMatches += searchWithPrefixAsKey(results);
+    nMatches += searchWithSuffixAsKey(results);
 
-    assert(part2Buf[part2Size] == '\0');
-    assert(abs(static_cast<int>(part1Size) - static_cast<int>(part2Size)) <= 1);
+    // If some matches occurred, the results string shall also contain a query.
+    if (nMatches > 0)
+    {
+        results.append(query);
+        results.append(1, '\n');
+    }
+
+    return nMatches;
+}
+
+size_t SplitIndex1::calcEntrySizeB(const char *entry) const
+{
+    const char *start = entry;
+    entry += 2; // Prefix index (uint16_t)
+
+    while (entry[0] != 0)
+    {
+        entry += 1 + entry[0];
+    }
+
+    return entry - start + 1; // Including the terminating '\0'.
+}
+
+void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
+{
+    prefixSize = prefixSizeLUT[word.size()];
+    assert(prefixSize > 0 and prefixSize <= word.size() - 1);
+
+    suffixSize = word.size() - prefixSize;
+    assert(abs(static_cast<int>(prefixSize) - static_cast<int>(suffixSize)) <= 1);
+
+    strncpy(prefixBuf, word.c_str(), prefixSize);
+    prefixBuf[prefixSize] = '\0';
+
+    strcpy(suffixBuf, word.c_str() + prefixSize);
+    assert(suffixBuf[suffixSize] == '\0');
 }
 
 char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPartSuffix) const
@@ -149,14 +184,13 @@ void SplitIndex1::addToEntry(char **entryPtr, const char *wordPart, size_t partS
     if (isPartSuffix and (*prefIndex) != 0)
     {
         // We determine where the prefixes start.
-        char *prefStart = advanceByWords(newEntry + 2, (*prefIndex) - 1);
+        char *prefStart = advanceInEntryByWordCount(newEntry + 2, (*prefIndex) - 1);
 
         // We move all prefixes to the right and thus make space for the new suffix.
         size_t offset = prefStart - newEntry;
         assert(oldSize - offset >= 0);
 
-        //memmove(dest, partSize + 1, oldSize - offset); // TODO??
-        //moveToRight(prefStart, partSize + 1, oldSize - offset);
+        memmove(prefStart + partSize + 1, prefStart, oldSize - offset);
 
         // We put the new word (suffix) in the place where old prefixes used to begin.
         prefStart[0] = static_cast<char>(partSize);
@@ -201,7 +235,7 @@ void SplitIndex1::appendToEntry(char *entry, size_t oldSize, const char *wordPar
     entry[oldSize + partSize] = '\0';
 }
 
-char *SplitIndex1::advanceByWords(char *entry, uint16_t nWords) const
+char *SplitIndex1::advanceInEntryByWordCount(char *entry, uint16_t nWords) const
 {
     for (uint16_t i = 0; i < nWords; ++i)
     {
@@ -212,7 +246,7 @@ char *SplitIndex1::advanceByWords(char *entry, uint16_t nWords) const
     return entry;
 }
 
-const char *SplitIndex1::advanceByWords(const char *entry, uint16_t nWords) const
+const char *SplitIndex1::advanceInEntryByWordCount(const char *entry, uint16_t nWords) const
 {
     for (uint16_t i = 0; i < nWords; ++i)
     {
@@ -223,88 +257,63 @@ const char *SplitIndex1::advanceByWords(const char *entry, uint16_t nWords) cons
     return entry;
 }
 
-int SplitIndex1::processQuery(const string &query, string &results)
+int SplitIndex1::searchWithPrefixAsKey(string &results)
 {
-    assert(constructed);
-    assert(query.size() >= 1 and query.size() <= maxWordSize);
-
-    splitWord(query);
-
-    bool hasResults = false;
-
-    if (searchPartPref(part1Buf, part1Size, part2Buf, part2Size, results))
-    {
-        hasResults = true;
-    }
-
-    if (searchPartSuf(part2Buf, part2Size, part1Buf, part1Size, results))
-    {
-        hasResults = true;
-    }
-
-    if (hasResults)
-    {
-        results.append(query);
-        results.append(1, '\n');
-    }
-
-    return 0; // TODO
-}
-
-bool SplitIndex1::searchPartPref(const char *keyPart, size_t keySize,
-                                 const char *matchPart, size_t matchSize, string &results)
-{
-    char **entryPtr = hashMap->retrieve(keyPart, keySize);
+    char **entryPtr = hashMap->retrieve(prefixBuf, prefixSize);
 
     if (entryPtr == nullptr)
-        return false;
+    {
+        return 0;
+    }
 
     const char *entry = *entryPtr;
-
-    // We search using the query's prefix, so we try to match suffixes here.
+    // We search with the query's prefix as key, so we shall try to match suffixes.
     const uint16_t *prefIndex = reinterpret_cast<const uint16_t *>(entry);
 
-    // Lists have sometimes only prefixes, so this check is likely to provide some speedup.
+    // This check whether the list contains only prefixes (i.e. no suffixes that we are looking for)
+    // is likely to provide some speedup.
     if (*prefIndex == 1)
-        return false;
+    {
+        return 0;
+    }
 
-    bool hasResults = false;
-    char cMatchSize = static_cast<char>(matchSize);
+    const char cSuffixSize = static_cast<char>(suffixSize);
+    int nMatches = 0;
     
     entry += 2;
 
-    // We have to stop when we reach the "missing" prefixes.
     if (*prefIndex != 0)
     {
-        const char *end = advanceByWords(entry, *prefIndex - 1);
+        // There are some prefixes stored in this entry, so we shall advance until they are reached.
+        const char *end = advanceInEntryByWordCount(entry, *prefIndex - 1);
 
         while (entry != end)
         {           
-            assert(entry[0] != 0);
+            assert(*entry != 0);
 
-            if (entry[0] == cMatchSize)
+            if (*entry == cSuffixSize)
             {
-                if (utils::Distance::isHammingAtMostK<1>(entry + 1, matchPart, matchSize))
+                if (utils::Distance::isHammingAtMostK<1>(entry + 1, suffixBuf, suffixSize))
                 {
-                    addResult(entry + 1, matchSize, results, '0');
-                    hasResults = true;
+                    addPartialResult(entry + 1, suffixSize, results, 0);
+                    nMatches += 1;
                 }
             }
 
-            entry += 1 + entry[0];
+            entry += 1 + *entry;
         }
     }
-    // Otherwise we simply check everything.
     else
     {
-        while (entry[0] != 0)
+        // There are only suffixes stored in this entry, so we check everything.
+        while (*entry != 0)
         {       
-            if (entry[0] == cMatchSize)
+            if (*entry == cSuffixSize)
             {
-                if (utils::Distance::isHammingAtMostK<1>(entry + 1, matchPart, matchSize))
+                if (utils::Distance::isHammingAtMostK<1>(entry + 1, suffixBuf, suffixSize))
                 {
-                    addResult(entry + 1, matchSize, results, '0');
-                    hasResults = true;
+                    addPartialResult(entry + 1, suffixSize, results, 0);
+                    nMatches += 1;
                 }
             }
 
@@ -312,64 +321,50 @@ bool SplitIndex1::searchPartPref(const char *keyPart, size_t keySize,
         }
     }
 
-    return hasResults;
+    return nMatches;
 }
 
-bool SplitIndex1::searchPartSuf(const char *keyPart, size_t keySize,
-                                const char *matchPart, size_t matchSize, string &results)
+int SplitIndex1::searchWithSuffixAsKey(string &results)
 {
-    char **entryPtr = hashMap->retrieve(keyPart, keySize);
+    char **entryPtr = hashMap->retrieve(suffixBuf, suffixSize);
 
     if (entryPtr == nullptr)
-        return false;
+    {
+        return 0;
+    }
 
     const char *entry = *entryPtr;
 
-    // We search using the query's suffix, so we try to match prefixes here.
+    // We search with the query's suffix as key, so we shall try to match prefixes.
     const uint16_t *prefIndex = reinterpret_cast<const uint16_t *>(entry);
 
-    if (*prefIndex == 0) // Only suffixes there.
-        return false;
-
-    entry = advanceByWords(entry + 2, (*prefIndex) - 1);
-
-    bool hasResults = false;
-    char cMatchSize = static_cast<char>(matchSize);
-
-    while (entry[0] != 0)
+    // This check whether the list contains only suffixes (i.e. no prefixes that we are looking for)
+    // is likely to provide some speedup.
+    if (*prefIndex == 0)
     {
-        if (entry[0] == cMatchSize)
+        return 0;
+    }
+
+    entry = advanceInEntryByWordCount(entry + 2, *prefIndex - 1);
+
+    const char cPrefixSize = static_cast<char>(prefixSize);
+    int nMatches = 0;
+
+    while (*entry != 0)
+    {
+        if (*entry == cPrefixSize)
         {
-            if (utils::Distance::isHammingAtMostK<1>(entry + 1, matchPart, matchSize))
+            if (utils::Distance::isHammingAtMostK<1>(entry + 1, prefixBuf, prefixSize))
             {
-                addResult(entry + 1, matchSize, results, '1');
-                hasResults = true;
+                addPartialResult(entry + 1, prefixSize, results, 1);
+                nMatches += 1;
             }
         }
 
-        entry += 1 + entry[0];
+        entry += 1 + *entry;
     }
 
-    return hasResults;
-}
-
-size_t SplitIndex1::calcEntrySizeB(const char *entry) const
-{
-    const char *start = entry;
-    entry += 2; // Prefix index (uint16_t)
-
-    while (entry[0] != 0)
-    {
-        entry += 1 + entry[0];
-    }
-
-    return entry - start + 1; // Including the terminating '\0'.
-}
-
-size_t SplitIndex1::getPartSize(size_t wordSize) const
-{
-    assert(wordSize <= maxWordSize and partSizeLUT != nullptr);
-    return partSizeLUT[wordSize];
+    return nMatches;
 }
 
 int SplitIndex1::calcEntryNWords(const char *entry) const

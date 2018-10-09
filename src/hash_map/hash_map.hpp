@@ -28,7 +28,7 @@ public:
 
     /** Inserts a pair [key] (of size [keySize]) -> [entry]. */
     void insert(const char *key, size_t keySize, char *entry);
-    /** Returns all entries associated with a [key] of size [keySize]. */
+    /** Returns a pointer to the entry from pair [key] (of size [keySize]) -> entry. */
     virtual char **retrieve(const char *key, size_t keySize) const = 0;
 
     /** Returns the total size in bytes, i.e. including both buckets and entries. */

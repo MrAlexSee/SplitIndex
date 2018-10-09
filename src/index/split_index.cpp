@@ -102,12 +102,13 @@ long SplitIndex::calcWordsSizeB() const
     return total;
 }
 
-void SplitIndex::addResult(const char *str, size_t size,
+void SplitIndex::addPartialResult(const char *str, size_t size,
     string &results,
-    char iPart, char separator)
+    int iPart,
+    char separator)
 {
     results.append(str, size);
-    results.append(1, iPart);
+    results.append(to_string(iPart));
     results.append(1, separator);
 }
 

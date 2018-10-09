@@ -42,12 +42,11 @@ protected:
 
     /** Returns the size of an entry in bytes, including the terminating '\0' if present. */
     virtual size_t calcEntrySizeB(const char *entry) const = 0;
-    /** Returns the size of a single part of a word, which depends on k for an approximate search. */
-    virtual inline size_t getPartSize(size_t wordSize) const = 0;
 
-    static void addResult(const char *str, size_t size,
+    static void addPartialResult(const char *str, size_t size,
         std::string &results,
-        char iPart, char separator = 0x1);
+        int iPart,
+        char separator = ' ');
 
     /** True if index has been constructed, false otherwise. */
     bool constructed = false;

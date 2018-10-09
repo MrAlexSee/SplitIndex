@@ -50,8 +50,8 @@ int run();
 /** Searches for [queries] in [words] using a split index. */
 void runSearch(const vector<string> &words, const vector<string> &queries);
 
-void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType, SplitIndexFactory::IndexType &indexType);
-
+void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType,
+    SplitIndexFactory::IndexType &indexType);
 } // namespace split_index
 
 int main(int argc, const char **argv)
@@ -162,7 +162,7 @@ int run()
         utils::StringUtils::filterWords(dict, params.minWordLength);
         utils::StringUtils::filterWords(patterns, params.minWordLength);
 
-        cout << boost::format("Read #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl;
+        cout << boost::format("Processing #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl << endl;
         runSearch(dict, patterns);
     }
     catch (const exception &ex)
@@ -183,7 +183,9 @@ void runSearch(const vector<string> &words, const vector<string> &queries)
     unordered_set<string> wordSet(words.begin(), words.end());
 
     SplitIndex *index = SplitIndexFactory::initIndex(wordSet, hashType, indexType);
-    cout << "Index constructed" << endl;
+
+    cout << "Index constructed:" << endl;
+    cout << index->toString() << endl;
 
     string results;
 
@@ -197,7 +199,8 @@ void runSearch(const vector<string> &words, const vector<string> &queries)
     delete index;
 }
 
-void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType, SplitIndexFactory::IndexType &indexType)
+void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType, 
+    SplitIndexFactory::IndexType &indexType)
 {
     using namespace hash_functions;
 

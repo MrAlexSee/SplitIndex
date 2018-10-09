@@ -12,6 +12,8 @@ namespace split_index
 namespace hash_map
 {
 
+/** This is an aligned version of a map.
+ * It stores keys in a single bucket contiguously for better cache utilization. */
 class HashMapAligned : public HashMap
 {
 public:

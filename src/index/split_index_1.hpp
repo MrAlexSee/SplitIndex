@@ -21,42 +21,45 @@ public:
 
 protected:
     void initEntry(const std::string &word) override;
-    void splitWord(const std::string &word);
-
     int processQuery(const std::string &query, std::string &results) override;
 
     size_t calcEntrySizeB(const char *entry) const override;
-    inline size_t getPartSize(size_t wordSize) const override;
 
+    /** Splits the word into two and stores the parts (prefix and suffix) in temporary buffers. */
+    void storePrefixSuffixInBuffers(const std::string &word);
+
+    /** Creates a new entry containing a [wordPart] of size [partSize].
+     * Part is either a prefix or a suffix, indicated by [isPartSuffix]. */
     virtual char *createEntry(const char *wordPart, size_t partSize, bool isPartSuffix) const;
+
+    /** Adds a [wordPart] of size [partSize] to entry pointed to by [entryPtr].
+     * Part is either a prefix or a suffix, indicated by [isPartSuffix]. */
     virtual void addToEntry(char **entryPtr, const char *wordPart, size_t partSize, bool isPartSuffix) const;
+
     virtual void appendToEntry(char *entry, size_t oldSize, const char *wordPart, size_t partSize) const;
 
-    virtual char *advanceByWords(char *entry, uint16_t nWords) const;
-    virtual const char *advanceByWords(const char *entry, uint16_t nWords) const;
+    virtual char *advanceInEntryByWordCount(char *entry, uint16_t nWords) const;
+    virtual const char *advanceInEntryByWordCount(const char *entry, uint16_t nWords) const;
 
-    // The part is a prefix.
-    virtual bool searchPartPref(const char *keyPart, size_t keySize,
-                                const char *matchPart, size_t matchSize, std::string &results);
-    // The part is a suffix.
-    virtual bool searchPartSuf(const char *keyPart, size_t keySize,
-                               const char *matchPart, size_t matchSize, std::string &results);
+    virtual int searchWithPrefixAsKey(std::string &results);
+    virtual int searchWithSuffixAsKey(std::string &results);
     
     virtual int calcEntryNWords(const char *entry) const;
 
     virtual std::string entryToString(const char *entry) const;
 
-    /** Lookup table to speed up access of the 1st word part size (there are 2 parts for k = 1). */
-    size_t *partSizeLUT = nullptr;
+    /** Lookup table to speed up access of prefix size.
+     * There are 2 parts, i.e. a prefix and a suffix for k = 1. */
+    size_t *prefixSizeLUT = nullptr;
 
-    /** Temporarily stores the size of the 1st part of the word. */
-    size_t part1Size = 0;
-    /** Temporarily stores the 1st part of the word. */
-    char *part1Buf = nullptr;
-    /** Temporarily stores the size of the 2nd part of the word. */
-    size_t part2Size = 0;
-    /** Temporarily stores the 2nd part of the word. */
-    char *part2Buf = nullptr;
+    /** Temporarily stores the size of word prefix (1st part). */
+    size_t prefixSize = 0;
+    /** Temporarily stores the word prefix. */
+    char *prefixBuf = nullptr;
+    /** Temporarily stores the size of word suffix (2nd part). */
+    size_t suffixSize = 0;
+    /** Temporarily stores the word suffix. */
+    char *suffixBuf = nullptr;
 };
 
 } // namespace split_index
