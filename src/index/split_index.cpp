@@ -15,7 +15,7 @@ namespace split_index
 SplitIndex::SplitIndex(const unordered_set<string> &wordSetArg)
     :wordSet(wordSetArg)
 {
-    assert(words.empty() == false);
+    assert(not wordSet.empty());
 }
 
 SplitIndex::~SplitIndex()
@@ -25,7 +25,7 @@ SplitIndex::~SplitIndex()
 
 void SplitIndex::construct()
 {
-    const double nBucketsHint = nBucketsHintFactor * wordSet.size();
+    const int nBucketsHint = nBucketsHintFactor * wordSet.size();
     hashMap->clear(nBucketsHint);
 
     cout << "Set a hash map with hint #buckets = " << nBucketsHint << endl << endl;
@@ -33,7 +33,7 @@ void SplitIndex::construct()
 
     for (const string &word : wordSet)
     {
-        utils::StringUtils::printProgress("Constructing the hash map", i++, wordSet.size());
+        utils::StringUtils::printProgress(string("Constructing the hash map"), i++, wordSet.size());
 
         assert(word.size() > 0 and word.size() <= maxWordSize);
         initEntry(word);

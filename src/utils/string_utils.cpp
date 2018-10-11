@@ -34,7 +34,7 @@ string StringUtils::getElapsedInfo(long long elapsedUs, int nQueries)
         % elapsedMs % countStr % elapsedUsPerQuery).str();
 }
 
-void StringUtils::printProgress(const string &info, int count, int size)
+void StringUtils::printProgress(string info, int count, int size)
 {
     assert(count >= 0 and count <= size);
     const double perc = static_cast<double>(count) * 100.0 / size;
@@ -43,7 +43,7 @@ void StringUtils::printProgress(const string &info, int count, int size)
         % info % count % size % round(perc) << flush;
 }
 
-void StringUtils::filterWords(vector<string> &words, int minWordLength)
+void StringUtils::filterWordsByMinLength(vector<string> &words, int minWordLength)
 {
     cout << boost::format("Filtering #words = %1%, min length = %2%")
         % words.size() % minWordLength << endl;

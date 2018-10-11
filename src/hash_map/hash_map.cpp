@@ -22,10 +22,16 @@ HashMap::HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
      nBuckets(nBucketsHint)
 {
     static_assert(bucketRehashFactor > 1.0, "bucket rehash factor must be greater than 1.0");
+assert(maxLoadFactor > 0.0);
     assert(nBuckets >= 0);
 
     hash = hash_functions::HashFunctions::getHashFunction(hashType);
     initBuckets();
+}
+
+HashMap::~HashMap()
+{
+    clearBuckets(buckets, nBuckets);
 }
 
 void HashMap::clear(int nBucketsHint)

@@ -15,9 +15,10 @@ struct StringUtils
     StringUtils() = delete;
 
     static std::string getElapsedInfo(long long elapsedUs, int nQueries);
-    static void printProgress(const std::string &info, int count, int size);
+    static void printProgress(std::string info, int count, int size);
     
-    static void filterWords(std::vector<std::string> &words, int minWordLength);
+    /** Leaves only words having >= [minWordLength] characters in the [words] vector. */
+    static void filterWordsByMinLength(std::vector<std::string> &words, int minWordLength);
 
     template<typename T>
     static std::string vecToStr(const std::vector<T> &vec, const std::string &separator = ",")
@@ -30,7 +31,7 @@ struct StringUtils
 
             if (i != vec.size() - 1)
             {
-                ret += separator + " ";
+                ret += separator;
             }
         }
 

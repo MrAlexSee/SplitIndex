@@ -21,7 +21,6 @@ public:
                    double maxLoadFactor, 
                    int nBucketsHint,
                    hash_functions::HashFunctions::HashType hashType);
-    ~HashMapAligned();
 
     std::string toString() const override;
 

@@ -27,11 +27,6 @@ HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEn
         hashType)
 { }
 
-HashMapAligned::~HashMapAligned()
-{
-    clearBuckets(buckets, nBuckets);
-}
-
 string HashMapAligned::toString() const
 {
     const double totalSizeKB = calcTotalSizeB() / 1024.0;
@@ -96,7 +91,6 @@ void HashMapAligned::insertEntry(const char *key, size_t keySize, char *entry)
     if (buckets[index] == nullptr)
     {
         buckets[index] = createBucket(key, keySize, newEntry);
-        nBuckets += 1;
     }
     else
     {
@@ -111,8 +105,6 @@ void HashMapAligned::rehash()
 
     nBuckets *= bucketRehashFactor;
     initBuckets();
-
-    nBuckets = 0;
 
     for (int i = 0; i < oldNBuckets; ++i)
     {
@@ -215,7 +207,7 @@ void HashMapAligned::addToBucket(char **bucket, const char *key, size_t keySize,
     *bucket = static_cast<char *>(ptr);
     
     (*bucket)[oldSize - 1] = keySize;
-    memcpy((*bucket) + oldSize, key, keySize);
+    memcpy(*bucket + oldSize, key, keySize);
 
     *reinterpret_cast<char **>(*bucket + oldSize + keySize) = entry;
     (*bucket)[newSize - 1] = '\0';

@@ -19,7 +19,7 @@ public:
             double maxLoadFactorArg,
             int nBucketsHint,
             hash_functions::HashFunctions::HashType hashType);
-    virtual ~HashMap() { }
+    virtual ~HashMap();
 
     virtual std::string toString() const = 0;
 
@@ -69,7 +69,7 @@ protected:
     char **buckets = nullptr;
 
     /** A factor used for increasing the number of available buckets when rehashing. */
-    static constexpr double bucketRehashFactor = 1.25;
+    static constexpr double bucketRehashFactor = 1.5;
 };
 
 } // namespace hash_map

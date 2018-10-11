@@ -160,8 +160,8 @@ int run()
         vector<string> dict = utils::FileIO::readWords(params.inDictFile, params.separator);
         vector<string> queries = utils::FileIO::readWords(params.inPatternFile, params.separator);
        
-        utils::StringUtils::filterWords(dict, params.minWordLength);
-        utils::StringUtils::filterWords(queries, params.minWordLength);
+        utils::StringUtils::filterWordsByMinLength(dict, params.minWordLength);
+        utils::StringUtils::filterWordsByMinLength(queries, params.minWordLength);
 
         runSearch(dict, queries);
     }

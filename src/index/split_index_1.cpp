@@ -62,6 +62,8 @@ void SplitIndex1::initEntry(const string &word)
 
     if (entryPtr == nullptr)
     {
+        cout << "null prefix" << endl;
+
         char *newEntry = createEntry(suffixBuf, suffixSize, true);
         hashMap->insert(prefixBuf, prefixSize, newEntry);
 
@@ -70,6 +72,7 @@ void SplitIndex1::initEntry(const string &word)
     }
     else
     {
+        // cout << "add prefix" << endl;
         addToEntry(entryPtr, suffixBuf, suffixSize, true);
     }
 
@@ -78,6 +81,8 @@ void SplitIndex1::initEntry(const string &word)
 
     if (entryPtr == nullptr)
     {
+        cout << "null suffix" << endl;
+
         char *newEntry = createEntry(prefixBuf, prefixSize, false);
         hashMap->insert(suffixBuf, suffixSize, newEntry);
 
@@ -86,6 +91,7 @@ void SplitIndex1::initEntry(const string &word)
     }
     else
     {
+        // cout << "add suffix" << endl;
         addToEntry(entryPtr, prefixBuf, prefixSize, false);
     }
 }
@@ -146,6 +152,8 @@ void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
     assert(prefixSize > 0 and prefixSize <= word.size() - 1);
 
     suffixSize = word.size() - prefixSize;
+    assert(suffixSize > 0 and suffixSize <= word.size() - 1);
+
     assert(abs(static_cast<int>(prefixSize) - static_cast<int>(suffixSize)) <= 1);
 
     strncpy(prefixBuf, word.c_str(), prefixSize);
@@ -162,7 +170,7 @@ char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPar
 
     // We set the index which points to the first prefix in the entry.
     // It is a 1-based index over the word count.
-    if (isPartSuffix == false)
+    if (not isPartSuffix)
     {
         *reinterpret_cast<uint16_t *>(entry) = 1u;
     }
@@ -220,7 +228,7 @@ void SplitIndex1::addToEntry(char **entryPtr,
         appendToEntry(newEntry, oldEntrySize, wordPart, partSize);
 
         // This is true only if we add a prefix for the first time (when there were only suffixes before).
-        if (isPartSuffix == false and *prefixIndex == 0)
+        if (not isPartSuffix and *prefixIndex == 0)
         {
             // The new index is the old number of words + 1, no need for "+1" here since we have already inserted a new word.
             *prefixIndex = calcEntryNWords(newEntry);
@@ -229,7 +237,7 @@ void SplitIndex1::addToEntry(char **entryPtr,
 
     // This is required in the case the memory has been moved by realloc.
     *entryPtr = newEntry;
-    assert(newEntry[newSize - 1] == '\0');
+    assert(newEntry[newEntrySize - 1] == '\0');
 }
 
 void SplitIndex1::appendToEntry(char *entry, size_t oldEntrySize,
