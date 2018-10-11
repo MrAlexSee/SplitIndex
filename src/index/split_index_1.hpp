@@ -24,6 +24,8 @@ protected:
     int processQuery(const std::string &query, std::string &results) override;
 
     size_t calcEntrySizeB(const char *entry) const override;
+    /** Returns the number of words (word parts) stored in an entry. */
+    virtual int calcEntryNWords(const char *entry) const;
 
     /** Splits the word into two and stores the parts (prefix and suffix) in temporary buffers. */
     void storePrefixSuffixInBuffers(const std::string &word);
@@ -39,19 +41,15 @@ protected:
         bool isPartSuffix) const;
 
     /** A helper function for adding a word at the end of an existing entry. */
-    virtual void appendToEntry(char *entry, 
-        const char *wordPart, size_t partSize,
-        size_t oldEntrySize) const;
+    virtual void appendToEntry(char *entry, size_t oldEntrySize,
+        const char *wordPart, size_t partSize) const;
 
     virtual int searchWithPrefixAsKey(std::string &results);
     virtual int searchWithSuffixAsKey(std::string &results);
 
+    /** Returns a pointer pointing [nWords] further within the [entry]. */
     virtual char *advanceInEntryByWordCount(char *entry, uint16_t nWords) const;
     virtual const char *advanceInEntryByWordCount(const char *entry, uint16_t nWords) const;
-
-    virtual int calcEntryNWords(const char *entry) const;
-
-    virtual std::string entryToString(const char *entry) const;
 
     /** Lookup table to speed up access of prefix size.
      * There are 2 parts, i.e. a prefix and a suffix for k = 1. */

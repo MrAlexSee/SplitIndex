@@ -61,7 +61,8 @@ protected:
     static constexpr double nBucketsHintFactor = 0.05;
     /** Maximum load factor passed to the hash map. */
     static constexpr double maxLoadFactor = 2.0;
-    /** Maximum word size, set to 127 because we use 8-bit counters. */
+    /** Maximum word size, set to 127 because we use 8-bit counters.
+     * Can be set to 255 if using unsigned char when compiling. */
     static constexpr size_t maxWordSize = 127;
 };
 

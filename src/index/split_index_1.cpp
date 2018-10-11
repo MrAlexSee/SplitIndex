@@ -115,7 +115,7 @@ int SplitIndex1::processQuery(const string &query, string &results)
 size_t SplitIndex1::calcEntrySizeB(const char *entry) const
 {
     const char *start = entry;
-    entry += 2; // We jump over the prefix index (uint16_t = 2 bytes).
+    entry += 2; // We jump over the prefix index (uint16_t == 2 bytes).
 
     while (*entry != 0)
     {
@@ -123,6 +123,21 @@ size_t SplitIndex1::calcEntrySizeB(const char *entry) const
     }
 
     return entry - start + 1; // This includes the terminating '\0'.
+}
+
+
+int SplitIndex1::calcEntryNWords(const char *entry) const
+{
+    int nWords = 0;
+    entry += 2; // We jump over the prefix index (uint16_t == 2 bytes).
+
+    while (*entry != 0)
+    {
+        nWords += 1;
+        entry += 1 + *entry;
+    }
+
+    return nWords;
 }
 
 void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
@@ -200,56 +215,30 @@ void SplitIndex1::addToEntry(char **entryPtr,
     {
         // Otherwise we append the word part to the entry. This is one of the two following cases:
         // a) we are adding a prefix (i.e. adding to the 2nd part of the entry),
-        // b) we are adding a suffix and there are no prefix (i.e. we are adding to the 1st part of the entry).
-        appendToEntry(newEntry, wordPart, partSize, oldEntrySize);
+        // b) we are adding a suffix and there are no prefixes (i.e. we are adding to the 1st, 
+        // that is the only part of the entry).
+        appendToEntry(newEntry, oldEntrySize, wordPart, partSize);
 
-        // This is true only if we add a prefix for the first time (there were only suffixes before).
+        // This is true only if we add a prefix for the first time (when there were only suffixes before).
         if (isPartSuffix == false and *prefixIndex == 0)
         {
-            // Old number of words + 1, no need for "+1" since we already inserted a new word.
+            // The new index is the old number of words + 1, no need for "+1" here since we have already inserted a new word.
             *prefixIndex = calcEntryNWords(newEntry);
         }
     }
 
-    // Required in the case the memory has been moved, no need for free (realloc does that).
+    // This is required in the case the memory has been moved by realloc.
     *entryPtr = newEntry;
     assert(newEntry[newSize - 1] == '\0');
 }
 
-void SplitIndex1::appendToEntry(char *entry,
-    const char *wordPart, size_t partSize,
-    size_t oldEntrySize) const
+void SplitIndex1::appendToEntry(char *entry, size_t oldEntrySize,
+    const char *wordPart, size_t partSize) const
 {
     entry[oldEntrySize - 1] = static_cast<char>(partSize);
 
-    for (size_t i = 0; i < partSize; ++i)
-    {
-        entry[oldEntrySize + i] = wordPart[i];
-    }
-
+    memcpy(entry + oldEntrySize, wordPart, partSize);
     entry[oldEntrySize + partSize] = '\0';
-}
-
-char *SplitIndex1::advanceInEntryByWordCount(char *entry, uint16_t nWords) const
-{
-    for (uint16_t i = 0; i < nWords; ++i)
-    {
-        assert(entry[0] != 0);
-        entry += 1 + entry[0];
-    }
-     
-    return entry;
-}
-
-const char *SplitIndex1::advanceInEntryByWordCount(const char *entry, uint16_t nWords) const
-{
-    for (uint16_t i = 0; i < nWords; ++i)
-    {
-        assert(entry[0] != 0);
-        entry += 1 + entry[0];
-    }
-     
-    return entry;
 }
 
 int SplitIndex1::searchWithPrefixAsKey(string &results)
@@ -362,42 +351,26 @@ int SplitIndex1::searchWithSuffixAsKey(string &results)
     return nMatches;
 }
 
-int SplitIndex1::calcEntryNWords(const char *entry) const
+char *SplitIndex1::advanceInEntryByWordCount(char *entry, uint16_t nWords) const
 {
-    int nWords = 0;
-    entry += 2; // Prefix index
-
-    while (entry[0] != 0)
+    for (uint16_t i = 0; i < nWords; ++i)
     {
-        nWords += 1;
-        entry += 1 + entry[0];
+        assert(*entry != 0);
+        entry += 1 + *entry;
     }
-
-    return nWords;
+     
+    return entry;
 }
 
-string SplitIndex1::entryToString(const char *entry) const
+const char *SplitIndex1::advanceInEntryByWordCount(const char *entry, uint16_t nWords) const
 {
-    string out = "|";
-
-    // Prefix index
-    out += "<" + to_string(*reinterpret_cast<const uint16_t *>(entry)) + ">";
-    entry += 2;
-
-    // Words
-    while (entry[0] != 0)
+    for (uint16_t i = 0; i < nWords; ++i)
     {
-        out += to_string(static_cast<int>(entry[0]));
-
-        for (size_t i = 1; i < static_cast<size_t>(entry[0]) + 1; ++i)
-        {
-            out += entry[i];
-        }
-
-        entry += 1 + entry[0];
+        assert(*entry != 0);
+        entry += 1 + *entry;
     }
-
-    return out + "|";
+     
+    return entry;
 }
 
 } // namespace split_index
