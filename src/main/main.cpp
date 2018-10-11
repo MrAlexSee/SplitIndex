@@ -149,6 +149,7 @@ bool checkInputFiles(const char *execName)
         return false;
     }
 
+    cout << "All input files exist" << endl;
     return true;
 }
 
@@ -157,13 +158,12 @@ int run()
     try
     {
         vector<string> dict = utils::FileIO::readWords(params.inDictFile, params.separator);
-        vector<string> patterns = utils::FileIO::readWords(params.inPatternFile, params.separator);
+        vector<string> queries = utils::FileIO::readWords(params.inPatternFile, params.separator);
        
         utils::StringUtils::filterWords(dict, params.minWordLength);
-        utils::StringUtils::filterWords(patterns, params.minWordLength);
+        utils::StringUtils::filterWords(queries, params.minWordLength);
 
-        cout << boost::format("Processing #words = %1%, #queries = %2%") % dict.size() % patterns.size() << endl << endl;
-        runSearch(dict, patterns);
+        runSearch(dict, queries);
     }
     catch (const exception &ex)
     {
@@ -174,13 +174,16 @@ int run()
     return 0;
 }
 
-void runSearch(const vector<string> &words, const vector<string> &queries)
+void runSearch(const vector<string> &dict, const vector<string> &queries)
 {
     HashFunctions::HashType hashType;
     SplitIndexFactory::IndexType indexType;
 
     initSplitIndexParams(hashType, indexType);
-    unordered_set<string> wordSet(words.begin(), words.end());
+    unordered_set<string> wordSet(dict.begin(), dict.end());
+
+    cout << endl << boost::format("Processing #words (dict) = %1%, #queries = %2%")
+            % wordSet.size() % queries.size() << endl;
 
     SplitIndex *index = SplitIndexFactory::initIndex(wordSet, hashType, indexType);
 
@@ -235,6 +238,9 @@ void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType,
     }
 
     indexType = indexTypeMap.at(params.indexType);
+
+    cout << boost::format("Using index type = %1%, hash function = %2%")
+        % params.indexType % params.hashType << endl;
 }
 
 } // namespace split_index

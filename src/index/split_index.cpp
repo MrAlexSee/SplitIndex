@@ -28,6 +28,7 @@ void SplitIndex::construct()
     const double nBucketsHint = nBucketsHintFactor * wordSet.size();
     hashMap->clear(nBucketsHint);
 
+    cout << "Set a hash map with hint #buckets = " << nBucketsHint << endl << endl;
     int i = 1;
 
     for (const string &word : wordSet)
