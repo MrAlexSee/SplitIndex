@@ -187,7 +187,7 @@ void runSearch(const vector<string> &dict, const vector<string> &queries)
 
     SplitIndex *index = SplitIndexFactory::initIndex(wordSet, hashType, indexType);
 
-    cout << "Index constructed:" << endl;
+    cout << endl << "Index constructed:" << endl;
     cout << index->toString() << endl;
 
     string results;

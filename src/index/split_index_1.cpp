@@ -62,8 +62,6 @@ void SplitIndex1::initEntry(const string &word)
 
     if (entryPtr == nullptr)
     {
-        cout << "null prefix" << endl;
-
         char *newEntry = createEntry(suffixBuf, suffixSize, true);
         hashMap->insert(prefixBuf, prefixSize, newEntry);
 
@@ -81,8 +79,6 @@ void SplitIndex1::initEntry(const string &word)
 
     if (entryPtr == nullptr)
     {
-        cout << "null suffix" << endl;
-
         char *newEntry = createEntry(prefixBuf, prefixSize, false);
         hashMap->insert(suffixBuf, suffixSize, newEntry);
 
@@ -128,7 +124,7 @@ size_t SplitIndex1::calcEntrySizeB(const char *entry) const
         entry += 1 + *entry;
     }
 
-    return entry - start + 1; // This includes the terminating '\0'.
+    return entry - start + 1; // This includes the terminating 0.
 }
 
 
@@ -157,10 +153,10 @@ void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
     assert(abs(static_cast<int>(prefixSize) - static_cast<int>(suffixSize)) <= 1);
 
     strncpy(prefixBuf, word.c_str(), prefixSize);
-    prefixBuf[prefixSize] = '\0';
+    prefixBuf[prefixSize] = 0;
 
     strcpy(suffixBuf, word.c_str() + prefixSize);
-    assert(suffixBuf[suffixSize] == '\0');
+    assert(suffixBuf[suffixSize] == 0);
 }
 
 char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPartSuffix) const
@@ -182,7 +178,7 @@ char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPar
     entry[2] = static_cast<char>(partSize);
     memcpy(entry + 3, wordPart, partSize);
 
-    entry[newSize - 1] = '\0';
+    entry[newSize - 1] = 0;
     return entry;
 }
 
@@ -237,7 +233,7 @@ void SplitIndex1::addToEntry(char **entryPtr,
 
     // This is required in the case the memory has been moved by realloc.
     *entryPtr = newEntry;
-    assert(newEntry[newEntrySize - 1] == '\0');
+    assert(newEntry[newEntrySize - 1] == 0);
 }
 
 void SplitIndex1::appendToEntry(char *entry, size_t oldEntrySize,
@@ -246,7 +242,7 @@ void SplitIndex1::appendToEntry(char *entry, size_t oldEntrySize,
     entry[oldEntrySize - 1] = static_cast<char>(partSize);
 
     memcpy(entry + oldEntrySize, wordPart, partSize);
-    entry[oldEntrySize + partSize] = '\0';
+    entry[oldEntrySize + partSize] = 0;
 }
 
 int SplitIndex1::searchWithPrefixAsKey(string &results)

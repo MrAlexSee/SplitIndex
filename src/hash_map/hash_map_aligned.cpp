@@ -71,13 +71,14 @@ char **HashMapAligned::retrieve(const char *key, size_t keySize) const
 void HashMapAligned::clearBucket(char *bucket)
 {
     assert(bucket != nullptr);
+    char *it = bucket;
 
-    while (*bucket != 0)
+    while (*it != 0)
     {
-        const size_t keyInBucketSize = *bucket;
+        const size_t keyInBucketSize = *it;
 
-        free(*reinterpret_cast<void **>(bucket + 1 + keyInBucketSize));
-        bucket += 1 + keyInBucketSize + sizeof(char *);
+        free(*reinterpret_cast<void **>(it + 1 + keyInBucketSize));
+        it += 1 + keyInBucketSize + sizeof(char *);
     }
 
     free(bucket);
@@ -144,7 +145,7 @@ long HashMapAligned::calcBucketTotalSizeB(const char *bucket) const
         bucket += 1 + keyInBucketSize + sizeof(char *);
     }
 
-    ret += (bucket - start + 1); // Includes the terminating '\0'.
+    ret += (bucket - start + 1); // Includes the terminating 0.
     return ret;
 }
 
@@ -157,7 +158,7 @@ long HashMapAligned::calcBucketSizeB(const char *bucket) const
         bucket += 1 + *bucket + sizeof(char *);
     }
 
-    return (bucket - start + 1); // Includes the terminating '\0'.
+    return (bucket - start + 1); // Includes the terminating 0.
 }
 
 char *HashMapAligned::copyEntry(const char *entry)
@@ -168,7 +169,7 @@ char *HashMapAligned::copyEntry(const char *entry)
 
     memcpy(newEntry, entry, entrySize);
 
-    assert(newEntry[entrySize - 1] == '\0');
+    assert(newEntry[entrySize - 1] == 0);
     return newEntry;
 }
 
@@ -177,16 +178,11 @@ char *HashMapAligned::createBucket(const char *key, size_t keySize, char *entry)
     const size_t bucketSize = 1 + keySize + sizeof(char *) + 1;
     char *bucket = static_cast<char *>(malloc(bucketSize));
 
-    if (bucket == NULL)
-    {
-        throw bad_alloc();
-    }
-
     *bucket = keySize;
     memcpy(bucket + 1, key, keySize);
 
     *reinterpret_cast<char **>(bucket + 1 + keySize) = entry;
-    bucket[bucketSize - 1] = '\0';
+    bucket[bucketSize - 1] = 0;
 
     assert(bucketSize == 2 + keySize + sizeof(char *));
     return bucket;
@@ -195,22 +191,16 @@ char *HashMapAligned::createBucket(const char *key, size_t keySize, char *entry)
 void HashMapAligned::addToBucket(char **bucket, const char *key, size_t keySize, char *entry)
 {
     const size_t oldSize = calcBucketSizeB(*bucket);
-    const size_t newSize = oldSize + keySize + sizeof(char *) + 1; // This includes the terminating '\0'.
+    const size_t newSize = oldSize + keySize + sizeof(char *) + 1; // This includes the terminating 0.
 
     void *ptr = realloc(*bucket, newSize);
-
-    if (ptr == NULL)
-    {
-        throw bad_alloc();
-    }
-
     *bucket = static_cast<char *>(ptr);
     
     (*bucket)[oldSize - 1] = keySize;
     memcpy(*bucket + oldSize, key, keySize);
 
     *reinterpret_cast<char **>(*bucket + oldSize + keySize) = entry;
-    (*bucket)[newSize - 1] = '\0';
+    (*bucket)[newSize - 1] = 0;
 }
 
 } // namespace hash_map
