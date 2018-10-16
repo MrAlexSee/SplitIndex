@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "catch.hpp"
-#include "repeat.hpp"
 
 #include "../src/utils/string_utils.hpp"
 
@@ -10,13 +9,6 @@ using namespace std;
 
 namespace split_index
 {
-
-namespace
-{
-
-constexpr int nRandIter = 100;
-
-}
 
 TEST_CASE("is word filtering by minimum length for empty vector correct", "[utils]")
 {
@@ -54,6 +46,9 @@ TEST_CASE("is vector to string correct", "[utils]")
 
     string str2 = utils::StringUtils::vecToStr(vec, ", ");
     REQUIRE(str2 == "[1, 3, 4, 7]");
+
+    string str3 = utils::StringUtils::vecToStr(vec, ";");
+    REQUIRE(str3 == "[1;3;4;7]");
 }
 
 } // namespace split_index

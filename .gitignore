@@ -1,1 +1,3 @@
 build/
+unit_tests/main_tests
+unit_tests/*.o

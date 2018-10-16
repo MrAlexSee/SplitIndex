@@ -9,7 +9,7 @@ INCLUDE    = -I$(BOOST_DIR)
 TEST_FILES = catch.hpp repeat.hpp
 
 EXE 	   = main_tests
-OBJ        = main_tests.o utils_string_utils_tests.o
+OBJ        = main_tests.o utils_distance_tests.o utils_string_utils_tests.o
 
 UTILS_LIB  = utils.a
 
@@ -28,6 +28,9 @@ libs:
 
 main_tests.o: main_tests.cpp catch.hpp
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c main_tests.cpp
+
+utils_distance_tests.o: utils_distance_tests.cpp ../src/utils/distance.hpp ../src/utils/distance.cpp catch.hpp
+	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c utils_distance_tests.cpp
 
 utils_string_utils_tests.o: utils_string_utils_tests.cpp ../src/utils/string_utils.hpp ../src/utils/string_utils.cpp catch.hpp
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c utils_string_utils_tests.cpp
