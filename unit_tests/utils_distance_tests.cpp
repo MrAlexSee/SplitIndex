@@ -39,7 +39,7 @@ void for_(FunctionType fun)
 
 TEST_CASE("is Hamming at most k for empty calculation correct", "[utils_distance]")
 {
-    const string empty = "";
+    string empty = "";
 
     for_<maxK>([&] (auto k)
     {
@@ -49,7 +49,7 @@ TEST_CASE("is Hamming at most k for empty calculation correct", "[utils_distance
 
 TEST_CASE("is Hamming at most k calculation for self correct", "[utils_distance]")
 {
-    const string str1 = "ala ma kota";
+    string str1 = "ala ma kota";
 
     for_<maxK>([&] (auto k)
     {
