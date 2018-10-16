@@ -10,7 +10,7 @@ using namespace std;
 namespace split_index
 {
 
-TEST_CASE("is getting elapsed info correct", "[utils]")
+TEST_CASE("is getting elapsed info correct", "[utils_string_utils]")
 {
     string info1 = utils::StringUtils::getElapsedInfo(10000, 1, 5);
 
@@ -25,7 +25,7 @@ TEST_CASE("is getting elapsed info correct", "[utils]")
     REQUIRE(info2.find("100") != string::npos); // per query us
 }
 
-TEST_CASE("is word filtering by minimum length for empty vector correct", "[utils]")
+TEST_CASE("is word filtering by minimum length for empty vector correct", "[utils_string_utils]")
 {
     vector<string> empty;
 
@@ -33,7 +33,7 @@ TEST_CASE("is word filtering by minimum length for empty vector correct", "[util
     REQUIRE(empty.empty());
 }
 
-TEST_CASE("is word filtering by minimum length correct", "[utils]")
+TEST_CASE("is word filtering by minimum length correct", "[utils_string_utils]")
 {
     vector<string> vec { "ala", "ma", "kota", "a", "jarek", "ma", "psa" };
 
@@ -44,13 +44,13 @@ TEST_CASE("is word filtering by minimum length correct", "[utils]")
     REQUIRE(vec.size() == 2);
 }
 
-TEST_CASE("is empty vector to string correct", "[utils]")
+TEST_CASE("is empty vector to string correct", "[utils_string_utils]")
 {
     string str1 = utils::StringUtils::vecToStr(vector<int>(), " ");
     REQUIRE(str1 == "[]");
 }
 
-TEST_CASE("is vector to string correct", "[utils]")
+TEST_CASE("is vector to string correct", "[utils_string_utils]")
 {
     vector<int> single { 7 };
 

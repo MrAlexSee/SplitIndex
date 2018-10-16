@@ -13,10 +13,6 @@ struct Distance
 {
     Distance() = delete;
 
-    static bool isExactMatch(const char *str1, const char *str2, size_t length);
-
-    static int calcHamming(const char *str1, const char *str2, size_t length);
-
     template<int k>
     static bool isHammingAtMostK(const char *str1, const char *str2, size_t length)
     {
