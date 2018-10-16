@@ -29,11 +29,6 @@ assert(maxLoadFactor > 0.0);
     initBuckets();
 }
 
-HashMap::~HashMap()
-{
-    clearBuckets(buckets, nBuckets);
-}
-
 void HashMap::clear(int nBucketsHint)
 {
     clearBuckets(buckets, nBuckets);

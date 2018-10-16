@@ -19,7 +19,7 @@ public:
             double maxLoadFactorArg,
             int nBucketsHint,
             hash_functions::HashFunctions::HashType hashType);
-    virtual ~HashMap();
+    virtual ~HashMap() { }
 
     virtual std::string toString() const = 0;
 

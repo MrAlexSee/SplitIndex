@@ -171,6 +171,7 @@ int run()
         return params.errorExitCode;
     }
 
+    cout << "All finished, returning" << endl;
     return 0;
 }
 
@@ -195,10 +196,10 @@ void runSearch(const vector<string> &dict, const vector<string> &queries)
     const int nMatches = index->search(queries, results, params.nIter);
     cout << "#matches = " << nMatches << endl;
 
-    const float elapsedTotalUs = index->getElapsedUs();
-    const float elapsedPerIterUs = elapsedTotalUs / static_cast<float>(params.nIter);
+    string elapsedInfo = utils::StringUtils::getElapsedInfo(index->getElapsedUs(), 
+        params.nIter, queries.size());
+    cout << elapsedInfo << endl;
 
-    cout << boost::format("Elapsed: %1% us") % elapsedPerIterUs << endl;
     delete index;
 }
 

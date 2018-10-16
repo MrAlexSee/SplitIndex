@@ -27,6 +27,11 @@ HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEn
         hashType)
 { }
 
+HashMapAligned::~HashMapAligned()
+{
+    clearBuckets(buckets, nBuckets);
+}
+
 string HashMapAligned::toString() const
 {
     const double totalSizeKB = calcTotalSizeB() / 1024.0;
