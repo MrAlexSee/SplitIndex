@@ -207,7 +207,7 @@ void SplitIndex1::addToEntry(char **entryPtr,
         // Hence, we need to move the prefixes to the right and insert a suffix somewhere in the middle.
         char *prefixesStart = advanceInEntryByWordCount(newEntry + 2, (*prefixIndex) - 1);
 
-        const size_t prefixesListSize = oldEntrySize - (prefixesStart - newEntry) + 1;
+        const size_t prefixesListSize = oldEntrySize - (prefixesStart - newEntry);
         assert(newEntrySize == prefixesStart - newEntry + partSize + 1 + prefixesListSize);
 
         memmove(prefixesStart + partSize + 1, prefixesStart, prefixesListSize);

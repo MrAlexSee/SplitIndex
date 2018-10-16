@@ -24,10 +24,10 @@ protected:
     int processQuery(const std::string &query, std::string &results) override;
 
     size_t calcEntrySizeB(const char *entry) const override;
-    /** Returns the number of words (word parts) stored in an entry. */
+    /** Returns the number of words (word parts) stored in [entry]. */
     virtual int calcEntryNWords(const char *entry) const;
 
-    /** Splits the word into two and stores the parts (prefix and suffix) in temporary buffers. */
+    /** Splits [word] into two and stores the parts (prefix and suffix) in temporary buffers. */
     void storePrefixSuffixInBuffers(const std::string &word);
 
     /** Creates a new entry containing a [wordPart] of size [partSize].
@@ -40,7 +40,8 @@ protected:
         const char *wordPart, size_t partSize,
         bool isPartSuffix) const;
 
-    /** A helper function for adding a word at the end of an existing entry. */
+    /** A helper function for adding a [wordPart] of size [partSize],
+     * at the end of an existing [entry] having [oldEntrySize] bytes . */
     virtual void appendToEntry(char *entry, size_t oldEntrySize,
         const char *wordPart, size_t partSize) const;
 
