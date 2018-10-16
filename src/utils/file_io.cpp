@@ -47,16 +47,21 @@ vector<string> FileIO::readWords(const string &filePath, const string &separator
     return filt;
 }
 
-void FileIO::writeFile(const string &data, const string &filePath)
+void FileIO::dumpToFile(const string &text, const string &filePath, bool newline)
 {
-    ofstream outStream(filePath);
+    ofstream outStream(filePath, ios_base::app);
 
     if (!outStream)
     {
-        throw std::runtime_error("failed to write file (insufficient permisions?): " + filePath);
+        throw runtime_error("failed to write file (insufficient permisions?): " + filePath);
     }
 
-    outStream << data;
+    outStream << text;
+
+    if (newline)
+    {
+        outStream << endl;
+    }
 }
 
 } // namespace utils

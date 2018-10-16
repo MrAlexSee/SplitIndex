@@ -17,7 +17,8 @@ struct FileIO
     static bool isFileReadable(const std::string &filePath);
     static std::vector<std::string> readWords(const std::string &filePath, const std::string &separator);
 
-    static void writeFile(const std::string &data, const std::string &filePath);
+    /** Appends [text] to file with [filePath] followed by an optional newline if [newline] is true. */
+    static void dumpToFile(const std::string &text, const std::string &filePath, bool newline = false);
 };
 
 } // namespace utils

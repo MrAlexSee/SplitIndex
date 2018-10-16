@@ -1,6 +1,7 @@
 #ifndef MATH_UTILS_HPP
 #define MATH_UTILS_HPP
 
+#include <cassert>
 #include <cmath>
 #include <string>
 #include <vector>
@@ -16,10 +17,16 @@ struct MathUtils
     MathUtils() = delete;
 
     template<typename T>
-    static std::vector<std::vector<T>> countCartProd(const std::vector<T> &vec, int repeat)
+    static std::vector<std::vector<T>> calcCartesianProduct(const std::vector<T> &vec, int repeat)
     {
         assert(repeat >= 2); // N-fold Cartesian product.
+
         std::vector<std::vector<T>> ret;
+
+        if (vec.empty())
+        {
+            return ret;
+        }
 
         std::vector<int> curI(repeat, 0);
         bool finished = false;
