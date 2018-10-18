@@ -58,9 +58,9 @@ protected:
     std::unordered_set<std::string> wordSet;
 
     /** The number of words is multiplied by this factor and passed as a bucket count hint to the hash map. */
-    static constexpr double nBucketsHintFactor = 0.1;
+    static constexpr float nBucketsHintFactor = 0.1;
     /** Maximum load factor passed to the hash map. */
-    static constexpr double maxLoadFactor = 2.0;
+    static constexpr float maxLoadFactor = 2.0;
     /** Maximum word size, set to 127 because we use 8-bit counters.
      * Can be set to 255 if using unsigned char when compiling. */
     static constexpr size_t maxWordSize = 127;

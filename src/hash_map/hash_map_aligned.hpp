@@ -18,7 +18,7 @@ class HashMapAligned : public HashMap
 {
 public:
     HashMapAligned(const std::function<size_t(const char *)> &calcEntrySizeB,
-                   double maxLoadFactor, 
+                   float maxLoadFactor, 
                    int nBucketsHint,
                    hash_functions::HashFunctions::HashType hashType);
     ~HashMapAligned() override;

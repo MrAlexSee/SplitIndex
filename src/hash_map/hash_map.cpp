@@ -14,7 +14,7 @@ namespace hash_map
 {
 
 HashMap::HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
-                 double maxLoadFactorArg,
+                 float maxLoadFactorArg,
                  int nBucketsHint,
                  hash_functions::HashFunctions::HashType hashType)
     :calcEntrySizeB(calcEntrySizeBArg),
@@ -48,7 +48,7 @@ void HashMap::insert(const char *key, size_t keySize, char *entry)
     insertEntry(key, keySize, entry);
     nEntries += 1;
 
-    curLoadFactor = static_cast<double>(nEntries) / nBuckets;
+    curLoadFactor = static_cast<float>(nEntries) / nBuckets;
 
     if (curLoadFactor > maxLoadFactor)
     {

@@ -49,7 +49,7 @@ string SplitIndex::toString() const
         throw runtime_error("index not constructed");
     }
 
-    const double wordsSizeKB = calcWordsSizeB() / 1024.0;
+    const float wordsSizeKB = calcWordsSizeB() / 1024.0;
     string ret = (boost::format("#words = %1%, words size = %2% KB")
         % wordSet.size() % wordsSizeKB).str();
 

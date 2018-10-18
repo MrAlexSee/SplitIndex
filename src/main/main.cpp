@@ -52,6 +52,9 @@ void runSearch(const vector<string> &words, const vector<string> &queries);
 
 void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType,
     SplitIndexFactory::IndexType &indexType);
+
+void dumpRunInfo(float elapsedUs, size_t nQueries);
+
 } // namespace split_index
 
 int main(int argc, const char **argv)
@@ -126,6 +129,11 @@ int handleParams(int argc, const char **argv)
         return params.errorExitCode;
     }
 
+    if (vm.count("dump"))
+    {
+        params.dumpToFile = true;
+    }
+
     return paramsResContinue;
 }
 
@@ -196,10 +204,7 @@ void runSearch(const vector<string> &dict, const vector<string> &queries)
     const int nMatches = index->search(queries, results, params.nIter);
     cout << "#matches = " << nMatches << endl;
 
-    string elapsedInfo = utils::StringUtils::getElapsedInfo(index->getElapsedUs(), 
-        params.nIter, queries.size());
-    cout << elapsedInfo << endl;
-
+    dumpRunInfo(index->getElapsedUs(), queries.size());
     delete index;
 }
 
@@ -242,6 +247,22 @@ void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType,
 
     cout << boost::format("Using index type = %1%, hash function = %2%")
         % params.indexType % params.hashType << endl;
+}
+
+void dumpRunInfo(float elapsedUs, size_t nQueries)
+{
+    string elapsedInfo = utils::StringUtils::getElapsedInfo(elapsedUs, params.nIter, nQueries);
+    cout << elapsedInfo << endl;
+
+    if (params.dumpToFile)
+    {
+        // string outStr = (boost::format("%1% %2% %3% %4% %5% %6% %7%") % params.inDictFile % params.inPatternFile % dictSizeMB
+            // % params.distanceType % params.fingerprintType % params.lettersType % elapsedPerWordNs).str();
+        string outStr;
+
+        utils::FileIO::dumpToFile(outStr, params.outFile, true);
+        cout << "Dumped info to: " << params.outFile << endl << endl;
+    }
 }
 
 } // namespace split_index

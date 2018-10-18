@@ -15,6 +15,9 @@ struct Params
 
     // These parameters are set by handleParams() in main.cpp after parsing command line args.
 
+    /** Dump input files and params info with elapsed and throughput to output file. Cmd arg -d. */
+    bool dumpToFile = false;
+
     /** Hash type used by the split index. */
     std::string hashType;
 
@@ -35,7 +38,7 @@ struct Params
     /** Input pattern file path (positional arg 2). */
     std::string inPatternFile;
 
-    /** Output file path. */
+    /** Output file path. Cmd arg -o. */
     std::string outFile;
 
     /*

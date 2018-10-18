@@ -14,7 +14,7 @@ struct StringUtils
 {
     StringUtils() = delete;
 
-    static std::string getElapsedInfo(long long elapsedUs, int nIter, int nQueries);
+    static std::string getElapsedInfo(float elapsedUs, int nIter, int nQueries);
     static void printProgress(std::string info, int count, int size);
     
     /** Leaves only words having >= [minWordLength] characters in the [words] vector. */

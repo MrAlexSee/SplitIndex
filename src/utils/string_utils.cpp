@@ -12,26 +12,26 @@ namespace split_index
 namespace utils
 {
 
-string StringUtils::getElapsedInfo(long long elapsedUs, int nIter, int nQueries)
+string StringUtils::getElapsedInfo(float elapsedUs, int nIter, int nQueries)
 {
     assert(elapsedUs > 0.0 and nIter > 0 and nQueries > 0);
     string queryCountStr;
 
     if (nQueries < 1000000)
     {
-        const double nQueriesK = static_cast<double>(nQueries) / 1000.0;
+        const float nQueriesK = nQueries / 1000.0f;
         queryCountStr = (boost::format("%1%k") % nQueriesK).str();
     }
     else
     {
-        const double nQueriesM = static_cast<double>(nQueries) / 1000000.0;
+        const float nQueriesM = nQueries / 1000000.0f;
         queryCountStr = (boost::format("%1%M") % nQueriesM).str();
     }
 
-    const double elapsedPerIterUs = elapsedUs / static_cast<double>(nIter);
+    const float elapsedPerIterUs = elapsedUs / nIter;
 
-    const double elapsedPerIterMs = elapsedPerIterUs / 1000.0; // milliseconds (ms)
-    const double elapsedPerQueryUs = elapsedPerIterUs / nQueries; // microseconds (us)
+    const float elapsedPerIterMs = elapsedPerIterUs / 1000.0; // milliseconds (ms)
+    const float elapsedPerQueryUs = elapsedPerIterUs / nQueries; // microseconds (us)
 
     return (boost::format("Elapsed per iter = %1%ms, per query = %2%us (#iter = %3%, #queries = %4%)")
         % elapsedPerIterMs % elapsedPerQueryUs % nIter % queryCountStr).str();
@@ -40,7 +40,7 @@ string StringUtils::getElapsedInfo(long long elapsedUs, int nIter, int nQueries)
 void StringUtils::printProgress(string info, int count, int size)
 {
     assert(count >= 0 and count <= size);
-    const double perc = count * 100.0 / size;
+    const float perc = count * 100.0 / size;
 
     cout << boost::format("\r%1%: %2%/%3% (%4%%%)")
         % info % count % size % round(perc) << flush;

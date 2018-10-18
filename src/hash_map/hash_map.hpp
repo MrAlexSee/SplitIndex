@@ -16,7 +16,7 @@ class HashMap
 {
 public:
     HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
-            double maxLoadFactorArg,
+            float maxLoadFactorArg,
             int nBucketsHint,
             hash_functions::HashFunctions::HashType hashType);
     virtual ~HashMap() { }
@@ -35,8 +35,8 @@ public:
     virtual long calcTotalSizeB() const;
 
     int getNBuckets() const { return nBuckets; }
-    double getCurLoadFactor() const { return curLoadFactor; }
-    double getMaxLoadFactor() const { return maxLoadFactor; }
+    float getCurLoadFactor() const { return curLoadFactor; }
+    float getMaxLoadFactor() const { return maxLoadFactor; }
 
 protected:
     void initBuckets();
@@ -57,9 +57,9 @@ protected:
     std::function<size_t(const char *)> calcEntrySizeB;
 
     /** Current load factor. */
-    double curLoadFactor;
+    float curLoadFactor;
     /** A maximum load factor which causes rehashing when crossed. */
-    double maxLoadFactor;
+    float maxLoadFactor;
 
     /** Total number of entries (values). */
     int nEntries = 0;
@@ -69,7 +69,7 @@ protected:
     char **buckets = nullptr;
 
     /** A factor used for increasing the number of available buckets when rehashing. */
-    static constexpr double bucketRehashFactor = 1.5;
+    static constexpr float bucketRehashFactor = 1.5;
 };
 
 } // namespace hash_map

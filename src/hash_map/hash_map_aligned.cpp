@@ -18,7 +18,7 @@ namespace hash_map
 {
 
 HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEntrySizeB,
-                               double maxLoadFactor, 
+                               float maxLoadFactor, 
                                int nBucketsHint,
                                hash_functions::HashFunctions::HashType hashType)
     :HashMap(calcEntrySizeB,
@@ -34,9 +34,9 @@ HashMapAligned::~HashMapAligned()
 
 string HashMapAligned::toString() const
 {
-    const double totalSizeKB = calcTotalSizeB() / 1024.0;
+    const float totalSizeKB = calcTotalSizeB() / 1024.0;
     
-    const double avgBucketSize = static_cast<double>(nEntries) / nBuckets;
+    const float avgBucketSize = static_cast<float>(nEntries) / nBuckets;
     const string formatStr = "Hash map: %1% entries, LF = %2% (max = %3%), total size = %4% KB, avg bucket size = %5%";
 
     return (boost::format(formatStr) % nEntries % curLoadFactor % maxLoadFactor 
@@ -129,7 +129,7 @@ void HashMapAligned::rehash()
     }
     
     clearBuckets(oldBuckets, oldNBuckets);
-    curLoadFactor = static_cast<double>(nEntries) / nBuckets;
+    curLoadFactor = static_cast<float>(nEntries) / nBuckets;
 
     if (curLoadFactor >= maxLoadFactor)
     {
