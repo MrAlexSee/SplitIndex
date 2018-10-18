@@ -12,13 +12,13 @@ namespace split_index
 
 TEST_CASE("is getting elapsed info correct", "[utils_string_utils]")
 {
-    string info1 = utils::StringUtils::getElapsedInfo(10000, 1, 5);
+    string info1 = utils::StringUtils::getElapsedInfo(10000.0f, 1, 5);
 
     REQUIRE(info1.find("10") != string::npos); // per iter ms
     REQUIRE(info1.find("1") != string::npos); // #iter
     REQUIRE(info1.find("2000") != string::npos); // per query us
 
-    string info2 = utils::StringUtils::getElapsedInfo(10000, 5, 20);
+    string info2 = utils::StringUtils::getElapsedInfo(10000.0f, 5, 20);
 
     REQUIRE(info2.find("2") != string::npos); // per iter ms
     REQUIRE(info2.find("5") != string::npos); // #iter
