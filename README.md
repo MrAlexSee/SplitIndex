@@ -29,10 +29,13 @@ Input dictionary file (positional parameter 1 or named parameter `-i` or `--in-d
 Input pattern file (positional parameter 2 or named parameter `-I` or `--in-pattern-file`) should contain the list of patterns, separated with newline characters.
 Attached as part of this package is a script `test_all.sh` for processing multiple dictionaries.
 
+Unit tests are located in the `unit_tests` folder and they can be run by issuing the `make run` command in that folder (requires support for the C++14 standard).
+
 #### Command-line parameter description
 
 Short name | Long name                | Parameter description
 ---------- | ------------------------ | ---------------------
+`-d`       | `--dump`                 | dump input files and params info with elapsed time and throughput to output file (useful for testing)
 &nbsp;     | `--hash-type`            | hash type used by the split index: city, farm, farsh, fnv1, fnv1a, murmur3, sdbm, spookyv2, superfast, xxhash (default = xxhash)
 `-h`       | `--help`                 | display help message
 &nbsp;     | `--index-type`           | split index type: k1 (k = 1), k1comp (k = 1 with compression) (default = k1)
