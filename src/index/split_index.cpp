@@ -91,6 +91,31 @@ int SplitIndex::search(const vector<string> &queries, string &results, int nIter
     return nMatches;
 }
 
+int SplitIndex::searchAndDumpAllMatches(const vector<string> &queries, string &results)
+{
+    assert(constructed);
+    size_t totalQueriesSize = 0;
+
+    for (const string &query : queries)
+    {
+        totalQueriesSize += query.size();
+    }
+
+    results.reserve(totalQueriesSize);
+
+    int nMatches = 0;
+
+    for (const string &query : queries)
+    {
+        int curNMatches = processQuery(query, results);
+        cout << query << " -> " << curNMatches << endl;
+
+        nMatches += curNMatches;
+    }
+
+    return nMatches;
+}
+
 long SplitIndex::calcWordsSizeB() const
 {
     long total = 0;

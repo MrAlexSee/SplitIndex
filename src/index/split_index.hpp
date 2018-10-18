@@ -26,6 +26,10 @@ public:
      * Only the result of the last iteration is stored. */
     int search(const std::vector<std::string> &queries, std::string &results, int nIter = 1);
 
+    /** Performs a search and returns the number of matches. Stores all results in [results].
+     * The number of matches for each query is dumped to standard output. Time measurement is not performed. */
+    int searchAndDumpAllMatches(const std::vector<std::string> &queries, std::string &results);
+
     /** Returns the total size of stored words in bytes. */
     long calcWordsSizeB() const;
     /* Returns the size of the underlying hash map in bytes. */

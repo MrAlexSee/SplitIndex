@@ -81,6 +81,7 @@ int handleParams(int argc, const char **argv)
     po::options_description options("Parameters");
     options.add_options()
        ("dump,d", "dump input files and params info with elapsed time and throughput to output file (useful for testing)")
+       ("dump-all-matches", "dump the number of matches for each query to standard output, note: this invalidates time measurement")
        ("hash-type", po::value<string>(&params.hashType)->default_value("xxhash"), "hash type used by the split index: city, farm, farsh, fnv1, fnv1a, murmur3, sdbm, spookyv2, superfast, xxhash")
        ("help,h", "display help message")
        ("index-type", po::value<string>(&params.indexType)->default_value("k1"), "split index type: k1 (k = 1), k1comp (k = 1 with compression)")
@@ -134,6 +135,10 @@ int handleParams(int argc, const char **argv)
     if (vm.count("dump"))
     {
         params.dumpToFile = true;
+    }
+    if (vm.count("dump-all-matches"))
+    {
+        params.dumpAllMatches = true;
     }
 
     return paramsResContinue;
@@ -202,11 +207,19 @@ void runSearch(const vector<string> &dict, const vector<string> &queries)
     cout << index->toString() << endl;
 
     string results;
+    int nMatches;
 
-    const int nMatches = index->search(queries, results, params.nIter);
+    if (params.dumpAllMatches)
+    {
+        nMatches = index->searchAndDumpAllMatches(queries, results);
+    }
+    else
+    {
+        nMatches = index->search(queries, results, params.nIter);
+        dumpRunInfo(index->getElapsedUs(), queries.size());
+    }
+
     cout << "#matches = " << nMatches << endl;
-
-    dumpRunInfo(index->getElapsedUs(), queries.size());
     delete index;
 }
 

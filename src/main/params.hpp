@@ -18,6 +18,9 @@ struct Params
     /** Dump input files and params info with elapsed and throughput to output file. Cmd arg -d. */
     bool dumpToFile = false;
 
+    /** Dump the number of matches for each query to standard output, note: this invalidates time measurement. */
+    bool dumpAllMatches = false;
+
     /** Hash type used by the split index. */
     std::string hashType;
 
