@@ -26,7 +26,8 @@ public:
     /** Clears the hash map, setting new bucket count to [nBucketsHint]. */
     virtual void clear(int nBucketsHint);
 
-    /** Inserts a pair [key] (of size [keySize]) -> [entry]. */
+    /** Inserts a pair [key] (of size [keySize]) -> [entry].
+     * Note: this does not overwrite existing entries (for performance reasons), rather, it adds duplicate entries. */
     void insert(const char *key, size_t keySize, char *entry);
     /** Returns a pointer to the entry from pair [key] (of size [keySize]) -> entry. */
     virtual char **retrieve(const char *key, size_t keySize) const = 0;

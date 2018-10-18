@@ -36,7 +36,8 @@ TEST_CASE("is empty map correctly initialized", "[hash_map_aligned]")
 
 TEST_CASE("is total size calculation correct", "[hash_map_aligned]")
 {
-    auto calcEntrySizeB = [](const char *) -> size_t { return 5; };
+    string entry = "entry";
+    auto calcEntrySizeB = [&entry](const char *) -> size_t { return entry.size(); };
 
     HashMapAligned empty(calcEntrySizeB, 1.0f, 0, hashType);
     REQUIRE(empty.calcTotalSizeB() == sizeof(char **));
@@ -44,22 +45,20 @@ TEST_CASE("is total size calculation correct", "[hash_map_aligned]")
     const int nBuckets = 5000;
     HashMapAligned hashMap(calcEntrySizeB, 1.0f, nBuckets, hashType);
 
-    string entry = "entry";
-
     hashMap.insert("key1", 4, const_cast<char *>(entry.c_str()));
     hashMap.insert("key2", 4, const_cast<char *>(entry.c_str()));
     hashMap.insert("key3", 4, const_cast<char *>(entry.c_str()));
 
-    const long totalBucketSize = 1 + 4 + sizeof(char *) + 5 + 1;
+    const long totalBucketSize = 1 + 4 + sizeof(char *) + entry.size() + 1;
     REQUIRE(hashMap.calcTotalSizeB() == sizeof(char **) + nBuckets * sizeof(char *) + 3 * totalBucketSize);
 }
 
 TEST_CASE("is clearing correct for 0 buckets hint", "[hash_map_aligned]")
 {
-    auto calcEntrySizeB = [](const char *) -> size_t { return 5; };
-    HashMapAligned hashMap(calcEntrySizeB, 1.0f, 5, hashType);
-
     string entry = "entry";
+    auto calcEntrySizeB = [&entry](const char *) -> size_t { return entry.size(); };
+
+    HashMapAligned hashMap(calcEntrySizeB, 1.0f, 5, hashType);
 
     hashMap.insert("key1", 4, const_cast<char *>(entry.c_str()));
     hashMap.insert("key2", 4, const_cast<char *>(entry.c_str()));
@@ -77,12 +76,11 @@ TEST_CASE("is clearing correct for 0 buckets hint", "[hash_map_aligned]")
 
 TEST_CASE("is clearing correct for 5 buckets hint", "[hash_map_aligned]")
 {
-    const int nBuckets = 5;
-
-    auto calcEntrySizeB = [](const char *) -> size_t { return 5; };
-    HashMapAligned hashMap(calcEntrySizeB, 1.0f, nBuckets, hashType);
-
     string entry = "entry";
+    auto calcEntrySizeB = [&entry](const char *) -> size_t { return entry.size(); };
+
+    const int nBuckets = 5;
+    HashMapAligned hashMap(calcEntrySizeB, 1.0f, nBuckets, hashType);
 
     hashMap.insert("key1", 4, const_cast<char *>(entry.c_str()));
     hashMap.insert("key2", 4, const_cast<char *>(entry.c_str()));
@@ -100,47 +98,48 @@ TEST_CASE("is clearing correct for 5 buckets hint", "[hash_map_aligned]")
 
 TEST_CASE("is inserting and retrieving a single entry correct", "[hash_map_aligned]")
 {
-    const int nBuckets = 5;
+    const int nBuckets = 500;
+
+    string entry = "entry";
+    auto calcEntrySizeB = [&entry](const char *) -> size_t { return entry.size(); };
+
+    HashMapAligned hashMap(calcEntrySizeB, 1.0f, nBuckets, hashType);
+    long totalBucketsSize = 0;
 
     for (const string &key : { "key1", "1", "123", "ala ma kota" })
     {
-        repeat(nReadRepeats, [&key] {
-            auto calcEntrySizeB = [](const char *) -> size_t { return 5; };
-            HashMapAligned hashMap(calcEntrySizeB, 1.0f, nBuckets, hashType);
+        hashMap.insert(key.c_str(), key.size(), const_cast<char *>(entry.c_str()));
+        totalBucketsSize += 1 + key.size() + sizeof(char *) + entry.size() + 1;
 
-            string entry = "entry";
-
-            hashMap.insert(key.c_str(), key.size(), const_cast<char *>(entry.c_str()));
-
+        repeat(nReadRepeats, [&] {
             char **fromHashMap = hashMap.retrieve(key.c_str(), key.size());
-            REQUIRE(strcmp(*fromHashMap, entry.c_str()) == 0);
+            REQUIRE(strncmp(*fromHashMap, entry.c_str(), entry.size()) == 0);
 
-            const long totalBucketSize = 1 + key.size() + sizeof(char *) + 5 + 1;
-            REQUIRE(hashMap.calcTotalSizeB() == sizeof(char **) + nBuckets * sizeof(char *) + totalBucketSize);
+            REQUIRE(hashMap.calcTotalSizeB() == sizeof(char **) + nBuckets * sizeof(char *) + totalBucketsSize);
         });
     }
 }
 
 TEST_CASE("is inserting and retrieving multiple entries correct", "[hash_map_aligned]")
 {
-    repeat(nReadRepeats, [] {
-        auto calcEntrySizeB = [](const char *) -> size_t { return 5; };
-        HashMapAligned hashMap(calcEntrySizeB, 1.0f, 5000, hashType);
+    string entry = "entry";
+    auto calcEntrySizeB = [&entry](const char *) -> size_t { return entry.size(); };
 
-        string entry = "entry";
+    HashMapAligned hashMap(calcEntrySizeB, 1.0f, 5000, hashType);
 
-        for (int iEntry = 0; iEntry < nEntries; ++iEntry)
-        {
-            const string key = "key" + to_string(iEntry);
-            hashMap.insert(key.c_str(), key.size(), const_cast<char *>(entry.c_str()));
-        }
+    for (int iEntry = 0; iEntry < nEntries; ++iEntry)
+    {
+        const string key = "key" + to_string(iEntry);
+        hashMap.insert(key.c_str(), key.size(), const_cast<char *>(entry.c_str()));
+    }
 
+    repeat(nReadRepeats, [&] {
         for (int iEntry = 0; iEntry < nEntries; ++iEntry)
         {
             const string key = "key" + to_string(iEntry);
 
             char **fromHashMap = hashMap.retrieve(key.c_str(), key.size());
-            REQUIRE(strcmp(*fromHashMap, entry.c_str()) == 0);
+            REQUIRE(strncmp(*fromHashMap, entry.c_str(), entry.size()) == 0);
         }
     });
 }
@@ -157,10 +156,10 @@ TEST_CASE("is copying entry correct", "[hash_map_aligned]")
 
 TEST_CASE("is creating a new bucket correct", "[hash_map_aligned]")
 {
-    auto calcEntrySizeB = [](const char *) -> size_t { return 5; };
-    HashMapAligned hashMap(calcEntrySizeB, 1.0f, 0, hashType);
-
     string entry = "entry";
+    auto calcEntrySizeB = [&entry](const char *) -> size_t { return entry.size(); };
+
+    HashMapAligned hashMap(calcEntrySizeB, 1.0f, 0, hashType);
     char *entryStr = const_cast<char *>(entry.c_str());
 
     char *bucket = HashMapAlignedWhitebox::createBucket(hashMap, "key1", 4, entryStr);

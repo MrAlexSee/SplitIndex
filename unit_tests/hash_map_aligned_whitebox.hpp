@@ -23,6 +23,11 @@ public:
     {
         return hashMap.createBucket(key, keySize, entry);
     }
+
+    inline static void addToBucket(hash_map::HashMapAligned &hashMap, char **bucket, const char *key, size_t keySize, char *entry)
+    {
+        return hashMap.addToBucket(bucket, key, keySize, entry);
+    }
 };
 
 } // namespace hash_map
