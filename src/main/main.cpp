@@ -87,6 +87,7 @@ int handleParams(int argc, const char **argv)
        ("in-dict-file,i", po::value<string>(&params.inDictFile)->required(), "input dictionary file path (positional arg 1)")
        ("in-pattern-file,I", po::value<string>(&params.inPatternFile)->required(), "input pattern file path (positional arg 2)")
        ("iter", po::value<int>(&params.nIter)->default_value(1), "number of iterations per pattern lookup")
+       ("max-load-factor", po::value<float>(&params.maxLoadFactor)->default_value(2.0f), "maximum load factor which causes rehashing when crossed")
        ("min-word-length", po::value<int>(&params.minWordLength)->default_value(4), "minimum word length from the input dictionary (shorter words are ignored)")
        ("out-file,o", po::value<string>(&params.outFile)->default_value("res.txt"), "output file path")
        // Not using a default value from Boost for separator because it literally prints a newline.
@@ -195,7 +196,7 @@ void runSearch(const vector<string> &dict, const vector<string> &queries)
     cout << endl << boost::format("Processing #words (dict) = %1%, #queries = %2%")
             % wordSet.size() % queries.size() << endl;
 
-    SplitIndex *index = SplitIndexFactory::initIndex(wordSet, hashType, indexType);
+    SplitIndex *index = SplitIndexFactory::initIndex(wordSet, hashType, indexType, params.maxLoadFactor);
 
     cout << endl << "Index constructed:" << endl;
     cout << index->toString() << endl;
@@ -259,8 +260,8 @@ void dumpRunInfo(float elapsedUs, size_t nQueries)
     {
         const float elapsedPerQueryUs = elapsedUs / params.nIter / nQueries;
 
-        string outStr = (boost::format("%1% %2% %3% %4% %5% %6%") % params.inDictFile % params.inPatternFile
-            % params.hashType % params.indexType % params.nIter % elapsedPerQueryUs).str();
+        string outStr = (boost::format("%1% %2% %3% %4% %5% %6% %7%") % params.inDictFile % params.inPatternFile
+            % params.hashType % params.indexType % params.maxLoadFactor % params.nIter % elapsedPerQueryUs).str();
 
         utils::FileIO::dumpToFile(outStr, params.outFile, true);
         cout << "Dumped info to: " << params.outFile << endl << endl;

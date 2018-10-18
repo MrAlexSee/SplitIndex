@@ -15,7 +15,8 @@ namespace split_index
 {
 
 SplitIndex1::SplitIndex1(const unordered_set<string> &wordSet,
-    hash_functions::HashFunctions::HashType hashType)
+    hash_functions::HashFunctions::HashType hashType,
+    float maxLoadFactor)
     :SplitIndex(wordSet)
 {
     auto calcEntrySizeB = std::bind(&SplitIndex1::calcEntrySizeB, this, std::placeholders::_1);

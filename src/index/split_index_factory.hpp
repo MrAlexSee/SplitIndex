@@ -17,22 +17,24 @@ struct SplitIndexFactory
 
     inline static SplitIndex *initIndex(const std::unordered_set<std::string> &words, 
         hash_functions::HashFunctions::HashType hashType, 
-        IndexType indexType);
+        IndexType indexType,
+        float maxLoadFactor);
 };
 
 SplitIndex *SplitIndexFactory::initIndex(const std::unordered_set<std::string> &words, 
     hash_functions::HashFunctions::HashType hashType, 
-    IndexType indexType)
+    IndexType indexType,
+    float maxLoadFactor)
 {
     SplitIndex *index;
     
     switch (indexType)
     {
         case IndexType::K1:
-            index = new SplitIndex1(words, hashType);
+            index = new SplitIndex1(words, hashType, maxLoadFactor);
             break;
         // case IndexType::K1Comp:
-            // index = new SplitIndex1Comp(words, hashType);
+            // index = new SplitIndex1Comp(words, hashType, maxLoadFactor);
             // break;
         default:
             throw std::invalid_argument("bad index type: " + std::to_string(static_cast<int>(indexType)));

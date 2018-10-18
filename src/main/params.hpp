@@ -27,6 +27,9 @@ struct Params
     /** Number of iterations per pattern lookup. */
     int nIter;
 
+    /** Maximum load factor which causes rehashing when crossed. */
+    float maxLoadFactor;
+
     /** Minumum word length in the input dictionary (shorter words are ignored). */
     int minWordLength;
 

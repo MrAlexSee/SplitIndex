@@ -13,7 +13,7 @@ class SplitIndex1 : public SplitIndex
 {
 public:
     SplitIndex1(const std::unordered_set<std::string> &wordSet,
-        hash_functions::HashFunctions::HashType hashType);
+        hash_functions::HashFunctions::HashType hashType, float maxLoadFactor);
     ~SplitIndex1() override;
 
     void construct() override;
