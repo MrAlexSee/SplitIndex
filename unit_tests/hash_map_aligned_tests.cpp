@@ -240,16 +240,16 @@ TEST_CASE("is adding multiple entries to a bucket correct", "[hash_map_aligned]"
     string key = "key0";
     char *bucket = HashMapAlignedWhitebox::createBucket(hashMap, key.c_str(), key.size(), entryStr);
 
-    for (int iEntry = 1; iEntry < nEntries; ++iEntry)
+    for (int iEntry = 1; iEntry < 3; ++iEntry)
     {
         key = "key" + to_string(iEntry);
-        // HashMapAlignedWhitebox::addToBucket(hashMap, &bucket, key.c_str(), key.size(), entryStr);
+        HashMapAlignedWhitebox::addToBucket(hashMap, &bucket, key.c_str(), key.size(), entryStr);
 
-        bucket += iEntry * (1 + key.size() + sizeof(char **));
+        char *lastKeyStart = bucket + iEntry * (1 + key.size() + sizeof(char **));
         string expected = "\4" + key;
         
-        // REQUIRE(strncmp(bucket, expected.c_str(), expected.size()) == 0);
-        // REQUIRE(strncmp(*reinterpret_cast<char **>(bucket + expected.size()), entryStr, entry.size()) == 0);
+        REQUIRE(strncmp(lastKeyStart, expected.c_str(), expected.size()) == 0);
+        REQUIRE(strncmp(*reinterpret_cast<char **>(lastKeyStart + expected.size()), entryStr, entry.size()) == 0);
     }
 }
 
