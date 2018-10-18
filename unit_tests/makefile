@@ -9,13 +9,15 @@ INCLUDE    = -I$(BOOST_DIR)
 TEST_FILES = catch.hpp repeat.hpp
 
 EXE 	   = main_tests
-OBJ        = main_tests.o utils_distance_tests.o utils_file_io_tests.o utils_string_utils_tests.o
+OBJ        = main_tests.o hash_map_aligned_tests.o utils_distance_tests.o utils_file_io_tests.o utils_string_utils_tests.o
 
+HASH_FUNCTION_LIB  = hash_function.a
+HASH_MAP_LIB  = hash_map.a
 UTILS_LIB  = utils.a
 
 LIB_DIR    = "../build/libs"
 
-LIBS = $(UTILS_LIB)
+LIBS = $(HASH_MAP_LIB) $(HASH_FUNCTION_LIB) $(UTILS_LIB)
 LIBS := $(addprefix $(LIB_DIR)/,$(LIBS))
 
 all: $(EXE)
@@ -28,6 +30,9 @@ libs:
 
 main_tests.o: main_tests.cpp catch.hpp
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c main_tests.cpp
+
+hash_map_aligned_tests.o: hash_map_aligned_tests.cpp ../src/hash_map/hash_map.* ../src/hash_map/hash_map_aligned.*  $(TEST_FILES)
+	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c hash_map_aligned_tests.cpp
 
 utils_distance_tests.o: utils_distance_tests.cpp ../src/utils/distance.hpp $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c utils_distance_tests.cpp
