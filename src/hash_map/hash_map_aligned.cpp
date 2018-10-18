@@ -106,10 +106,17 @@ void HashMapAligned::insertEntry(const char *key, size_t keySize, char *entry)
 
 void HashMapAligned::rehash()
 {
+    assert(curLoadFactor > maxLoadFactor);
+
     char **oldBuckets = buckets;
     const int oldNBuckets = nBuckets;
 
-    nBuckets *= bucketRehashFactor;
+    while (curLoadFactor > maxLoadFactor)
+    {
+        nBuckets *= bucketRehashFactor;
+        curLoadFactor = static_cast<float>(nEntries) / nBuckets;
+    }
+
     initBuckets();
 
     for (int i = 0; i < oldNBuckets; ++i)
@@ -129,12 +136,6 @@ void HashMapAligned::rehash()
     }
     
     clearBuckets(oldBuckets, oldNBuckets);
-    curLoadFactor = static_cast<float>(nEntries) / nBuckets;
-
-    if (curLoadFactor >= maxLoadFactor)
-    {
-        rehash();
-    }
 }
 
 long HashMapAligned::calcBucketTotalSizeB(const char *bucket) const
@@ -166,7 +167,7 @@ long HashMapAligned::calcBucketSizeB(const char *bucket) const
     return (bucket - start + 1); // Includes the terminating 0.
 }
 
-char *HashMapAligned::copyEntry(const char *entry)
+char *HashMapAligned::copyEntry(const char *entry) const
 {
     // We do not use strdup here because there might be zeros inside the entry.
     const size_t entrySize = calcEntrySizeB(entry);

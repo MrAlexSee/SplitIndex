@@ -70,7 +70,7 @@ protected:
     char **buckets = nullptr;
 
     /** A factor used for increasing the number of available buckets when rehashing. */
-    static constexpr float bucketRehashFactor = 1.5;
+    static constexpr float bucketRehashFactor = 2.0f;
 };
 
 } // namespace hash_map

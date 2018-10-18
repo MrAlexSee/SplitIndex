@@ -19,6 +19,11 @@ struct HashMapAlignedWhitebox
 public:
     HashMapAlignedWhitebox() = delete;
 
+    inline static char *copyEntry(hash_map::HashMapAligned &hashMap, const char *entry)
+    {
+        return hashMap.copyEntry(entry);
+    }
+
     inline static char *createBucket(const hash_map::HashMapAligned &hashMap, const char *key, size_t keySize, char *entry)
     {
         return hashMap.createBucket(key, keySize, entry);

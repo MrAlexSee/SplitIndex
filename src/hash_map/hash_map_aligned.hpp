@@ -43,7 +43,7 @@ protected:
     long calcBucketSizeB(const char *bucket) const;
 
     /** Returns a deep copy of the entry. */
-    char *copyEntry(const char *entry);
+    char *copyEntry(const char *entry) const;
     
     /** Returns a new bucket which already contains a pair [key] -> [entry]. */
     char *createBucket(const char *key, size_t keySize, char *entry) const;
