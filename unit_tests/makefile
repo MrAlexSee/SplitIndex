@@ -33,7 +33,7 @@ libs:
 main_tests.o: main_tests.cpp catch.hpp
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c main_tests.cpp
 
-hash_map_aligned_tests.o: hash_map_aligned_tests.cpp ../src/hash_map/hash_map.* ../src/hash_map/hash_map_aligned.*  $(TEST_FILES)
+hash_map_aligned_tests.o: hash_map_aligned_tests.cpp ../src/hash_map/hash_map.* ../src/hash_map/hash_map_aligned.* hash_map_aligned_whitebox.hpp $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c hash_map_aligned_tests.cpp
 
 utils_distance_tests.o: utils_distance_tests.cpp ../src/utils/distance.hpp $(TEST_FILES)

@@ -176,7 +176,7 @@ char *HashMapAligned::copyEntry(const char *entry)
     return newEntry;
 }
 
-char *HashMapAligned::createBucket(const char *key, size_t keySize, char *entry)
+char *HashMapAligned::createBucket(const char *key, size_t keySize, char *entry) const
 {
     const size_t bucketSize = 1 + keySize + sizeof(char *) + 1;
     char *bucket = static_cast<char *>(malloc(bucketSize));

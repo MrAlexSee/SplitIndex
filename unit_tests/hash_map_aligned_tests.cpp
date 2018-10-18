@@ -3,6 +3,8 @@
 #include "catch.hpp"
 #include "repeat.hpp"
 
+#include "hash_map_aligned_whitebox.hpp"
+
 #include "../src/hash_map/hash_map_aligned.hpp"
 
 using namespace split_index::hash_map;
@@ -141,6 +143,36 @@ TEST_CASE("is inserting and retrieving multiple entries correct", "[hash_map_ali
             REQUIRE(strcmp(*fromHashMap, entry.c_str()) == 0);
         }
     });
+}
+
+TEST_CASE("is rehashing correct", "[hash_map_aligned]")
+{
+
+}
+
+TEST_CASE("is copying entry correct", "[hash_map_aligned]")
+{
+
+}
+
+TEST_CASE("is creating a new bucket correct", "[hash_map_aligned]")
+{
+    auto calcEntrySizeB = [](const char *) -> size_t { return 5; };
+    HashMapAligned hashMap(calcEntrySizeB, 1.0f, 0, hashType);
+
+    string entry = "entry";
+    char *entryStr = const_cast<char *>(entry.c_str());
+
+    char *bucket = HashMapAlignedWhitebox::createBucket(hashMap, "key1", 4, entryStr);
+    string expectedStart = "\4key1";
+
+    REQUIRE(strncmp(bucket, expectedStart.c_str(), expectedStart.size()) == 0);
+    REQUIRE(strncmp(*reinterpret_cast<char **>(bucket + expectedStart.size()), entryStr, entry.size()) == 0);
+}
+
+TEST_CASE("is adding to a bucket correct", "[hash_map_aligned]")
+{
+
 }
 
 } // namespace split_index

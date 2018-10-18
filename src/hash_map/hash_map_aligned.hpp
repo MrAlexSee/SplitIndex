@@ -6,6 +6,10 @@
 
 #include "hash_map.hpp"
 
+#ifndef HASH_MAP_ALIGNED_WHITEBOX
+#define HASH_MAP_ALIGNED_WHITEBOX
+#endif
+
 namespace split_index
 {
 
@@ -42,9 +46,11 @@ protected:
     char *copyEntry(const char *entry);
     
     /** Returns a new bucket which already contains a pair [key] -> [entry]. */
-    char *createBucket(const char *key, size_t keySize, char *entry);
+    char *createBucket(const char *key, size_t keySize, char *entry) const;
     /** Adds a pair [key] -> [entry] to [bucket]. Resizes the bucket as appropriate. */
     void addToBucket(char **bucket, const char *key, size_t keySize, char *entry);
+
+    HASH_MAP_ALIGNED_WHITEBOX
 };
 
 } // namespace hash_map
