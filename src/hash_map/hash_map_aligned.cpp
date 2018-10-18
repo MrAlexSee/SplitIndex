@@ -173,8 +173,6 @@ char *HashMapAligned::copyEntry(const char *entry)
     char *newEntry = static_cast<char *>(malloc(entrySize));
 
     memcpy(newEntry, entry, entrySize);
-
-    assert(newEntry[entrySize - 1] == 0);
     return newEntry;
 }
 

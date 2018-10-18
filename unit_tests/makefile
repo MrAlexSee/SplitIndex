@@ -26,6 +26,8 @@ $(EXE): $(OBJ) libs
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(OBJ) $(LIBS) -o $@
 
 libs:
+	$(MAKE) -C ../src/hash_function
+	$(MAKE) -C ../src/hash_map
 	$(MAKE) -C ../src/utils
 
 main_tests.o: main_tests.cpp catch.hpp
