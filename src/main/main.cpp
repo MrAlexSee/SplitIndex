@@ -80,6 +80,7 @@ int handleParams(int argc, const char **argv)
 {
     po::options_description options("Parameters");
     options.add_options()
+       ("dump,d", "dump input files and params info with elapsed time and throughput to output file (useful for testing)")
        ("hash-type", po::value<string>(&params.hashType)->default_value("xxhash"), "hash type used by the split index: city, farm, farsh, fnv1, fnv1a, murmur3, sdbm, spookyv2, superfast, xxhash")
        ("help,h", "display help message")
        ("index-type", po::value<string>(&params.indexType)->default_value("k1"), "split index type: k1 (k = 1), k1comp (k = 1 with compression)")
@@ -256,9 +257,10 @@ void dumpRunInfo(float elapsedUs, size_t nQueries)
 
     if (params.dumpToFile)
     {
-        // string outStr = (boost::format("%1% %2% %3% %4% %5% %6% %7%") % params.inDictFile % params.inPatternFile % dictSizeMB
-            // % params.distanceType % params.fingerprintType % params.lettersType % elapsedPerWordNs).str();
-        string outStr;
+        const float elapsedPerQueryUs = elapsedUs / params.nIter / nQueries;
+
+        string outStr = (boost::format("%1% %2% %3% %4% %5% %6%") % params.inDictFile % params.inPatternFile
+            % params.hashType % params.indexType % params.nIter % elapsedPerQueryUs).str();
 
         utils::FileIO::dumpToFile(outStr, params.outFile, true);
         cout << "Dumped info to: " << params.outFile << endl << endl;
