@@ -5,6 +5,10 @@
 
 #include "split_index.hpp"
 
+#ifndef SPLIT_INDEX_1_WHITEBOX
+#define SPLIT_INDEX_1_WHITEBOX
+#endif
+
 namespace split_index
 {
 
@@ -64,6 +68,8 @@ protected:
     size_t suffixSize = 0;
     /** Temporarily stores the word suffix. */
     char *suffixBuf = nullptr;
+
+    SPLIT_INDEX_1_WHITEBOX
 };
 
 } // namespace split_index

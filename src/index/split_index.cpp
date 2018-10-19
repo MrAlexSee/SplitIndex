@@ -1,6 +1,7 @@
 #include <boost/format.hpp>
 #include <cassert>
 #include <chrono>
+#include <cmath>
 #include <iostream>
 #include <stdexcept>
 
@@ -25,7 +26,7 @@ SplitIndex::~SplitIndex()
 
 void SplitIndex::construct()
 {
-    const int nBucketsHint = nBucketsHintFactor * wordSet.size();
+    const int nBucketsHint = std::max(1, static_cast<int>(nBucketsHintFactor * wordSet.size()));
     hashMap->clear(nBucketsHint);
 
     cout << "Set a hash map with hint #buckets = " << nBucketsHint << endl << endl;
