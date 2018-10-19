@@ -16,7 +16,6 @@ namespace hash_map
 
 struct HashMapAlignedWhitebox
 {
-public:
     HashMapAlignedWhitebox() = delete;
 
     inline static char *copyEntry(hash_map::HashMapAligned &hashMap, const char *entry)

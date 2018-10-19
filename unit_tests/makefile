@@ -9,15 +9,16 @@ INCLUDE    = -I$(BOOST_DIR)
 TEST_FILES = catch.hpp repeat.hpp
 
 EXE 	   = main_tests
-OBJ        = main_tests.o hash_map_aligned_tests.o utils_distance_tests.o utils_file_io_tests.o utils_string_utils_tests.o
+OBJ        = main_tests.o hash_map_aligned_tests.o split_index_1_tests.o utils_distance_tests.o utils_file_io_tests.o utils_string_utils_tests.o
 
 HASH_FUNCTION_LIB  = hash_function.a
-HASH_MAP_LIB  = hash_map.a
-UTILS_LIB  = utils.a
+HASH_MAP_LIB       = hash_map.a
+INDEX_DIR 		   = index.a
+UTILS_LIB  	       = utils.a
 
-LIB_DIR    = "../build/libs"
+LIB_DIR = "../build/libs"
 
-LIBS = $(HASH_MAP_LIB) $(HASH_FUNCTION_LIB) $(UTILS_LIB)
+LIBS = $(HASH_MAP_LIB) $(HASH_FUNCTION_LIB) $(INDEX_DIR) $(UTILS_LIB)
 LIBS := $(addprefix $(LIB_DIR)/,$(LIBS))
 
 all: $(EXE)
@@ -28,6 +29,7 @@ $(EXE): $(OBJ) libs
 libs:
 	$(MAKE) -C ../src/hash_function
 	$(MAKE) -C ../src/hash_map
+	$(MAKE) -C ../src/index
 	$(MAKE) -C ../src/utils
 
 main_tests.o: main_tests.cpp catch.hpp
@@ -35,6 +37,9 @@ main_tests.o: main_tests.cpp catch.hpp
 
 hash_map_aligned_tests.o: hash_map_aligned_tests.cpp ../src/hash_map/hash_map.* ../src/hash_map/hash_map_aligned.* hash_map_aligned_whitebox.hpp $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c hash_map_aligned_tests.cpp
+
+split_index_1_tests.o: split_index_1_tests.cpp ../src/index/split_index.* ../src/index/split_index_1.* split_index_1_whitebox.hpp $(TEST_FILES)
+	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c split_index_1_tests.cpp
 
 utils_distance_tests.o: utils_distance_tests.cpp ../src/utils/distance.hpp $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c utils_distance_tests.cpp
