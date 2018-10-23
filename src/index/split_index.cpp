@@ -16,7 +16,10 @@ namespace split_index
 SplitIndex::SplitIndex(const unordered_set<string> &wordSetArg)
     :wordSet(wordSetArg)
 {
-    assert(not wordSet.empty());
+    if (wordSet.empty())
+    {
+        throw runtime_error("word set cannot be empty");
+    }
 }
 
 SplitIndex::~SplitIndex()
