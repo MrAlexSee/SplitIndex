@@ -1,5 +1,4 @@
 #include <cstring>
-#include <iostream>
 
 #include "catch.hpp"
 #include "repeat.hpp"
@@ -35,9 +34,39 @@ TEST_CASE("is word size correctly initialized", "[split_index_1]")
     REQUIRE(index2.calcWordsSizeB() == 19);
 }
 
-TEST_CASE("is searching correct 1", "[split_index_1]")
+TEST_CASE("is searching words exact correct", "[split_index_1]")
 {
-    
+    vector<string> words { "ala", "ma", "kota", "jarek", "lubi", "psy" };
+    vector<string> patternsOut { "not", "in", "this", "dict" };
+
+    SplitIndex1 index1(unordered_set<string>(words.begin(), words.end()), hashType, 1.0f);
+    index1.construct();
+
+    string results;
+
+    REQUIRE(index1.search(words, results) == words.size());
+    REQUIRE(index1.search(patternsOut, results) == 0);
+}
+
+TEST_CASE("is searching words exact one-by-one correct", "[split_index_1]")
+{
+    vector<string> words { "ala", "ma", "kota", "jarek", "lubi", "psy" };
+    vector<string> patternsOut { "not", "in", "this", "dict" };
+
+    SplitIndex1 index1(unordered_set<string>(words.begin(), words.end()), hashType, 1.0f);
+    index1.construct();
+
+    string results;
+
+    for (const string &word : words)
+    {
+        REQUIRE(index1.search({ word }, results) == 1);
+    }
+
+    for (const string &patternOut : patternsOut)
+    {
+        REQUIRE(index1.search({ patternOut }, results) == 0);
+    }
 }
 
 TEST_CASE("is entry size calculation correct", "[split_index_1]")
