@@ -37,17 +37,41 @@ TEST_CASE("is word size correctly initialized", "[split_index_1]")
 
 TEST_CASE("is searching correct 1", "[split_index_1]")
 {
-
+    
 }
 
 TEST_CASE("is entry size calculation correct", "[split_index_1]")
 {
+    SplitIndex1 index({ "index" }, hashType, 1.0f);
 
+    char *entry = SplitIndex1Whitebox::createEntry(index, "ala", 3, true);
+    REQUIRE(SplitIndex1Whitebox::calcEntrySizeB(index, entry) == 7);
+
+    SplitIndex1Whitebox::addToEntry(index, &entry, "ada", 3, true);
+    REQUIRE(SplitIndex1Whitebox::calcEntrySizeB(index, entry) == 11);
+
+    SplitIndex1Whitebox::addToEntry(index, &entry, "index", 5, false);
+    REQUIRE(SplitIndex1Whitebox::calcEntrySizeB(index, entry) == 17);
+
+    SplitIndex1Whitebox::addToEntry(index, &entry, "pies", 4, false);
+    REQUIRE(SplitIndex1Whitebox::calcEntrySizeB(index, entry) == 22);
 }
 
 TEST_CASE("is entry word count calculation correct", "[split_index_1]")
 {
+    SplitIndex1 index({ "index" }, hashType, 1.0f);
 
+    char *entry = SplitIndex1Whitebox::createEntry(index, "ala", 3, true);
+    REQUIRE(SplitIndex1Whitebox::calcEntryNWords(index, entry) == 1);
+
+    SplitIndex1Whitebox::addToEntry(index, &entry, "ada", 3, true);
+    REQUIRE(SplitIndex1Whitebox::calcEntryNWords(index, entry) == 2);
+
+    SplitIndex1Whitebox::addToEntry(index, &entry, "index", 5, false);
+    REQUIRE(SplitIndex1Whitebox::calcEntryNWords(index, entry) == 3);
+
+    SplitIndex1Whitebox::addToEntry(index, &entry, "pies", 4, false);
+    REQUIRE(SplitIndex1Whitebox::calcEntryNWords(index, entry) == 4);
 }
 
 TEST_CASE("is storing prefix and suffix in buffers correct for even size", "[split_index_1]")
