@@ -15,6 +15,31 @@ namespace split_index
 struct SplitIndex1Whitebox
 {
     SplitIndex1Whitebox() = delete;
+
+    inline static size_t getPrefixSize(const SplitIndex1 &index)
+    {
+        return index.prefixSize;
+    }
+
+    inline static char *getPrefixBuf(const SplitIndex1 &index)
+    {
+        return index.prefixBuf;
+    }
+
+    inline static size_t getSuffixSize(const SplitIndex1 &index)
+    {
+        return index.suffixSize;
+    }
+
+    inline static char *getSuffixBuf(const SplitIndex1 &index)
+    {
+        return index.suffixBuf;
+    }
+
+    inline static void storePrefixSuffixInBuffers(SplitIndex1 &index, const std::string &word)
+    {
+        index.storePrefixSuffixInBuffers(word);
+    }
 };
 
 } // namespace split_index
