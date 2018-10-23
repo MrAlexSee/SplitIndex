@@ -52,7 +52,8 @@ protected:
     virtual int searchWithPrefixAsKey(std::string &results);
     virtual int searchWithSuffixAsKey(std::string &results);
 
-    /** Returns a pointer pointing [nWords] further within the [entry]. */
+    /** Returns a pointer pointing [nWords] further within the [entry],
+     * which must point towards a word size byte. */
     virtual char *advanceInEntryByWordCount(char *entry, uint16_t nWords) const;
     virtual const char *advanceInEntryByWordCount(const char *entry, uint16_t nWords) const;
 
