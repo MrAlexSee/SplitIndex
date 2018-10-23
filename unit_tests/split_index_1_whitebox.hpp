@@ -36,9 +36,34 @@ struct SplitIndex1Whitebox
         return index.suffixBuf;
     }
 
+    inline static size_t calcEntrySizeB(const SplitIndex1 &index, const char *entry)
+    {
+        return index.calcEntrySizeB(entry);
+    }
+
+    inline static int calcEntryNWords(const SplitIndex1 &index, const char *entry)
+    {
+        return index.calcEntryNWords(entry);
+    }
+
     inline static void storePrefixSuffixInBuffers(SplitIndex1 &index, const std::string &word)
     {
         index.storePrefixSuffixInBuffers(word);
+    }
+
+    inline static char *createEntry(const SplitIndex1 &index, const char *wordPart, size_t partSize, bool isPartSuffix)
+    {
+        return index.createEntry(wordPart, partSize, isPartSuffix);
+    }
+
+    inline static void addToEntry(const SplitIndex1 &index, char **entryPtr, const char *wordPart, size_t partSize, bool isPartSuffix)
+    {
+        return index.addToEntry(entryPtr, wordPart, partSize, isPartSuffix);
+    }
+
+    inline static char *advanceInEntryByWordCount(const SplitIndex1 &index, char *entry, uint16_t nWords)
+    {
+        return index.advanceInEntryByWordCount(entry, nWords);
     }
 };
 
