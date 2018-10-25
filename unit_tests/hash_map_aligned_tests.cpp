@@ -113,7 +113,7 @@ TEST_CASE("is inserting and retrieving a single entry correct", "[hash_map_align
 
         repeat(nReadRepeats, [&] {
             char **fromHashMap = hashMap.retrieve(key.c_str(), key.size());
-            REQUIRE(strncmp(*fromHashMap, entry.c_str(), entry.size()) == 0);
+            REQUIRE(memcmp(*fromHashMap, entry.c_str(), entry.size()) == 0);
 
             REQUIRE(hashMap.calcTotalSizeB() == sizeof(char **) + nBuckets * sizeof(char *) + totalBucketsSize);
         });
@@ -139,7 +139,7 @@ TEST_CASE("is inserting and retrieving multiple entries correct", "[hash_map_ali
             const string key = "key" + to_string(iEntry);
 
             char **fromHashMap = hashMap.retrieve(key.c_str(), key.size());
-            REQUIRE(strncmp(*fromHashMap, entry.c_str(), entry.size()) == 0);
+            REQUIRE(memcmp(*fromHashMap, entry.c_str(), entry.size()) == 0);
         }
     });
 }
@@ -202,8 +202,8 @@ TEST_CASE("is creating a new bucket correct", "[hash_map_aligned]")
     char *bucket = HashMapAlignedWhitebox::createBucket(hashMap, "key1", 4, entryStr);
     string expectedStart = "\4key1";
 
-    REQUIRE(strncmp(bucket, expectedStart.c_str(), expectedStart.size()) == 0);
-    REQUIRE(strncmp(*reinterpret_cast<char **>(bucket + expectedStart.size()), entryStr, entry.size()) == 0);
+    REQUIRE(memcmp(bucket, expectedStart.c_str(), expectedStart.size()) == 0);
+    REQUIRE(memcmp(*reinterpret_cast<char **>(bucket + expectedStart.size()), entryStr, entry.size()) == 0);
 }
 
 TEST_CASE("is adding a single entry to a bucket correct", "[hash_map_aligned]")
@@ -220,13 +220,13 @@ TEST_CASE("is adding a single entry to a bucket correct", "[hash_map_aligned]")
     string expected1 = "\4key1";
     string expected2 = "\7keykey2";
 
-    REQUIRE(strncmp(bucket, expected1.c_str(), expected1.size()) == 0);
-    REQUIRE(strncmp(*reinterpret_cast<char **>(bucket + expected1.size()), entryStr, entry.size()) == 0);
+    REQUIRE(memcmp(bucket, expected1.c_str(), expected1.size()) == 0);
+    REQUIRE(memcmp(*reinterpret_cast<char **>(bucket + expected1.size()), entryStr, entry.size()) == 0);
 
     bucket += 1 + 4 + sizeof(char **);
 
-    REQUIRE(strncmp(bucket, expected2.c_str(), expected2.size()) == 0);
-    REQUIRE(strncmp(*reinterpret_cast<char **>(bucket + expected2.size()), entryStr, entry.size()) == 0);
+    REQUIRE(memcmp(bucket, expected2.c_str(), expected2.size()) == 0);
+    REQUIRE(memcmp(*reinterpret_cast<char **>(bucket + expected2.size()), entryStr, entry.size()) == 0);
 }
 
 TEST_CASE("is adding multiple entries to a bucket correct", "[hash_map_aligned]")
@@ -248,8 +248,8 @@ TEST_CASE("is adding multiple entries to a bucket correct", "[hash_map_aligned]"
         char *lastKeyStart = bucket + iEntry * (1 + key.size() + sizeof(char **));
         string expected = "\4" + key;
         
-        REQUIRE(strncmp(lastKeyStart, expected.c_str(), expected.size()) == 0);
-        REQUIRE(strncmp(*reinterpret_cast<char **>(lastKeyStart + expected.size()), entryStr, entry.size()) == 0);
+        REQUIRE(memcmp(lastKeyStart, expected.c_str(), expected.size()) == 0);
+        REQUIRE(memcmp(*reinterpret_cast<char **>(lastKeyStart + expected.size()), entryStr, entry.size()) == 0);
     }
 }
 

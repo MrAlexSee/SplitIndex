@@ -61,7 +61,7 @@ char **HashMapAligned::retrieve(const char *key, size_t keySize) const
 
         if (keySize == keyInBucketSize)
         {
-            if (strncmp(bucket + 1, key, keySize) == 0)
+            if (memcmp(bucket + 1, key, keySize) == 0)
             {
                 return reinterpret_cast<char **>(bucket + 1 + keyInBucketSize);
             }

@@ -71,7 +71,6 @@ void SplitIndex1::initEntry(const string &word)
     }
     else
     {
-        // cout << "add prefix" << endl;
         addToEntry(entryPtr, suffixBuf, suffixSize, true);
     }
 
@@ -88,7 +87,6 @@ void SplitIndex1::initEntry(const string &word)
     }
     else
     {
-        // cout << "add suffix" << endl;
         addToEntry(entryPtr, prefixBuf, prefixSize, false);
     }
 }
@@ -102,8 +100,10 @@ int SplitIndex1::processQuery(const string &query, string &results)
 
     int nMatches = 0;
 
-    nMatches += searchWithPrefixAsKey(results);
-    nMatches += searchWithSuffixAsKey(results);
+    set<string> matched;
+
+    nMatches += searchWithPrefixAsKey(results, matched);
+    nMatches += searchWithSuffixAsKey(results, matched);
 
     // If some matches occurred, the results string shall also contain a query.
     if (nMatches > 0)
@@ -246,7 +246,7 @@ void SplitIndex1::appendToEntry(char *entry, size_t oldEntrySize,
     entry[oldEntrySize + partSize] = 0;
 }
 
-int SplitIndex1::searchWithPrefixAsKey(string &results)
+int SplitIndex1::searchWithPrefixAsKey(string &results, set<string> &matchedWords)
 {
     char **entryPtr = hashMap->retrieve(prefixBuf, prefixSize);
 
@@ -284,8 +284,15 @@ int SplitIndex1::searchWithPrefixAsKey(string &results)
             {
                 if (utils::Distance::isHammingAtMostK<1>(entry + 1, suffixBuf, suffixSize))
                 {
-                    addPartialResult(entry + 1, suffixSize, results, 0);
-                    nMatches += 1;
+                    string matchedWord = string(entry + 1, cSuffixSize) + string(suffixBuf, suffixSize);
+
+                    if (matchedWords.find(move(matchedWord)) == matchedWords.end())
+                    {
+                        addPartialResult(entry + 1, suffixSize, results, 0);
+                        nMatches += 1;
+
+                        matchedWords.insert(matchedWord);
+                    }
                 }
             }
 
@@ -301,8 +308,15 @@ int SplitIndex1::searchWithPrefixAsKey(string &results)
             {
                 if (utils::Distance::isHammingAtMostK<1>(entry + 1, suffixBuf, suffixSize))
                 {
-                    addPartialResult(entry + 1, suffixSize, results, 0);
-                    nMatches += 1;
+                    string matchedWord = string(prefixBuf, prefixSize) + string(entry + 1, cSuffixSize);
+
+                    if (matchedWords.find(move(matchedWord)) == matchedWords.end())
+                    {
+                        addPartialResult(entry + 1, suffixSize, results, 0);
+                        nMatches += 1;
+
+                        matchedWords.insert(matchedWord);
+                    }
                 }
             }
 
@@ -313,7 +327,7 @@ int SplitIndex1::searchWithPrefixAsKey(string &results)
     return nMatches;
 }
 
-int SplitIndex1::searchWithSuffixAsKey(string &results)
+int SplitIndex1::searchWithSuffixAsKey(string &results, set<string> &matchedWords)
 {
     char **entryPtr = hashMap->retrieve(suffixBuf, suffixSize);
 
@@ -345,8 +359,15 @@ int SplitIndex1::searchWithSuffixAsKey(string &results)
         {
             if (utils::Distance::isHammingAtMostK<1>(entry + 1, prefixBuf, prefixSize))
             {
-                addPartialResult(entry + 1, prefixSize, results, 1);
-                nMatches += 1;
+                string matchedWord = string(entry + 1, cPrefixSize) + string(suffixBuf, suffixSize);
+
+                if (matchedWords.find(move(matchedWord)) == matchedWords.end())
+                {
+                    addPartialResult(entry + 1, prefixSize, results, 1);
+                    nMatches += 1;
+                
+                    matchedWords.insert(matchedWord);
+                }
             }
         }
 

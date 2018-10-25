@@ -113,8 +113,8 @@ TEST_CASE("is storing prefix and suffix in buffers correct for even size", "[spl
     REQUIRE(SplitIndex1Whitebox::getPrefixSize(index) == 2);
     REQUIRE(SplitIndex1Whitebox::getSuffixSize(index) == 2);
 
-    REQUIRE(strncmp(SplitIndex1Whitebox::getPrefixBuf(index), "pi", 2) == 0);
-    REQUIRE(strncmp(SplitIndex1Whitebox::getSuffixBuf(index), "es", 2) == 0);
+    REQUIRE(memcmp(SplitIndex1Whitebox::getPrefixBuf(index), "pi", 2) == 0);
+    REQUIRE(memcmp(SplitIndex1Whitebox::getSuffixBuf(index), "es", 2) == 0);
 }
 
 TEST_CASE("is storing prefix and suffix in buffers correct for odd size", "[split_index_1]")
@@ -127,8 +127,8 @@ TEST_CASE("is storing prefix and suffix in buffers correct for odd size", "[spli
     REQUIRE(SplitIndex1Whitebox::getPrefixSize(index) == 2);
     REQUIRE(SplitIndex1Whitebox::getSuffixSize(index) == 3);
 
-    REQUIRE(strncmp(SplitIndex1Whitebox::getPrefixBuf(index), "pi", 2) == 0);
-    REQUIRE(strncmp(SplitIndex1Whitebox::getSuffixBuf(index), "esa", 3) == 0);
+    REQUIRE(memcmp(SplitIndex1Whitebox::getPrefixBuf(index), "pi", 2) == 0);
+    REQUIRE(memcmp(SplitIndex1Whitebox::getSuffixBuf(index), "esa", 3) == 0);
 }
 
 TEST_CASE("is creating suffix entry correct", "[split_index_1]")
@@ -136,7 +136,7 @@ TEST_CASE("is creating suffix entry correct", "[split_index_1]")
     SplitIndex1 index({ "index" }, hashType, 1.0f);
 
     char *entry = SplitIndex1Whitebox::createEntry(index, "ala", 3, true);
-    REQUIRE(strncmp(entry, "\0\0\3ala\0", 7) == 0);
+    REQUIRE(memcmp(entry, "\0\0\3ala\0", 7) == 0);
 }
 
 TEST_CASE("is creating prefix entry correct", "[split_index_1]")
@@ -146,7 +146,7 @@ TEST_CASE("is creating prefix entry correct", "[split_index_1]")
     char *entry = SplitIndex1Whitebox::createEntry(index, "ala", 3, false);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 1u);
-    REQUIRE(strncmp(entry + 2, "\3ala\0", 5) == 0);
+    REQUIRE(memcmp(entry + 2, "\3ala\0", 5) == 0);
 }
 
 TEST_CASE("is adding to entry only suffixes correct", "[split_index_1]")
@@ -157,7 +157,7 @@ TEST_CASE("is adding to entry only suffixes correct", "[split_index_1]")
     SplitIndex1Whitebox::addToEntry(index, &entry, "index", 5, true);
     SplitIndex1Whitebox::addToEntry(index, &entry, "ba", 2, true);
 
-    REQUIRE(strncmp(entry, "\0\0\3ala\5index\2ba\0", 16) == 0);
+    REQUIRE(memcmp(entry, "\0\0\3ala\5index\2ba\0", 16) == 0);
 }
 
 TEST_CASE("is adding to entry only prefixes correct", "[split_index_1]")
@@ -169,7 +169,7 @@ TEST_CASE("is adding to entry only prefixes correct", "[split_index_1]")
     SplitIndex1Whitebox::addToEntry(index, &entry, "ba", 2, false);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 1u);
-    REQUIRE(strncmp(entry + 2, "\3ala\5index\2ba\0", 14) == 0);
+    REQUIRE(memcmp(entry + 2, "\3ala\5index\2ba\0", 14) == 0);
 }
 
 TEST_CASE("is adding to entry prefixes and suffixes correct 1", "[split_index_1]")
@@ -182,7 +182,7 @@ TEST_CASE("is adding to entry prefixes and suffixes correct 1", "[split_index_1]
     SplitIndex1Whitebox::addToEntry(index, &entry, "pies", 4, true);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 3u);
-    REQUIRE(strncmp(entry + 2, "\5index\4pies\3ala\0", 16) == 0);
+    REQUIRE(memcmp(entry + 2, "\5index\4pies\3ala\0", 16) == 0);
 }
 
 TEST_CASE("is adding to entry prefixes and suffixes correct 2", "[split_index_1]")
@@ -195,7 +195,7 @@ TEST_CASE("is adding to entry prefixes and suffixes correct 2", "[split_index_1]
     SplitIndex1Whitebox::addToEntry(index, &entry, "pies", 4, false);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 2u);
-    REQUIRE(strncmp(entry + 2, "\3ala\5index\4pies\0", 16) == 0);
+    REQUIRE(memcmp(entry + 2, "\3ala\5index\4pies\0", 16) == 0);
 }
 
 TEST_CASE("is advancing by word count in entry with prefixes correct", "[split_index_1]")

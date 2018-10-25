@@ -2,6 +2,7 @@
 #define SPLIT_INDEX_1_HPP
 
 #include <cmath>
+#include <set>
 
 #include "split_index.hpp"
 
@@ -49,8 +50,8 @@ protected:
     virtual void appendToEntry(char *entry, size_t oldEntrySize,
         const char *wordPart, size_t partSize) const;
 
-    virtual int searchWithPrefixAsKey(std::string &results);
-    virtual int searchWithSuffixAsKey(std::string &results);
+    virtual int searchWithPrefixAsKey(std::string &results, std::set<std::string> &matchedWords);
+    virtual int searchWithSuffixAsKey(std::string &results, std::set<std::string> &matchedWords);
 
     /** Returns a pointer pointing [nWords] further within the [entry],
      * which must point towards a word size byte. */
