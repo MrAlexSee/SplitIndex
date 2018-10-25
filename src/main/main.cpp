@@ -206,20 +206,19 @@ void runSearch(const vector<string> &dict, const vector<string> &queries)
     cout << endl << "Index constructed:" << endl;
     cout << index->toString() << endl;
 
-    string results;
-    int nMatches;
+    set<string> results;
 
     if (params.dumpAllMatches)
     {
-        nMatches = index->searchAndDumpAllMatches(queries, results);
+        results = index->searchAndDumpMatchCounts(queries);
     }
     else
     {
-        nMatches = index->search(queries, results, params.nIter);
+        results = index->search(queries, params.nIter);
         dumpRunInfo(index->getElapsedUs(), queries.size());
     }
 
-    cout << "#matches = " << nMatches << endl;
+    cout << "#matches = " << results.size() << endl;
     delete index;
 }
 

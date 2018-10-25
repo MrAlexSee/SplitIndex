@@ -17,6 +17,7 @@ namespace
 {
 
 hash_functions::HashFunctions::HashType hashType = hash_functions::HashFunctions::HashType::XxHash;
+constexpr int maxNIter = 10;
 
 }
 
@@ -34,6 +35,16 @@ TEST_CASE("is word size correctly initialized", "[split_index_1]")
     REQUIRE(index2.calcWordsSizeB() == 19);
 }
 
+TEST_CASE("is searching empty patterns correct", "[fingerprints]")
+{
+    vector<string> words { "ala", "ma", "kota", "jarek", "lubi", "psy" };
+    SplitIndex1 index1(unordered_set<string>(words.begin(), words.end()), hashType, 1.0f);
+
+    index1.construct();
+
+    // TODO
+}
+
 TEST_CASE("is searching words exact correct", "[split_index_1]")
 {
     vector<string> words { "ala", "ma", "kota", "jarek", "lubi", "psy" };
@@ -42,10 +53,11 @@ TEST_CASE("is searching words exact correct", "[split_index_1]")
     SplitIndex1 index1(unordered_set<string>(words.begin(), words.end()), hashType, 1.0f);
     index1.construct();
 
-    string results;
-
-    REQUIRE(index1.search(words, results) == words.size());
-    REQUIRE(index1.search(patternsOut, results) == 0);
+    for (int nIter = 1; nIter <= maxNIter; ++nIter)
+    {
+        REQUIRE(index1.search(words, nIter).size() == words.size());
+        REQUIRE(index1.search(patternsOut, nIter).empty());
+    }
 }
 
 TEST_CASE("is searching words exact one-by-one correct", "[split_index_1]")
@@ -58,14 +70,17 @@ TEST_CASE("is searching words exact one-by-one correct", "[split_index_1]")
 
     string results;
 
-    for (const string &word : words)
+    for (int nIter = 1; nIter <= maxNIter; ++nIter)
     {
-        REQUIRE(index1.search({ word }, results) == 1);
-    }
+        for (const string &word : words)
+        {
+            REQUIRE(index1.search({ word }, nIter).size() == 1);
+        }
 
-    for (const string &patternOut : patternsOut)
-    {
-        REQUIRE(index1.search({ patternOut }, results) == 0);
+        for (const string &patternOut : patternsOut)
+        {
+            REQUIRE(index1.search({ patternOut }, nIter).empty());
+        }
     }
 }
 

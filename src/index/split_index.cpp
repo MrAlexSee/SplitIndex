@@ -61,29 +61,18 @@ string SplitIndex::toString() const
     return ret;
 }
 
-int SplitIndex::search(const vector<string> &queries, string &results, int nIter)
+set<string> SplitIndex::search(const vector<string> &queries, int nIter)
 {
     assert(constructed);
-    size_t totalQueriesSize = 0;
-
-    for (const string &query : queries)
-    {
-        totalQueriesSize += query.size();
-    }
-
-    results.reserve(totalQueriesSize);
+    set<string> ret;
 
     clock_t start = std::clock();
-    int nMatches;
 
     for (int i = 0; i < nIter; ++i)
     {
-        nMatches = 0;
-        results.clear();
-
         for (const string &query : queries)
         {
-            nMatches += processQuery(query, results);
+            processQuery(query, ret);
         }
     }
 
@@ -92,32 +81,24 @@ int SplitIndex::search(const vector<string> &queries, string &results, int nIter
     const float elapsedS = (end - start) / static_cast<float>(CLOCKS_PER_SEC);
     elapsedUs = elapsedS * 1000000.0f;
 
-    return nMatches;
+    return ret;
 }
 
-int SplitIndex::searchAndDumpAllMatches(const vector<string> &queries, string &results)
+set<string> SplitIndex::searchAndDumpMatchCounts(const vector<string> &queries)
 {
     assert(constructed);
-    size_t totalQueriesSize = 0;
+    set<string> ret;
 
     for (const string &query : queries)
     {
-        totalQueriesSize += query.size();
+        set<string> curResults;
+        processQuery(query, curResults);
+
+        cout << query << " -> " << curResults.size() << endl;
+        ret.insert(curResults.begin(), curResults.end());
     }
 
-    results.reserve(totalQueriesSize);
-
-    int nMatches = 0;
-
-    for (const string &query : queries)
-    {
-        int curNMatches = processQuery(query, results);
-        cout << query << " -> " << curNMatches << endl;
-
-        nMatches += curNMatches;
-    }
-
-    return nMatches;
+    return ret;
 }
 
 long SplitIndex::calcWordsSizeB() const
@@ -130,16 +111,6 @@ long SplitIndex::calcWordsSizeB() const
     }
 
     return total;
-}
-
-void SplitIndex::addPartialResult(const char *str, size_t size,
-    string &results,
-    int iPart,
-    char separator)
-{
-    results.append(str, size);
-    results.append(to_string(iPart));
-    results.append(1, separator);
 }
 
 } // namespace split_index

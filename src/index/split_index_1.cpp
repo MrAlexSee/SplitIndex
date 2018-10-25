@@ -91,28 +91,15 @@ void SplitIndex1::initEntry(const string &word)
     }
 }
 
-int SplitIndex1::processQuery(const string &query, string &results)
+void SplitIndex1::processQuery(const string &query, set<string> &results)
 {
     assert(constructed);
     assert(query.size() > 0 and query.size() <= maxWordSize);
 
     storePrefixSuffixInBuffers(query);
 
-    int nMatches = 0;
-
-    set<string> matched;
-
-    nMatches += searchWithPrefixAsKey(results, matched);
-    nMatches += searchWithSuffixAsKey(results, matched);
-
-    // If some matches occurred, the results string shall also contain a query.
-    if (nMatches > 0)
-    {
-        results.append(query);
-        results.append(1, '\n');
-    }
-
-    return nMatches;
+    searchWithPrefixAsKey(results);
+    searchWithSuffixAsKey(results);
 }
 
 size_t SplitIndex1::calcEntrySizeB(const char *entry) const
@@ -246,13 +233,13 @@ void SplitIndex1::appendToEntry(char *entry, size_t oldEntrySize,
     entry[oldEntrySize + partSize] = 0;
 }
 
-int SplitIndex1::searchWithPrefixAsKey(string &results, set<string> &matchedWords)
+void SplitIndex1::searchWithPrefixAsKey(set<string> &results)
 {
     char **entryPtr = hashMap->retrieve(prefixBuf, prefixSize);
 
     if (entryPtr == nullptr)
     {
-        return 0;
+        return;
     }
 
     const char *entry = *entryPtr;
@@ -263,13 +250,11 @@ int SplitIndex1::searchWithPrefixAsKey(string &results, set<string> &matchedWord
     // is likely to provide some speedup.
     if (*prefIndex == 1)
     {
-        return 0;
+        return;
     }
 
-    const char cSuffixSize = static_cast<char>(suffixSize);
-    int nMatches = 0;
-    
     entry += 2;
+    const char cSuffixSize = static_cast<char>(suffixSize);
 
     if (*prefIndex != 0)
     {
@@ -284,14 +269,11 @@ int SplitIndex1::searchWithPrefixAsKey(string &results, set<string> &matchedWord
             {
                 if (utils::Distance::isHammingAtMostK<1>(entry + 1, suffixBuf, suffixSize))
                 {
-                    string matchedWord = string(entry + 1, cSuffixSize) + string(suffixBuf, suffixSize);
+                    const string result = string(prefixBuf, prefixSize) + string(entry + 1, suffixSize);
 
-                    if (matchedWords.find(move(matchedWord)) == matchedWords.end())
+                    if (results.find(result) == results.end())
                     {
-                        addPartialResult(entry + 1, suffixSize, results, 0);
-                        nMatches += 1;
-
-                        matchedWords.insert(matchedWord);
+                        results.insert(move(result));
                     }
                 }
             }
@@ -308,36 +290,30 @@ int SplitIndex1::searchWithPrefixAsKey(string &results, set<string> &matchedWord
             {
                 if (utils::Distance::isHammingAtMostK<1>(entry + 1, suffixBuf, suffixSize))
                 {
-                    string matchedWord = string(prefixBuf, prefixSize) + string(entry + 1, cSuffixSize);
+                    const string result = string(prefixBuf, prefixSize) + string(entry + 1, suffixSize);
 
-                    if (matchedWords.find(move(matchedWord)) == matchedWords.end())
+                    if (results.find(result) == results.end())
                     {
-                        addPartialResult(entry + 1, suffixSize, results, 0);
-                        nMatches += 1;
-
-                        matchedWords.insert(matchedWord);
+                        results.insert(move(result));
                     }
                 }
             }
 
-            entry += 1 + entry[0];
+            entry += 1 + *entry;
         }
     }
-
-    return nMatches;
 }
 
-int SplitIndex1::searchWithSuffixAsKey(string &results, set<string> &matchedWords)
+void SplitIndex1::searchWithSuffixAsKey(set<string> &results)
 {
     char **entryPtr = hashMap->retrieve(suffixBuf, suffixSize);
 
     if (entryPtr == nullptr)
     {
-        return 0;
+        return;
     }
 
     const char *entry = *entryPtr;
-
     // We search with the query's suffix as key, so we shall try to match prefixes.
     const uint16_t *prefIndex = reinterpret_cast<const uint16_t *>(entry);
 
@@ -345,13 +321,11 @@ int SplitIndex1::searchWithSuffixAsKey(string &results, set<string> &matchedWord
     // is likely to provide some speedup.
     if (*prefIndex == 0)
     {
-        return 0;
+        return;
     }
 
     entry = advanceInEntryByWordCount(entry + 2, *prefIndex - 1);
-
     const char cPrefixSize = static_cast<char>(prefixSize);
-    int nMatches = 0;
 
     while (*entry != 0)
     {
@@ -359,22 +333,17 @@ int SplitIndex1::searchWithSuffixAsKey(string &results, set<string> &matchedWord
         {
             if (utils::Distance::isHammingAtMostK<1>(entry + 1, prefixBuf, prefixSize))
             {
-                string matchedWord = string(entry + 1, cPrefixSize) + string(suffixBuf, suffixSize);
+                const string result = string(entry + 1, cPrefixSize) + string(suffixBuf, suffixSize);
 
-                if (matchedWords.find(move(matchedWord)) == matchedWords.end())
+                if (results.find(result) == results.end())
                 {
-                    addPartialResult(entry + 1, prefixSize, results, 1);
-                    nMatches += 1;
-                
-                    matchedWords.insert(matchedWord);
+                    results.insert(move(result));
                 }
             }
         }
 
         entry += 1 + *entry;
     }
-
-    return nMatches;
 }
 
 char *SplitIndex1::advanceInEntryByWordCount(char *entry, uint16_t nWords) const
