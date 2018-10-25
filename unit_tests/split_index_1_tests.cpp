@@ -35,14 +35,17 @@ TEST_CASE("is word size correctly initialized", "[split_index_1]")
     REQUIRE(index2.calcWordsSizeB() == 19);
 }
 
-TEST_CASE("is searching empty patterns correct", "[fingerprints]")
+TEST_CASE("is searching empty patterns correct", "[split_index_1]")
 {
     vector<string> words { "ala", "ma", "kota", "jarek", "lubi", "psy" };
-    SplitIndex1 index1(unordered_set<string>(words.begin(), words.end()), hashType, 1.0f);
 
+    SplitIndex1 index1(unordered_set<string>(words.begin(), words.end()), hashType, 1.0f);
     index1.construct();
 
-    // TODO
+    for (int nIter = 1; nIter <= maxNIter; ++nIter)
+    {
+        REQUIRE(index1.search({ }, nIter).empty());
+    }
 }
 
 TEST_CASE("is searching words exact correct", "[split_index_1]")
@@ -50,12 +53,12 @@ TEST_CASE("is searching words exact correct", "[split_index_1]")
     vector<string> words { "ala", "ma", "kota", "jarek", "lubi", "psy" };
     vector<string> patternsOut { "not", "in", "this", "dict" };
 
-    SplitIndex1 index1(unordered_set<string>(words.begin(), words.end()), hashType, 1.0f);
+    SplitIndex1 index1({ words.begin(), words.end() }, hashType, 1.0f);
     index1.construct();
 
     for (int nIter = 1; nIter <= maxNIter; ++nIter)
     {
-        REQUIRE(index1.search(words, nIter).size() == words.size());
+        REQUIRE(index1.search(words, nIter) == set<string>(words.begin(), words.end()));
         REQUIRE(index1.search(patternsOut, nIter).empty());
     }
 }
@@ -65,22 +68,45 @@ TEST_CASE("is searching words exact one-by-one correct", "[split_index_1]")
     vector<string> words { "ala", "ma", "kota", "jarek", "lubi", "psy" };
     vector<string> patternsOut { "not", "in", "this", "dict" };
 
-    SplitIndex1 index1(unordered_set<string>(words.begin(), words.end()), hashType, 1.0f);
+    SplitIndex1 index1({ words.begin(), words.end() }, hashType, 1.0f);
     index1.construct();
-
-    string results;
 
     for (int nIter = 1; nIter <= maxNIter; ++nIter)
     {
         for (const string &word : words)
         {
-            REQUIRE(index1.search({ word }, nIter).size() == 1);
+            REQUIRE(index1.search({ word }, nIter) == set<string>{ word });
         }
 
         for (const string &patternOut : patternsOut)
         {
             REQUIRE(index1.search({ patternOut }, nIter).empty());
         }
+    }
+}
+
+TEST_CASE("is searching words for k = 1 for Hamming correct", "[split_index_1]")
+{
+    vector<string> words { "ala", "ma", "kota", "jarek", "da", "psa" };
+    vector<string> patternsIn;
+
+    SplitIndex1 index1({ words.begin(), words.end() }, hashType, 1.0f);
+    index1.construct();
+
+    for (const string &word : words)
+    {
+        for (size_t i = 0; i < word.size(); ++i)
+        {
+            string curWord = word;
+            curWord[i] = 'N';
+
+            patternsIn.push_back(move(curWord));
+        }
+    }
+
+    for (int nIter = 1; nIter <= maxNIter; ++nIter)
+    {
+        REQUIRE(index1.search(patternsIn, nIter) == set<string>(words.begin(), words.end()));
     }
 }
 
