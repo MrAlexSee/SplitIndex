@@ -35,7 +35,7 @@ Unit tests are located in the `unit_tests` folder and they can be run by issuing
 
 Short name | Long name                | Parameter description
 ---------- | ------------------------ | ---------------------
-`-d`       | `--dump`                 | dump input files and params info with elapsed time and throughput to output file (useful for testing)
+`-d`       | `--dump`                 | dump input files and params info with elapsed time to output file (useful for testing)
 &nbsp;     | `--dump-all-matches`     | dump the number of matches for each query to standard output, note: this invalidates time measurement
 &nbsp;     | `--hash-type`            | hash type used by the split index: city, farm, farsh, fnv1, fnv1a, murmur3, sdbm, spookyv2, superfast, xxhash (default = xxhash)
 `-h`       | `--help`                 | display help message
