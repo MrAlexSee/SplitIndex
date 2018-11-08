@@ -40,8 +40,7 @@ SplitIndex1::~SplitIndex1()
 
 string SplitIndex1::toString() const
 {
-    string ret = "k = 1\n";
-    return ret + SplitIndex::toString();
+    return SplitIndex::toString() + "\nk = 1";
 }
 
 void SplitIndex1::construct()
