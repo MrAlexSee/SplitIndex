@@ -6,7 +6,9 @@
 #include <unordered_set>
 
 #include "../hash_function/hash_functions.hpp"
+
 #include "split_index_1.hpp"
+#include "split_index_1_comp.hpp"
 
 namespace split_index
 {
@@ -33,9 +35,9 @@ SplitIndex *SplitIndexFactory::initIndex(const std::unordered_set<std::string> &
         case IndexType::K1:
             index = new SplitIndex1(words, hashType, maxLoadFactor);
             break;
-        // case IndexType::K1Comp:
-            // index = new SplitIndex1Comp(words, hashType, maxLoadFactor);
-            // break;
+        case IndexType::K1Comp:
+            index = new SplitIndex1Comp(words, hashType, maxLoadFactor);
+            break;
         default:
             throw std::invalid_argument("bad index type: " + std::to_string(static_cast<int>(indexType)));
     }
