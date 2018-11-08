@@ -18,6 +18,12 @@ bool FileIO::isFileReadable(const string &filePath)
     return inStream.good();
 }
 
+bool FileIO::isFileEmpty(const string &filePath)
+{
+    ifstream inStream(filePath);
+    return inStream.peek() == std::ifstream::traits_type::eof();
+}
+
 vector<string> FileIO::readWords(const string &filePath, const string &separator)
 {
     ifstream inStream(filePath);

@@ -271,8 +271,14 @@ void dumpRunInfo(float elapsedUs, size_t nQueries)
     if (params.dumpToFile)
     {
         const float elapsedPerQueryUs = elapsedUs / params.nIter / nQueries;
+        string outStr = "";
 
-        string outStr = (boost::format("%1% %2% %3% %4% %5% %6% %7%") % params.inDictFile % params.inPatternFile
+        if (utils::FileIO::isFileEmpty(params.outFile))
+        {
+            outStr += params.outputHeader;
+        }
+
+        outStr += (boost::format("%1% %2% %3% %4% %5% %6% %7%") % params.inDictFile % params.inPatternFile
             % params.hashType % params.indexType % params.maxLoadFactor % params.nIter % elapsedPerQueryUs).str();
 
         utils::FileIO::dumpToFile(outStr, params.outFile, true);

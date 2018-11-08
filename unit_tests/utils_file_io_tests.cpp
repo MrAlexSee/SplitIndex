@@ -19,6 +19,19 @@ inline void removeFile(const string &filePath)
     remove(filePath.c_str());
 }
 
+TEST_CASE("is querying empty file correct", "[utils_file_io]")
+{
+    REQUIRE(utils::FileIO::isFileEmpty(tmpFileName));
+
+    utils::FileIO::dumpToFile("", tmpFileName, false);
+    REQUIRE(utils::FileIO::isFileEmpty(tmpFileName));
+
+    utils::FileIO::dumpToFile("abc", tmpFileName, false);
+    REQUIRE(utils::FileIO::isFileEmpty(tmpFileName) == false);
+
+    removeFile(tmpFileName);
+}
+
 TEST_CASE("is reading empty words correct", "[utils_file_io]")
 {
     utils::FileIO::dumpToFile("", tmpFileName, false);
