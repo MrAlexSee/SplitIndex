@@ -65,8 +65,7 @@ void SplitIndex1::initEntry(const string &word)
         char *newEntry = createEntry(suffixBuf, suffixSize, true);
         hashMap->insert(prefixBuf, prefixSize, newEntry);
 
-        // The entry is copied inside the map, so it can be freed here.
-        free(newEntry);
+        free(newEntry); // The entry is copied inside the map, so it can be freed here.
     }
     else
     {
@@ -81,8 +80,7 @@ void SplitIndex1::initEntry(const string &word)
         char *newEntry = createEntry(prefixBuf, prefixSize, false);
         hashMap->insert(suffixBuf, suffixSize, newEntry);
 
-        // The entry is copied inside the map, so it can be freed here.
-        free(newEntry);
+        free(newEntry); // The entry is copied inside the map, so it can be freed here.
     }
     else
     {

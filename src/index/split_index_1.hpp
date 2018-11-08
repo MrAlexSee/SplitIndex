@@ -33,7 +33,7 @@ protected:
     /** Returns the number of words (word parts) stored in [entry]. */
     virtual int calcEntryNWords(const char *entry) const;
 
-    /** Splits [word] into two and stores the parts (prefix and suffix) in temporary buffers. */
+    /** Splits [word] into two and stores the parts (prefix and suffix) in prefixBuf and suffixBuf, resp. */
     void storePrefixSuffixInBuffers(const std::string &word);
 
     /** Creates a new entry containing a [wordPart] of size [partSize].

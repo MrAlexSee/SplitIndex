@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <boost/format.hpp>
 #include <cassert>
+#include <cstring>
 #include <iostream>
 
 #include "split_index_1_comp.hpp"
@@ -109,6 +110,103 @@ vector<string> SplitIndex1Comp::calcQGramsOrderedByFrequency() const
     }
 
     return ret;
+}
+
+void SplitIndex1Comp::initEntry(const string &word)
+{
+    storePrefixSuffixInBuffers(word);
+
+    // 1. We store the pair [prefix] -> [suffix].
+    char **entryPtr = hashMap->retrieve(prefixBuf, prefixSize);
+    const size_t encodedSuffixSize = encodeToBuf(suffixBuf, suffixSize);
+
+    if (entryPtr == nullptr)
+    {
+        char *newEntry = createEntry(codingBuf, encodedSuffixSize, true);
+        hashMap->insert(prefixBuf, prefixSize, newEntry);
+
+        free(newEntry); // The entry is copied inside the map, so it can be freed here.
+    }
+    else
+    {
+        addToEntry(entryPtr, codingBuf, encodedSuffixSize, true);
+    }
+
+    // 2. We store the pair [suffix] -> [prefix].
+    entryPtr = hashMap->retrieve(suffixBuf, suffixSize);
+    const size_t encodedPrefixSize = encodeToBuf(prefixBuf, prefixSize);
+
+    if (entryPtr == nullptr)
+    {
+        char *newEntry = createEntry(codingBuf, encodedPrefixSize, false);
+        hashMap->insert(suffixBuf, suffixSize, newEntry);
+
+        free(newEntry); // The entry is copied inside the map, so it can be freed here.
+    }
+    else
+    {
+        addToEntry(entryPtr, codingBuf, encodedPrefixSize, false);
+    }
+}
+
+size_t SplitIndex1Comp::encodeToBuf(const char *word, size_t wordSize)
+{
+    size_t iBuf = 0;
+    const size_t qgramEnd = wordSize - qgramSize + 1;
+
+    for (size_t iW = 0; iW < wordSize; ++iW)
+    {
+        if (iW < qgramEnd)
+        {
+            auto it = qgramToChar.find(string(word + iW, qgramSize));
+
+            if (it != qgramToChar.end())
+            {
+                codingBuf[iBuf++] = it->second;
+                iW += qgramSize - 1;
+            }
+            else
+            {
+                codingBuf[iBuf++] = word[iW];
+            }
+        }
+        else
+        {
+            codingBuf[iBuf++] = word[iW];
+        }
+    }
+
+    assert(iBuf < maxWordSize);
+    return iBuf;
+}
+
+size_t SplitIndex1Comp::decodeToBuf(const char *word, size_t wordSize, size_t maxDecodedWordSize)
+{
+    size_t iBuf = 0;
+
+    for (size_t iW = 0; iW < wordSize; ++iW)
+    {
+        auto it = charToQgram.find(word[iW]);
+
+        if (it != charToQgram.end())
+        {
+            const string &qgram = it->second;
+
+            memcpy(codingBuf + iBuf, qgram.c_str(), qgram.size());
+            iBuf += qgram.size();
+        }
+        else
+        {
+            codingBuf[iBuf++] = word[iW];
+        }
+
+        if (iBuf > maxDecodedWordSize)
+        {
+            return 0;
+        }
+    }
+
+    return iBuf;
 }
 
 } // namespace split_index

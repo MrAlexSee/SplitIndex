@@ -27,6 +27,14 @@ protected:
     void fillQgramMaps();
     std::vector<std::string> calcQGramsOrderedByFrequency() const;
 
+    void initEntry(const std::string &word) override;
+
+    /** Encodes [word] of size [wordSize] into codingBuf. Returns the size of encoded word. */
+    virtual size_t encodeToBuf(const char *word, size_t wordSize);
+    /** Decodes [word] of size [wordSize] into codingBuf. 
+     * Returns the size of decoded word or 0 if [maxDecodedWordSize] is exceeded. */
+    virtual size_t decodeToBuf(const char *word, size_t wordSize, size_t maxDecodedWordSize);
+
     char *codingBuf = nullptr;
 
     /** A map q-gram -> char. */
