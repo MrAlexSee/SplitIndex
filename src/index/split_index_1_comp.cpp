@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "split_index_1_comp.hpp"
+#include "../utils/distance.hpp"
 
 using namespace std;
 
@@ -98,8 +99,10 @@ vector<string> SplitIndex1Comp::calcQGramsOrderedByFrequency() const
         sorter.emplace_back(kv.second, kv.first);
     }
 
+    const size_t curNQgrams = std::min(sorter.size(), nQgrams);
+
     // We sort in order to obtain the highest counts in front.
-    std::partial_sort(sorter.begin(), sorter.begin() + nQgrams, sorter.end(),
+    std::partial_sort(sorter.begin(), sorter.begin() + curNQgrams, sorter.end(),
         std::greater<pair<int, string>>());
 
     vector<string> ret;
@@ -146,6 +149,128 @@ void SplitIndex1Comp::initEntry(const string &word)
     else
     {
         addToEntry(entryPtr, codingBuf, encodedPrefixSize, false);
+    }
+}
+
+void SplitIndex1Comp::searchWithPrefixAsKey(set<string> &results)
+{
+    char **entryPtr = hashMap->retrieve(prefixBuf, prefixSize);
+
+    if (entryPtr == nullptr)
+    {
+        return;
+    }
+
+    const char *entry = *entryPtr;
+    // We search with the query's prefix as key, so we shall try to match suffixes.
+    const uint16_t *prefixIndex = reinterpret_cast<const uint16_t *>(entry);
+
+    // This check whether the entry contains only prefixes (i.e. no suffixes that we are looking for)
+    // is likely to provide some speedup.
+    if (*prefixIndex == 1)
+    {
+        return;
+    }
+
+    entry += 2;
+    const char cSuffixSize = static_cast<char>(suffixSize);
+
+    if (*prefixIndex != 0)
+    {
+        // There are some prefixes stored in this entry, so we shall advance until they are reached.
+        const char *end = advanceInEntryByWordCount(entry, *prefixIndex - 1);
+
+        while (entry != end)
+        {           
+            assert(*entry != 0);
+
+            if (*entry <= cSuffixSize)
+            {
+                const size_t decodedSize = decodeToBuf(entry + 1, *entry, cSuffixSize);
+
+                if (decodedSize == cSuffixSize and 
+                    utils::Distance::isHammingAtMostK<1>(codingBuf, suffixBuf, suffixSize))
+                {
+                    const string result = string(prefixBuf, prefixSize) + string(codingBuf, decodedSize);
+
+                    if (results.find(result) == results.end())
+                    {
+                        results.insert(move(result));
+                    }
+                }
+            }
+
+            entry += 1 + *entry;
+        }
+    }
+    else
+    {
+        // There are only suffixes stored in this entry, so we check everything.
+        while (*entry != 0)
+        {       
+            if (*entry <= cSuffixSize)
+            {
+                const size_t decodedSize = decodeToBuf(entry + 1, *entry, cSuffixSize);
+
+                if (decodedSize == cSuffixSize and
+                    utils::Distance::isHammingAtMostK<1>(codingBuf, suffixBuf, suffixSize))
+                {
+                    const string result = string(prefixBuf, prefixSize) + string(codingBuf, decodedSize);
+
+                    if (results.find(result) == results.end())
+                    {
+                        results.insert(move(result));
+                    }
+                }
+            }
+
+            entry += 1 + *entry;
+        }
+    }
+}
+
+void SplitIndex1Comp::searchWithSuffixAsKey(set<string> &results)
+{
+    char **entryPtr = hashMap->retrieve(suffixBuf, suffixSize);
+
+    if (entryPtr == nullptr)
+    {
+        return;
+    }
+
+    const char *entry = *entryPtr;
+    // We search with the query's suffix as key, so we shall try to match prefixes.
+    const uint16_t *prefixIndex = reinterpret_cast<const uint16_t *>(entry);
+
+    // This check whether the entry contains only suffixes (i.e. no prefixes that we are looking for)
+    // is likely to provide some speedup.
+    if (*prefixIndex == 0)
+    {
+        return;
+    }
+
+    entry = advanceInEntryByWordCount(entry + 2, *prefixIndex - 1);
+    const char cPrefixSize = static_cast<char>(prefixSize);
+
+    while (*entry != 0)
+    {
+        if (*entry <= cPrefixSize)
+        {
+            const size_t decodedSize = decodeToBuf(entry + 1, *entry, cPrefixSize);
+
+            if (decodedSize == cPrefixSize and
+                utils::Distance::isHammingAtMostK<1>(codingBuf, prefixBuf, prefixSize))
+            {
+                const string result = string(codingBuf, decodedSize) + string(suffixBuf, suffixSize);
+
+                if (results.find(result) == results.end())
+                {
+                    results.insert(move(result));
+                }
+            }
+        }
+
+        entry += 1 + *entry;
     }
 }
 

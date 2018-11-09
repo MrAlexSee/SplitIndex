@@ -241,11 +241,11 @@ void SplitIndex1::searchWithPrefixAsKey(set<string> &results)
 
     const char *entry = *entryPtr;
     // We search with the query's prefix as key, so we shall try to match suffixes.
-    const uint16_t *prefIndex = reinterpret_cast<const uint16_t *>(entry);
+    const uint16_t *prefixIndex = reinterpret_cast<const uint16_t *>(entry);
 
     // This check whether the entry contains only prefixes (i.e. no suffixes that we are looking for)
     // is likely to provide some speedup.
-    if (*prefIndex == 1)
+    if (*prefixIndex == 1)
     {
         return;
     }
@@ -253,10 +253,10 @@ void SplitIndex1::searchWithPrefixAsKey(set<string> &results)
     entry += 2;
     const char cSuffixSize = static_cast<char>(suffixSize);
 
-    if (*prefIndex != 0)
+    if (*prefixIndex != 0)
     {
         // There are some prefixes stored in this entry, so we shall advance until they are reached.
-        const char *end = advanceInEntryByWordCount(entry, *prefIndex - 1);
+        const char *end = advanceInEntryByWordCount(entry, *prefixIndex - 1);
 
         while (entry != end)
         {           
@@ -312,16 +312,16 @@ void SplitIndex1::searchWithSuffixAsKey(set<string> &results)
 
     const char *entry = *entryPtr;
     // We search with the query's suffix as key, so we shall try to match prefixes.
-    const uint16_t *prefIndex = reinterpret_cast<const uint16_t *>(entry);
+    const uint16_t *prefixIndex = reinterpret_cast<const uint16_t *>(entry);
 
     // This check whether the entry contains only suffixes (i.e. no prefixes that we are looking for)
     // is likely to provide some speedup.
-    if (*prefIndex == 0)
+    if (*prefixIndex == 0)
     {
         return;
     }
 
-    entry = advanceInEntryByWordCount(entry + 2, *prefIndex - 1);
+    entry = advanceInEntryByWordCount(entry + 2, *prefixIndex - 1);
     const char cPrefixSize = static_cast<char>(prefixSize);
 
     while (*entry != 0)

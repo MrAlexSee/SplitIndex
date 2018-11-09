@@ -12,7 +12,7 @@
 namespace split_index
 {
 
-/** Split index for k = 1 using compression. */
+/** Split index for k = 1, using compression. */
 class SplitIndex1Comp : public SplitIndex1
 {
 public:
@@ -29,9 +29,12 @@ protected:
 
     void initEntry(const std::string &word) override;
 
+    void searchWithPrefixAsKey(std::set<std::string> &results) override;
+    void searchWithSuffixAsKey(std::set<std::string> &results) override;
+
     /** Encodes [word] of size [wordSize] into codingBuf. Returns the size of encoded word. */
     virtual size_t encodeToBuf(const char *word, size_t wordSize);
-    /** Decodes [word] of size [wordSize] into codingBuf. 
+    /** Decodes [word] of size [wordSize] into codingBuf.
      * Returns the size of decoded word or 0 if [maxDecodedWordSize] is exceeded. */
     virtual size_t decodeToBuf(const char *word, size_t wordSize, size_t maxDecodedWordSize);
 
