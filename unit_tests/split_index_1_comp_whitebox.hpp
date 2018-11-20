@@ -15,6 +15,11 @@ struct SplitIndex1CompWhitebox
 {
     SplitIndex1CompWhitebox() = delete;
 
+    inline static void fillQgramMaps(SplitIndex1Comp &index)
+    {
+        index.fillQgramMaps();
+    }
+
     inline static std::vector<std::string> calcQGramsOrderedByFrequency(const SplitIndex1Comp &index)
     {
         return index.calcQGramsOrderedByFrequency();
@@ -30,9 +35,19 @@ struct SplitIndex1CompWhitebox
         return index.decodeToBuf(word, wordSize, maxDecodedWordSize);
     }
 
-    inline const char *getCodingBuf(const SplitIndex1Comp &index)
+    inline static const char *getCodingBuf(const SplitIndex1Comp &index)
     {
         return index.codingBuf;
+    }
+
+    inline static const std::map<std::string, char> getQGramToCharMap(const SplitIndex1Comp &index)
+    {
+        return index.qgramToChar;        
+    }
+
+    inline static const std::map<char, std::string> getCharToQgramMap(const SplitIndex1Comp &index)
+    {
+        return index.charToQgram;
     }
 };
 

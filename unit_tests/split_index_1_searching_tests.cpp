@@ -22,7 +22,7 @@ constexpr int nIndexes = 2;
 
 TEST_CASE("is searching empty patterns correct", "[split_index_1_searching]")
 {
-    unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "lubi", "psy" };
+    const unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "lubi", "psy" };
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f) };
@@ -65,8 +65,8 @@ TEST_CASE("is searching words exact correct", "[split_index_1_searching]")
 
 TEST_CASE("is searching words exact one-by-one correct", "[split_index_1_searching]")
 {
-    unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "lubi", "psy" };
-    vector<string> patternsOut { "not", "in", "this", "dict" };
+    const unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "lubi", "psy" };
+    const vector<string> patternsOut { "not", "in", "this", "dict" };
 
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
@@ -95,7 +95,7 @@ TEST_CASE("is searching words exact one-by-one correct", "[split_index_1_searchi
 
 TEST_CASE("is searching words for k = 1 for Hamming correct", "[split_index_1_searching]")
 {
-    unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa" };
+    const unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa" };
     vector<string> patternsIn;
 
     SplitIndex *indexes[] = { 
@@ -128,7 +128,7 @@ TEST_CASE("is searching words for k = 1 for Hamming correct", "[split_index_1_se
 
 TEST_CASE("is searching words for k = 1 one-by-one for Hamming correct", "[split_index_1_searching]")
 {
-    unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa" };
+    const unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa" };
 
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
@@ -164,7 +164,7 @@ TEST_CASE("is searching words for k = 1 one-by-one for Hamming correct", "[split
 
 TEST_CASE("is searching words for various k for Hamming correct", "[split_index_1_searching]")
 {
-    unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
+    const unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
 
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
