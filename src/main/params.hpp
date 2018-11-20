@@ -57,7 +57,7 @@ struct Params
     /** Current version: major.minor.patch */
     const std::string versionInfo = "split_index v0.1.0";
 
-    const std::string outputHeader = "dictionary | patterns | hash type | index type | max load factor | #iter | elapsed per query (us)\n";
+    const std::string outputHeader = "dictionary | patterns | hash type | index type | max load factor | #iter | hash map size (KB) | elapsed per query (us)\n";
     const std::string usageInfoString = "[options] <input dictionary file> <input pattern file>";
 };
 

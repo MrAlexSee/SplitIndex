@@ -53,7 +53,7 @@ void runSearch(const vector<string> &words, const vector<string> &queries);
 void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType,
     SplitIndexFactory::IndexType &indexType);
 
-void dumpRunInfo(float elapsedUs, size_t nQueries);
+void dumpRunInfo(const SplitIndex *index, size_t nQueries);
 
 } // namespace split_index
 
@@ -215,7 +215,7 @@ void runSearch(const vector<string> &dict, const vector<string> &queries)
     else
     {
         results = index->search(queries, params.nIter);
-        dumpRunInfo(index->getElapsedUs(), queries.size());
+        dumpRunInfo(index, queries.size());
     }
 
     cout << "#matches = " << results.size() << endl;
@@ -263,14 +263,14 @@ void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType,
         % params.indexType % params.hashType << endl;
 }
 
-void dumpRunInfo(float elapsedUs, size_t nQueries)
+void dumpRunInfo(const SplitIndex *index, size_t nQueries)
 {
-    string elapsedInfo = utils::StringUtils::getElapsedInfo(elapsedUs, params.nIter, nQueries);
+    string elapsedInfo = utils::StringUtils::getElapsedInfo(index->getElapsedUs(), params.nIter, nQueries);
     cout << elapsedInfo << endl;
 
     if (params.dumpToFile)
     {
-        const float elapsedPerQueryUs = elapsedUs / params.nIter / nQueries;
+        const float elapsedPerQueryUs = index->getElapsedUs() / params.nIter / nQueries;
         string outStr = "";
 
         if (utils::FileIO::isFileEmpty(params.outFile))
@@ -278,8 +278,10 @@ void dumpRunInfo(float elapsedUs, size_t nQueries)
             outStr += params.outputHeader;
         }
 
-        outStr += (boost::format("%1% %2% %3% %4% %5% %6% %7%") % params.inDictFile % params.inPatternFile
-            % params.hashType % params.indexType % params.maxLoadFactor % params.nIter
+        const float hashMapSizeKB = index->calcHashMapSizeB() / 1024.0f;
+
+        outStr += (boost::format("%1% %2% %3% %4% %5% %6% %7% %8%") % params.inDictFile % params.inPatternFile
+            % params.hashType % params.indexType % params.maxLoadFactor % params.nIter % hashMapSizeKB
             % elapsedPerQueryUs).str();
 
         utils::FileIO::dumpToFile(outStr, params.outFile, true);

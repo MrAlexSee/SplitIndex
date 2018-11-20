@@ -34,7 +34,7 @@ HashMapAligned::~HashMapAligned()
 
 string HashMapAligned::toString() const
 {
-    const float totalSizeKB = calcTotalSizeB() / 1024.0;
+    const float totalSizeKB = calcTotalSizeB() / 1024.0f;
     
     const float avgBucketSize = static_cast<float>(nEntries) / nBuckets;
     const string formatStr = "Hash map: %1% entries, LF = %2% (max = %3%), total size = %4% KB, avg bucket size = %5%";
