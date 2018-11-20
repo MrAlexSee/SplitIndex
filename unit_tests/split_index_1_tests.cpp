@@ -21,7 +21,7 @@ constexpr int maxNIter = 10;
 
 }
 
-TEST_CASE("does index throw for empty words", "[split_index_1]")
+TEST_CASE("does split index 1 throw for empty words", "[split_index_1]")
 {
     REQUIRE_THROWS(SplitIndex1({ }, hashType, 1.0f));
 }

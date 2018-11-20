@@ -8,7 +8,6 @@
 
 #include "../src/index/split_index_1.hpp"
 
-
 namespace split_index
 {
 
