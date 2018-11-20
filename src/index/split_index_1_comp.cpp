@@ -93,6 +93,7 @@ vector<string> SplitIndex1Comp::calcQGramsOrderedByFrequency() const
     }
 
     vector<pair<int, string>> sorter; // Pairs: [count, qgram].
+    sorter.reserve(nQgrams);
 
     for (const auto &kv : counter)
     {
@@ -106,10 +107,11 @@ vector<string> SplitIndex1Comp::calcQGramsOrderedByFrequency() const
         std::greater<pair<int, string>>());
 
     vector<string> ret;
+    ret.reserve(curNQgrams);
 
-    for (const auto &pair : sorter)
+    for (size_t i = 0; i < curNQgrams; ++i)
     {
-        ret.push_back(pair.second);
+        ret.push_back(move(sorter[i].second));
     }
 
     return ret;
