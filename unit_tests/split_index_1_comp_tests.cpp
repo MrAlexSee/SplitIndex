@@ -24,4 +24,9 @@ TEST_CASE("does split index 1 comp throw for empty words", "[split_index_1_comp]
     REQUIRE_THROWS(SplitIndex1Comp({ }, hashType, 1.0f));
 }
 
+TEST_CASE("is calculating qgrams ordered by frequency correct", "[split_index_1_comp]")
+{
+    // TODO
+}
+
 } // namespace split_index
