@@ -9,7 +9,7 @@ LIB = $(ROOT_DIR)/$(LIB_DIR)/$(INDEX_LIB)
 
 all: $(LIB)
 
-$(LIB): $(OBJ_FILES)
+$(LIB): $(OBJ_FILES) split_index_k.hpp
 	ar rs $@ $(OBJ_FILES)
 
 -include $(OBJ_FILES:.o=.d)
