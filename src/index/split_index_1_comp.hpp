@@ -12,7 +12,7 @@
 namespace split_index
 {
 
-/** Split index for k = 1, using compression. */
+/** Split index for k = 1, using compression with a single q-gram size. */
 class SplitIndex1Comp : public SplitIndex1
 {
 public:
@@ -24,8 +24,13 @@ public:
     std::string toString() const override;
 
 protected:
-    void fillQgramMaps();
-    std::vector<std::string> calcQGramsOrderedByFrequency() const;
+    virtual void calcQgramsAndFillMaps();
+
+    std::vector<std::string> calcQGramsOrderedByFrequency(size_t curNQgrams, size_t curQgramSize) const;
+
+    /** Fills both q-gram maps with [qgrams], starting encoding with [curFirstChar].
+     * Invalidates insides of [qgrams] vector for performance. */
+    void fillQgramMaps(std::vector<std::string> &qgrams, char curFirstChar);
 
     void initEntry(const std::string &word) override;
 

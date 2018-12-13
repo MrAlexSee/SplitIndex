@@ -38,47 +38,38 @@ string SplitIndex1Comp::toString() const
 
 void SplitIndex1Comp::construct()
 {
-    fillQgramMaps();
+    calcQgramsAndFillMaps();
     SplitIndex1::construct();
 }
 
-void SplitIndex1Comp::fillQgramMaps()
+void SplitIndex1Comp::calcQgramsAndFillMaps()
 {
     qgramToChar.clear();
     charToQgram.clear();
 
-    const vector<string> qgrams = calcQGramsOrderedByFrequency();
-    const size_t curNQgrams = std::min(qgrams.size(), nQgrams);
+    vector<string> qgrams = calcQGramsOrderedByFrequency(nQgrams, qgramSize);
+    fillQgramMaps(qgrams, firstChar);
 
-    for (size_t i = 0; i < curNQgrams; ++i)
-    {
-        const char curIndex = firstChar + i;
-        assert(curIndex < 255u);
+    assert(qgramToChar.size() == qgrams.size());
+    assert(charToQgram.size() == qgrams.size());
 
-        charToQgram[curIndex] = qgrams[i];
-        qgramToChar[qgrams[i]] = curIndex;
-    }
-
-    assert(qgramToChar.size() == curNQgrams);
-    assert(charToQgram.size() == curNQgrams);
-
-    cout << boost::format("Filled maps for %1% %2%-grams") % curNQgrams % qgramSize << endl;
+    cout << boost::format("Filled maps for %1% %2%-grams") % qgrams.size() % qgramSize << endl;
 }
 
-vector<string> SplitIndex1Comp::calcQGramsOrderedByFrequency() const
+vector<string> SplitIndex1Comp::calcQGramsOrderedByFrequency(size_t curNQgrams, size_t curQgramSize) const
 {
     map<string, int> counter;
 
     for (const string &word : wordSet)
     {
-        const size_t end = word.size() - qgramSize + 1;
+        const size_t end = word.size() - curQgramSize + 1;
 
         for (size_t i = 0; i < end; ++i)
         {
-            assert(i + qgramSize <= word.size());
-            const string qgram = word.substr(i, qgramSize);
+            assert(i + curQgramSize <= word.size());
+            const string qgram = word.substr(i, curQgramSize);
 
-            assert(qgram.size() == qgramSize);
+            assert(qgram.size() == curQgramSize);
             auto it = counter.find(qgram);
 
             if (it != counter.end())
@@ -93,28 +84,40 @@ vector<string> SplitIndex1Comp::calcQGramsOrderedByFrequency() const
     }
 
     vector<pair<int, string>> sorter; // Pairs: [count, qgram].
-    sorter.reserve(nQgrams);
+    sorter.reserve(curNQgrams);
 
     for (const auto &kv : counter)
     {
         sorter.emplace_back(kv.second, kv.first);
     }
 
-    const size_t curNQgrams = std::min(sorter.size(), nQgrams);
+    const size_t availableNQgrams = std::min(sorter.size(), curNQgrams);
 
     // We sort in order to obtain the highest counts in front.
-    std::partial_sort(sorter.begin(), sorter.begin() + curNQgrams, sorter.end(),
+    std::partial_sort(sorter.begin(), sorter.begin() + availableNQgrams, sorter.end(),
         std::greater<pair<int, string>>());
 
     vector<string> ret;
-    ret.reserve(curNQgrams);
+    ret.reserve(availableNQgrams);
 
-    for (size_t i = 0; i < curNQgrams; ++i)
+    for (size_t i = 0; i < availableNQgrams; ++i)
     {
         ret.push_back(move(sorter[i].second));
     }
 
     return ret;
+}
+
+void SplitIndex1Comp::fillQgramMaps(vector<string> &qgrams, char curFirstChar)
+{
+    for (size_t i = 0; i < qgrams.size(); ++i)
+    {
+        const char curIndex = curFirstChar + i;
+        assert(curIndex < 255u);
+
+        qgramToChar[qgrams[i]] = curIndex;
+        charToQgram[curIndex] = move(qgrams[i]);
+    }
 }
 
 void SplitIndex1Comp::initEntry(const string &word)
