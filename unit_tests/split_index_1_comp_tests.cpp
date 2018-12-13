@@ -31,10 +31,8 @@ TEST_CASE("is calculating q-grams ordered by frequency correct", "[split_index_1
     const unordered_set<string> wordSet{ "ala", "dla", "kota", "jarek", "lubi", "psy" };    
 
     SplitIndex1Comp index1(wordSet, hashType, 1.0f);
-    vector<string> qgrams = SplitIndex1CompWhitebox::calcQGramsOrderedByFrequency(index1);
+    vector<string> qgrams = SplitIndex1CompWhitebox::calcQGramsOrderedByFrequency(index1, 100, 2);
 
-    // This assumes di-grams (2-grams, q-gram size = 2) and 
-    // that the compile-time number of q-grams is >= than the number of q-grams extracted from words.
     const vector<string> expected { "al", "la", "dl", "ko", "ot", "ta", "ja", "ar", "re", "ek", "lu",
         "ub", "bi", "ps", "sy" };
 
@@ -54,7 +52,7 @@ TEST_CASE("is filling q-gram maps correct", "[split_index_1_comp]")
     const unordered_set<string> wordSet{ "ala", "dla", "kota", "jarek", "lubi", "psy" };    
 
     SplitIndex1Comp index1(wordSet, hashType, 1.0f);
-    SplitIndex1CompWhitebox::fillQgramMaps(index1);
+    SplitIndex1CompWhitebox::calcQgramsAndFillMaps(index1);
 
     // This assumes di-grams (2-grams, q-gram size = 2) and 
     // that the compile-time number of q-grams is >= than the number of q-grams extracted from words.
@@ -83,7 +81,7 @@ TEST_CASE("is encoding to buffer correct", "[split_index_1_comp]")
     const unordered_set<string> wordSet{ "ala", "ma", "kota" };
 
     SplitIndex1Comp index1(wordSet, hashType, 1.0f);
-    SplitIndex1CompWhitebox::fillQgramMaps(index1);
+    SplitIndex1CompWhitebox::calcQgramsAndFillMaps(index1);
 
     // 2-grams used for encoding: al, la, ma, ko, ot, ta.
 
@@ -101,7 +99,7 @@ TEST_CASE("is decoding to buffer correct", "[split_index_1_comp]")
     const unordered_set<string> wordSet{ "ala", "ma", "kota" };
  
     SplitIndex1Comp index1(wordSet, hashType, 1.0f);
-    SplitIndex1CompWhitebox::fillQgramMaps(index1);
+    SplitIndex1CompWhitebox::calcQgramsAndFillMaps(index1);
 
     // 2-grams used for encoding: al, la, ma, ko, ot, ta.
     char encoded = SplitIndex1CompWhitebox::getQGramToCharMap(index1).at("al");

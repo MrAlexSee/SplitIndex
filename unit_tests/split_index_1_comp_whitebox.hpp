@@ -15,14 +15,15 @@ struct SplitIndex1CompWhitebox
 {
     SplitIndex1CompWhitebox() = delete;
 
-    inline static void fillQgramMaps(SplitIndex1Comp &index)
+    inline static void calcQgramsAndFillMaps(SplitIndex1Comp &index)
     {
-        index.fillQgramMaps();
+        index.calcQgramsAndFillMaps();
     }
 
-    inline static std::vector<std::string> calcQGramsOrderedByFrequency(const SplitIndex1Comp &index)
+    inline static std::vector<std::string> calcQGramsOrderedByFrequency(const SplitIndex1Comp &index,
+        size_t nQgrams, size_t qgramSize)
     {
-        return index.calcQGramsOrderedByFrequency();
+        return index.calcQGramsOrderedByFrequency(nQgrams, qgramSize);
     }
 
     inline static size_t encodeToBuf(SplitIndex1Comp &index, const char *word, size_t wordSize)
