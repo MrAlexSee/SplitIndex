@@ -45,6 +45,11 @@ TEST_CASE("is calculating q-grams ordered by frequency correct", "[split_index_1
 
     // "la" occurs twice so it should be the first one.
     REQUIRE(qgrams.front() == "la");
+
+    vector<string> qgrams2 = SplitIndex1CompWhitebox::calcQGramsOrderedByFrequency(index1, 5, 2);
+
+    REQUIRE(qgrams2.size() == 5);
+    REQUIRE(qgrams2.front() == "la");
 }
 
 TEST_CASE("is filling q-gram maps correct", "[split_index_1_comp]")
