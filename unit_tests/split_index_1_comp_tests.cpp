@@ -67,6 +67,11 @@ TEST_CASE("is filling q-gram maps correct", "[split_index_1_comp]")
         REQUIRE(qgramToChar.find(qgram) != qgramToChar.end());
     }    
 
+    for (const string &qgramOut : { "aa", "cc", "ala", "kota" })
+    {
+        REQUIRE(qgramToChar.find(qgramOut) == qgramToChar.end());
+    }
+
     const map<char, string> charToQgram = SplitIndex1CompWhitebox::getCharToQgramMap(index1);
     REQUIRE(qgramToChar.size() == expected.size());
 
@@ -110,6 +115,8 @@ TEST_CASE("is decoding to buffer correct", "[split_index_1_comp]")
     REQUIRE(size1 == 5);
     REQUIRE(memcmp(SplitIndex1CompWhitebox::getCodingBuf(index1), "alddd", 5) == 0);
 
+    size_t size2 = SplitIndex1CompWhitebox::decodeToBuf(index1, toDecode.c_str(), toDecode.size(), 2);
+    REQUIRE(size2 == 0); // Exceeded expected max word size.
 }
 
 } // namespace split_index

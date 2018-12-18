@@ -3,8 +3,8 @@
 
 #include "split_index_1_comp.hpp"
 
-#ifndef SPLIT_INDEX_1_COMP_TRIPLE_WHITEBOX
-#define SPLIT_INDEX_1_COMP_TRIPLE_WHITEBOX
+#ifndef SPLIT_INDEX_1_COMP_WHITEBOX
+#define SPLIT_INDEX_1_COMP_WHITEBOX
 #endif
 
 namespace split_index
@@ -36,7 +36,8 @@ protected:
     /** These are all compile-time constants, determined earlier. */
     static constexpr size_t n2grams = 20, n3grams = 70, n4grams = 10;
 
-    SPLIT_INDEX_1_COMP_TRIPLE_WHITEBOX
+    // We can take advantage of the whitebox class for the base class since functions are overridden here.
+    SPLIT_INDEX_1_COMP_WHITEBOX
 };
 
 } // namespace split_index

@@ -11,7 +11,7 @@ cd end_to_end_tests
 echo "3/4 Running"
 
 # All index types for k=1.
-for iType in k1 k1comp;
+for iType in k1 k1comp k1comptriple;
 do
     # All hash types.
     for hType in city farm farsh fnv1 fnv1a murmur3 sdbm spookyv2 superfast xxhash;

@@ -62,6 +62,11 @@ vector<string> SplitIndex1Comp::calcQGramsOrderedByFrequency(size_t curNQgrams, 
 
     for (const string &word : wordSet)
     {
+        if (word.size() < curQgramSize)
+        {
+            continue;
+        }
+
         const size_t end = word.size() - curQgramSize + 1;
 
         for (size_t i = 0; i < end; ++i)
