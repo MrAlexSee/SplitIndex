@@ -1,5 +1,5 @@
 """
-Extracts k-mers of given size from the input string.
+Extracts k-mers of given size from the input DNA string.
 """
 
 import sys
@@ -12,9 +12,9 @@ pJumpSize = 500
 pHasFastaHeader = True
 
 # Input file path.
-pInFile = "fruitfly.fa"
+pInFilePath = "fruitfly.fa"
 # Output file path.
-pOutFile = "dict.txt"
+pOutFilePath = "dict.txt"
 
 def filterData(data, hasFastaHeader):
     print "Filtering data..."
@@ -28,7 +28,7 @@ def filterData(data, hasFastaHeader):
     data = [c for c in data if c in dnaChars]
     data = "".join(data)
 
-    sizeMB = len(data) / 1024.0 / 1024.0
+    sizeMB = len(data) / 1000.0 / 1000.0
     print "Filtered data, #chars = {0}, {1:.2f} MB".format(len(data), sizeMB)
 
     return data
@@ -55,14 +55,14 @@ def processAndDump(data, kmerLength, jumpSize, outFile):
     print "\nDumped #words = {0} to: {1}".format(nWords, outFile)
 
 def main():
-    with open(pInFile, "r") as f:
+    with open(pInFilePath, "r") as f:
         data = f.read().lower()
 
     sizeMB = len(data) / 1024.0 / 1024.0
-    print "Read data from: {0}, size = {1:.2f} MB".format(pInFile, sizeMB)
+    print "Read data from: {0}, size = {1:.2f} MB".format(pInFilePath, sizeMB)
 
     data = filterData(data, pHasFastaHeader)
-    processAndDump(data, pKmerLength, pJumpSize, pOutFile)
+    processAndDump(data, pKmerLength, pJumpSize, pOutFilePath)
 
 if __name__ == "__main__":
     main()
