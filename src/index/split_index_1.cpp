@@ -19,8 +19,8 @@ SplitIndex1::SplitIndex1(const unordered_set<string> &wordSet,
     float maxLoadFactor)
     :SplitIndex(wordSet)
 {
-    auto calcEntrySizeB = std::bind(&SplitIndex1::calcEntrySizeB, this, std::placeholders::_1);
     const int nBucketsHint = std::max(1, static_cast<int>(nBucketsHintFactor * wordSet.size()));
+    auto calcEntrySizeB = std::bind(&SplitIndex1::calcEntrySizeB, this, std::placeholders::_1);
 
     hashMap = new hash_map::HashMapAligned(calcEntrySizeB, maxLoadFactor, nBucketsHint, hashType);
 

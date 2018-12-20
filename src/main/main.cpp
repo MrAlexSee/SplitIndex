@@ -250,7 +250,9 @@ void initSplitIndexParams(hash_functions::HashFunctions::HashType &hashType,
     const map<string, SplitIndexFactory::IndexType> indexTypeMap {
         { "k1", SplitIndexFactory::IndexType::K1 },
         { "k1comp", SplitIndexFactory::IndexType::K1Comp },
-        { "k1comptriple", SplitIndexFactory::IndexType::K1CompTriple }
+        { "k1comptriple", SplitIndexFactory::IndexType::K1CompTriple },
+        { "k2", SplitIndexFactory::IndexType::K2},
+        { "k3", SplitIndexFactory::IndexType::K3}
     };
 
     if (indexTypeMap.count(params.indexType) == 0)
