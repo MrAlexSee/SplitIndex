@@ -102,8 +102,9 @@ def calcOptimalCompression(words, totalNQgrams):
 
     results = []
 
-    for combination in combinations:
-        results += [(combination, calcCompressionRatio(words, qgrams, combination))]
+    for iC in xrange(len(combinations)):
+        print "Combination {0}/{1}".format(iC + 1, len(combinations))
+        results += [(combinations[i], calcCompressionRatio(words, qgrams, combinations[i]))]
 
     # We return the permutation with the highest compression score.
     return sorted(results, key = lambda t: t[1], reverse = True)[0]
