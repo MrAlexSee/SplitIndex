@@ -24,10 +24,10 @@ SplitIndex1::SplitIndex1(const unordered_set<string> &wordSet,
 
     hashMap = new hash_map::HashMapAligned(calcEntrySizeB, maxLoadFactor, nBucketsHint, hashType);
 
-    prefixBuf = new char[maxWordSize + 1];
-    suffixBuf = new char[maxWordSize + 1];
+    prefixBuf = new char[maxWordSize];
+    suffixBuf = new char[maxWordSize];
 
-    prefixSizeLUT = new size_t[maxWordSize + 1];
+    prefixSizeLUT = new size_t[maxWordSize];
 }
 
 SplitIndex1::~SplitIndex1()
