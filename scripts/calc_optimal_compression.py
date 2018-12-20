@@ -108,15 +108,25 @@ def calcOptimalCompression(words, totalNQgrams):
         print "Combination {0}/{1}".format(iC + 1, len(combinations))
         results += [(combinations[iC], calcCompressionRatio(words, qgrams, combinations[iC]))]
 
+    counts, ratio = sorted(results, key = lambda t: t[1], reverse = True)[0]
+    selectedQgrams = []
+
+    for iQ in xrange(len(counts)):
+        selectedQgrams += [[qgram for qgram in qgrams[iQ][ : counts[iQ]]]]
+
     # We return the permutation with the highest compression score.
-    return sorted(results, key = lambda t: t[1], reverse = True)[0]
+    return counts, ratio, selectedQgrams
 
 def main():
     words = readWords(pInFilePath)
-    counts, ratio = calcOptimalCompression(words, pTotalNQgrams)
+    counts, ratio, qgrams = calcOptimalCompression(words, pTotalNQgrams)
 
-    print "Optimal counts = {0} (2-,3-,4-)".format(counts)
+    print "\nOptimal counts = {0} (2-,3-,4-)".format(counts)
     print "Compression ratio = {0}".format(ratio)
+
+    print "2-grams = {0}".format(qgrams[0])
+    print "3-grams = {0}".format(qgrams[1])
+    print "4-grams = {0}".format(qgrams[2])
 
 if __name__ == "__main__":
     main()
