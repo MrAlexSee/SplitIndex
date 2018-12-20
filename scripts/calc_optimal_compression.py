@@ -10,7 +10,7 @@ import itertools
 pInFilePath = "dict.txt"
 
 # Total number (sum) of 2-,3-,4-grams.
-pTotalNQgrams = 25
+pTotalNQgrams = 50
 
 def readWords(inFilePath):
     with open(inFilePath, "r") as f:
@@ -104,7 +104,7 @@ def calcOptimalCompression(words, totalNQgrams):
 
     for iC in xrange(len(combinations)):
         print "Combination {0}/{1}".format(iC + 1, len(combinations))
-        results += [(combinations[i], calcCompressionRatio(words, qgrams, combinations[i]))]
+        results += [(combinations[iC], calcCompressionRatio(words, qgrams, combinations[iC]))]
 
     # We return the permutation with the highest compression score.
     return sorted(results, key = lambda t: t[1], reverse = True)[0]
