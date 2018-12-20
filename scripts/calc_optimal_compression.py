@@ -10,7 +10,7 @@ import itertools
 pInFilePath = "dict.txt"
 
 # Total number (sum) of 2-,3-,4-grams.
-pTotalNQgrams = 50
+pTotalNQgrams = 25
 
 def readWords(inFilePath):
     with open(inFilePath, "r") as f:
@@ -40,11 +40,13 @@ def extractQgramsOrderedByFrequency(words):
                 qgram = word[i : i + qgramSize]
                 counter[qgram] += 1
 
-        ret += [[key for key in counter]]
+        ret += [[t[0] for t in counter.most_common()]]
 
     assert len([q for q in ret if len(q) == len(set(q))]) == len(ret)
 
     print "Extracted #q-grams: {0} (2-,3-,4-)".format([len(q) for q in ret])
+    print "Most common qgrams: {0}".format([ret[0][0], ret[1][0], ret[2][0]])
+
     return ret
 
 # This simply uses one character from outside the text for substitution.
