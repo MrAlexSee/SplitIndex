@@ -17,7 +17,7 @@ namespace split_index
 
 struct SplitIndexFactory
 {
-    enum class IndexType { K1, K1Comp, K1CompTriple };
+    enum class IndexType { K1, K1Comp, K1CompTriple, K2, K3 };
 
     inline static SplitIndex *initIndex(const std::unordered_set<std::string> &words, 
         hash_functions::HashFunctions::HashType hashType, 
@@ -42,6 +42,12 @@ SplitIndex *SplitIndexFactory::initIndex(const std::unordered_set<std::string> &
             break;
         case IndexType::K1CompTriple:
             index = new SplitIndex1CompTriple(words, hashType, maxLoadFactor);
+            break;
+        case IndexType::K2:
+            index = new SplitIndexK<2>(words, hashType, maxLoadFactor);
+            break;
+        case IndexType::K3:
+            index = new SplitIndexK<3>(words, hashType, maxLoadFactor);
             break;
         default:
             throw std::invalid_argument("bad index type: " + std::to_string(static_cast<int>(indexType)));
