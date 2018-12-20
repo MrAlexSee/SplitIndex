@@ -17,7 +17,6 @@ namespace
 {
 
 hash_functions::HashFunctions::HashType hashType = hash_functions::HashFunctions::HashType::XxHash;
-constexpr int maxNIter = 10;
 
 }
 

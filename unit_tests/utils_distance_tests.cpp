@@ -18,30 +18,13 @@ namespace
 constexpr int maxK = 5;
 constexpr int nHammingRepeats = 10;
 
-// https://stackoverflow.com/questions/37602057/why-isnt-a-for-loop-a-compile-time-expression
-template<size_t N>
-struct NumberBox { static const constexpr auto value = N; };
-
-template <class FunctionType, size_t... Count>
-void for_(FunctionType fun, std::index_sequence<Count...>)
-{
-    using expander = int[];
-    (void)expander{ 0, ((void)fun(NumberBox<Count>{ }), 0)... };
-}
-
-template <size_t N, typename FunctionType>
-void for_(FunctionType fun)
-{
-    for_(fun, std::make_index_sequence<N>());
-}
-
 }
 
 TEST_CASE("is Hamming at most k for empty calculation correct", "[utils_distance]")
 {
     string empty = "";
 
-    for_<maxK>([&] (auto k)
+    for_<maxK + 1>([&] (auto k)
     {
         REQUIRE(utils::Distance::isHammingAtMostK<k.value>(empty.c_str(), empty.c_str(), 0) == true);    
     });
@@ -51,7 +34,7 @@ TEST_CASE("is Hamming at most k calculation for self correct", "[utils_distance]
 {
     string str1 = "ala ma kota";
 
-    for_<maxK>([&] (auto k)
+    for_<maxK + 1>([&] (auto k)
     {
         REQUIRE(utils::Distance::isHammingAtMostK<k.value>(str1.c_str(), str1.c_str(), str1.size()) == true);    
     });
@@ -131,7 +114,7 @@ TEST_CASE("is Hamming at most k=0,1,2,3,4 randomized calculation correct", "[uti
 
     const string str = "ala ma kota";
 
-    for_<maxK>([&] (auto k)
+    for_<maxK + 1>([&] (auto k)
     {
         repeat(nHammingRepeats, [&] {
             set<int> indexList = randNumbersFromRange(0, str.size() - 1, k.value);

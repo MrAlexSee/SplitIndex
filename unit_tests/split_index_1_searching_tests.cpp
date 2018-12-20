@@ -17,7 +17,7 @@ namespace
 hash_functions::HashFunctions::HashType hashType = hash_functions::HashFunctions::HashType::XxHash;
 
 constexpr int maxNIter = 10;
-constexpr int nIndexes = 2;
+constexpr int nIndexes = 3;
 
 }
 
