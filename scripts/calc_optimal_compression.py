@@ -1,5 +1,5 @@
 """
-Determines the optimal counts of most frequent 2-, 3-, and 4-grams from the input text.
+Determines optimal counts of most frequent 2-, 3-, and 4-grams from the input text.
 Optimal = providing highest compression for character substitution coding.
 """
 
@@ -10,7 +10,7 @@ import itertools
 pInFilePath = "dict.txt"
 
 # Total number (sum) of 2-,3-,4-grams.
-pTotalNQgrams = 5
+pTotalNQgrams = 25
 
 def readWords(inFilePath):
     with open(inFilePath, "r") as f:
@@ -41,6 +41,8 @@ def extractQgramsOrderedByFrequency(words):
                 counter[qgram] += 1
 
         ret += [[key for key in counter]]
+
+    assert len([q for q in ret if len(q) == len(set(q))]) == len(ret)
 
     print "Extracted #q-grams: {0} (2-,3-,4-)".format([len(q) for q in ret])
     return ret
