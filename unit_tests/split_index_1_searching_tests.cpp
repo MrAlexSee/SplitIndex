@@ -4,6 +4,7 @@
 #include "../src/index/split_index_1.hpp"
 #include "../src/index/split_index_1_comp.hpp"
 #include "../src/index/split_index_1_comp_triple.hpp"
+#include "../src/index/split_index_k.hpp"
 
 using namespace split_index;
 using namespace std;
@@ -15,9 +16,7 @@ namespace
 {
 
 hash_functions::HashFunctions::HashType hashType = hash_functions::HashFunctions::HashType::XxHash;
-
 constexpr int maxNIter = 10;
-constexpr int nIndexes = 3;
 
 }
 
@@ -27,7 +26,11 @@ TEST_CASE("is searching empty patterns correct", "[split_index_1_searching]")
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
-        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<2>(wordSet, hashType, 1.0f),
+        new SplitIndexK<3>(wordSet, hashType, 1.0f) };
+
+    const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
     for (int iIndex = 0; iIndex < nIndexes; ++iIndex)
     {
@@ -50,7 +53,11 @@ TEST_CASE("is searching words exact correct", "[split_index_1_searching]")
     SplitIndex *indexes[] = { 
         new SplitIndex1({ words.begin(), words.end() }, hashType, 1.0f), 
         new SplitIndex1Comp({ words.begin(), words.end() }, hashType, 1.0f),
-        new SplitIndex1CompTriple({ words.begin(), words.end() }, hashType, 1.0f) };
+        new SplitIndex1CompTriple({ words.begin(), words.end() }, hashType, 1.0f),
+        new SplitIndexK<2>({ words.begin(), words.end() }, hashType, 1.0f),
+        new SplitIndexK<3>({ words.begin(), words.end() }, hashType, 1.0f) };
+
+    const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
     for (int iIndex = 0; iIndex < nIndexes; ++iIndex)
     {
@@ -74,7 +81,11 @@ TEST_CASE("is searching words exact one-by-one correct", "[split_index_1_searchi
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
-        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<2>(wordSet, hashType, 1.0f),
+        new SplitIndexK<3>(wordSet, hashType, 1.0f) };
+
+    const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
     for (int iIndex = 0; iIndex < nIndexes; ++iIndex)
     {
@@ -97,7 +108,7 @@ TEST_CASE("is searching words exact one-by-one correct", "[split_index_1_searchi
     }
 }
 
-TEST_CASE("is searching words for k = 1 for Hamming correct", "[split_index_1_searching]")
+TEST_CASE("is searching words for k = 1 correct", "[split_index_1_searching]")
 {
     const unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa" };
     vector<string> patternsIn;
@@ -105,7 +116,11 @@ TEST_CASE("is searching words for k = 1 for Hamming correct", "[split_index_1_se
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
-        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<2>(wordSet, hashType, 1.0f),
+        new SplitIndexK<3>(wordSet, hashType, 1.0f) };
+
+    const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
     for (int iIndex = 0; iIndex < nIndexes; ++iIndex)
     {
@@ -131,14 +146,18 @@ TEST_CASE("is searching words for k = 1 for Hamming correct", "[split_index_1_se
     }
 }
 
-TEST_CASE("is searching words for k = 1 one-by-one for Hamming correct", "[split_index_1_searching]")
+TEST_CASE("is searching words for k = 1 one-by-one correct", "[split_index_1_searching]")
 {
     const unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa" };
 
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
-        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<2>(wordSet, hashType, 1.0f),
+        new SplitIndexK<3>(wordSet, hashType, 1.0f)  };
+
+    const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
     for (int iIndex = 0; iIndex < nIndexes; ++iIndex)
     {
@@ -168,7 +187,7 @@ TEST_CASE("is searching words for k = 1 one-by-one for Hamming correct", "[split
     }
 }
 
-TEST_CASE("is searching words for various k for Hamming correct", "[split_index_1_searching]")
+TEST_CASE("is searching words for various number of mismatches correct", "[split_index_1_searching]")
 {
     const unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
 
@@ -176,6 +195,8 @@ TEST_CASE("is searching words for various k for Hamming correct", "[split_index_
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
         new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
+
+    const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
     for (int iIndex = 0; iIndex < nIndexes; ++iIndex)
     {
