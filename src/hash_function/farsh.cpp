@@ -104,8 +104,8 @@ static ULONG farsh_fast (const UINT *data, const UINT *key)
     _mm_storel_epi64 (&result, sum);
     return *(ULONG*) &result;
 #else
-    ULONG sum = 0;  int i;
-    for (i=0; i < STRIPE_ELEMENTS; i+=2)
+    ULONG sum = 0;
+    for (size_t i=0; i < STRIPE_ELEMENTS; i+=2)
         sum += (data[i] + key[i]) * (ULONG)(data[i+1] + key[i+1]);
     return sum;
 #endif
@@ -114,7 +114,7 @@ static ULONG farsh_fast (const UINT *data, const UINT *key)
 /* Internal: hash up to STRIPE bytes, consisting of whole UINT pairs, including optional UINT pair in the extra[] */
 static ULONG farsh_pairs (const UINT *data, size_t elements, const UINT* extra, const UINT *key)
 {
-    ULONG sum = 0;  int i;
+    ULONG sum = 0; size_t i;
     for (i=0; i < elements; i+=2)
         sum += (data[i] + key[i]) * (ULONG)(data[i+1] + key[i+1]);
     if (extra)
@@ -260,7 +260,7 @@ void farsh_keyed_n (const void *data, size_t bytes, const void *key, int n, void
 /* Hash the buffer and return hash 32*n bits long (n<=32), starting with hash number 'k' */
 void farsh_n (const void *data, size_t bytes, int k, int n, void *hash)
 {
-    if (k+n > MAX_HASHES)  abort();  /* FARSH_KEYS contains only material for the hashes 0..MAX_HASHES-1 */
+    if (k+n > static_cast<int>(MAX_HASHES))  abort();  /* FARSH_KEYS contains only material for the hashes 0..MAX_HASHES-1 */
     farsh_keyed_n (data, bytes, (const char*)FARSH_KEYS + k*KEY_OFFSET, n, hash);
 }
 
