@@ -11,9 +11,15 @@
 namespace split_index
 {
 
-struct SplitIndex1Whitebox
+struct SplitIndexKWhitebox
 {
-    SplitIndex1Whitebox() = delete;
+    SplitIndexKWhitebox() = delete;
+
+    template<size_t k>
+    inline static size_t getPartSize(size_t wordSize)
+    {
+        return SplitIndexK<k>::getPartSize(wordSize);
+    }
 };
 
 } // namespace split_index

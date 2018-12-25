@@ -38,4 +38,15 @@ TEST_CASE("does split index k throw for empty words", "[split_index_k]")
     });
 }
 
+TEST_CASE("is k entry size calculation correct", "[split_index_k]")
+{
+
+}
+
+TEST_CASE("is part size calculation correct", "[split_index_k]")
+{    
+    REQUIRE(SplitIndexKWhitebox::getPartSize<1>(4) == 2);
+    REQUIRE(SplitIndexKWhitebox::getPartSize<2>(4) == 1);
+}
+
 } // namespace split_index

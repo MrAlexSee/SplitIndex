@@ -102,7 +102,7 @@ void SplitIndex1::processQuery(const string &query, set<string> &results)
 size_t SplitIndex1::calcEntrySizeB(const char *entry) const
 {
     const char *start = entry;
-    entry += 2; // We jump over the prefix index (uint16_t == 2 bytes).
+    entry += sizeof(uint16_t); // We jump over the prefix index.
 
     while (*entry != 0)
     {
@@ -116,7 +116,7 @@ size_t SplitIndex1::calcEntrySizeB(const char *entry) const
 int SplitIndex1::calcEntryNWords(const char *entry) const
 {
     int nWords = 0;
-    entry += 2; // We jump over the prefix index (uint16_t == 2 bytes).
+    entry += sizeof(uint16_t); // We jump over the prefix index.
 
     while (*entry != 0)
     {
