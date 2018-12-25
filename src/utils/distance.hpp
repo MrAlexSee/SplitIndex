@@ -13,10 +13,10 @@ struct Distance
 {
     Distance() = delete;
 
-    template<int k>
+    template<unsigned k>
     static bool isHammingAtMostK(const char *str1, const char *str2, size_t length)
     {
-        int nErrors = 0;
+        unsigned nErrors = 0;
 
         for (size_t i = 0; i < length; ++i)
         {
