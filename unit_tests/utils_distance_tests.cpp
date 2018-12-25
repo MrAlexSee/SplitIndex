@@ -15,9 +15,15 @@ namespace split_index
 namespace
 {
 
-constexpr int maxK = 5;
+constexpr size_t maxK = 5;
 constexpr int nHammingRepeats = 10;
 
+}
+
+TEST_CASE("is Hamming for empty calculation correct", "[utils_distance]")
+{
+    string empty = "";
+    REQUIRE(utils::Distance::calcHamming(empty.c_str(), empty.c_str(), 0) == 0);
 }
 
 TEST_CASE("is Hamming at most k for empty calculation correct", "[utils_distance]")
@@ -30,14 +36,35 @@ TEST_CASE("is Hamming at most k for empty calculation correct", "[utils_distance
     });
 }
 
+
+TEST_CASE("is Hamming for self correct", "[utils_distance]")
+{
+    string str1 = "ala ma kota";
+    REQUIRE(utils::Distance::calcHamming(str1.c_str(), str1.c_str(), str1.size()) == 0);
+}
+
 TEST_CASE("is Hamming at most k calculation for self correct", "[utils_distance]")
 {
     string str1 = "ala ma kota";
 
     for_<maxK + 1>([&] (auto k)
     {
-        REQUIRE(utils::Distance::isHammingAtMostK<k.value>(str1.c_str(), str1.c_str(), str1.size()) == true);    
+        REQUIRE(utils::Distance::isHammingAtMostK<k.value>(str1.c_str(), str1.c_str(), str1.size()) == true);
     });
+}
+
+TEST_CASE("is Hamming calculation for 1 error correct", "[utils_distance]")
+{
+    const string str = "ala ma kota";
+    
+    for (size_t i = 0; i < str.size(); ++i)
+    {
+        string cur = str;
+        cur[i] = 'N';
+
+        REQUIRE(utils::Distance::calcHamming(cur.c_str(), str.c_str(), cur.size()) == 1);
+        REQUIRE(utils::Distance::calcHamming(str.c_str(), cur.c_str(), cur.size()) == 1);
+    }
 }
 
 TEST_CASE("is Hamming at most k=1 calculation correct", "[utils_distance]")
@@ -55,6 +82,26 @@ TEST_CASE("is Hamming at most k=1 calculation correct", "[utils_distance]")
         REQUIRE(utils::Distance::isHammingAtMostK<1>(cur.c_str(), str.c_str(), cur.size()) == true);
         REQUIRE(utils::Distance::isHammingAtMostK<1>(str.c_str(), cur.c_str(), cur.size()) == true);
     }
+}
+
+TEST_CASE("is Hamming calculation for selected words correct", "[distance]")
+{
+    string str1 = "aaaa", str2 = "aaab";
+
+    REQUIRE(utils::Distance::calcHamming(str1.c_str(), str2.c_str(), str1.size()) == 1);
+    REQUIRE(utils::Distance::calcHamming(str2.c_str(), str1.c_str(), str1.size()) == 1);
+
+    str1 = "aaaa", str2 = "baab";
+    REQUIRE(utils::Distance::calcHamming(str1.c_str(), str2.c_str(), str1.size()) == 2);
+    REQUIRE(utils::Distance::calcHamming(str2.c_str(), str1.c_str(), str1.size()) == 2);
+
+    str1 = "abcdef", str2 = "abccef";
+    REQUIRE(utils::Distance::calcHamming(str1.c_str(), str2.c_str(), str1.size()) == 1);
+    REQUIRE(utils::Distance::calcHamming(str2.c_str(), str1.c_str(), str1.size()) == 1);
+
+    str1 = "abcdef", str2 = "abcccf";
+    REQUIRE(utils::Distance::calcHamming(str1.c_str(), str2.c_str(), str1.size()) == 2);
+    REQUIRE(utils::Distance::calcHamming(str2.c_str(), str1.c_str(), str1.size()) == 2);
 }
 
 TEST_CASE("is Hamming at most k=1 calculation for selected words correct", "[distance]")
