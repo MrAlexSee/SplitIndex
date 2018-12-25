@@ -364,92 +364,117 @@ template<size_t k>
 std::string SplitIndexK<k>::tryMatchPart(const std::string &query, const char *entry,
     size_t matchSize, size_t iPart) const
 {
+    assert(k == 1);
     switch (iPart)
     {
         case 0:
-            if (utils::Distance::isHammingAtMostK<k>(entry, query.c_str() + wordPartSizes[0], matchSize))
+            if (utils::Distance::isHammingAtMostK<1>(entry, query.c_str() + wordPartSizes[0], matchSize))
             {
                 return std::string(query.c_str(), wordPartSizes[0]) +
                     std::string(entry, matchSize);
             }
             break;
         case 1:
-            switch (k)
+            if (utils::Distance::isHammingAtMostK<1>(entry, query.c_str(), matchSize))
             {
-                case 1:
-                    if (utils::Distance::isHammingAtMostK<1>(entry, query.c_str(), matchSize))
-                    {
-                        return std::string(entry, matchSize) +
-                            std::string(query.c_str() + matchSize, wordPartSizes[1]);
-                    }
-                    break;
-                case 2:
-                    {
-                        unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), wordPartSizes[0]);
-                        nErrors += utils::Distance::calcHamming(entry + wordPartSizes[0],
-                            query.c_str() + wordPartSizes[0] + wordPartSizes[1], wordPartSizes[2]);
+                return std::string(entry, matchSize) +
+                    std::string(query.c_str() + matchSize, wordPartSizes[1]);
+            }
+            break;
+        default:
+            assert(false);
+    }
 
-                        if (nErrors <= k)
-                        {
-                            return std::string(entry, wordPartSizes[0]) +
-                                std::string(query.c_str() + wordPartSizes[0], wordPartSizes[1]) +
-                                std::string(entry + wordPartSizes[0], wordPartSizes[2]);
-                        }
-                    }
-                    break;
-                case 3:
-                    {
-                        const size_t partSize2 = wordPartSizes[2] + wordPartSizes[3];
+    return "";
+}
 
-                        unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), wordPartSizes[0]);
-                        nErrors += utils::Distance::calcHamming(entry + wordPartSizes[0],
-                            query.c_str() + wordPartSizes[0] + wordPartSizes[1], partSize2);
+template<>
+inline std::string SplitIndexK<2>::tryMatchPart(const std::string &query, const char *entry,
+    size_t matchSize, size_t iPart) const
+{
+    switch (iPart)
+    {
+        case 0:
+            if (utils::Distance::isHammingAtMostK<2>(entry, query.c_str() + wordPartSizes[0], matchSize))
+            {
+                return std::string(query.c_str(), wordPartSizes[0]) +
+                    std::string(entry, matchSize);
+            }
+            break;
+        case 1:
+            {
+                unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), wordPartSizes[0]);
+                nErrors += utils::Distance::calcHamming(entry + wordPartSizes[0],
+                    query.c_str() + wordPartSizes[0] + wordPartSizes[1], wordPartSizes[2]);
 
-                        if (nErrors <= k)
-                        {
-                            return std::string(entry, wordPartSizes[0]) +
-                                std::string(query.c_str() + wordPartSizes[0], wordPartSizes[1]) +
-                                std::string(entry + wordPartSizes[0], partSize2);
-                        }
-                    }
-                    break;
-                default:
-                    assert(false);
+                if (nErrors <= 2)
+                {
+                    return std::string(entry, wordPartSizes[0]) +
+                        std::string(query.c_str() + wordPartSizes[0], wordPartSizes[1]) +
+                        std::string(entry + wordPartSizes[0], wordPartSizes[2]);
+                }
             }
             break;
         case 2:
-            switch (k)
+            if (utils::Distance::isHammingAtMostK<2>(entry, query.c_str(), matchSize))
             {
-                case 2:
-                    if (utils::Distance::isHammingAtMostK<1>(entry, query.c_str(), matchSize))
-                    {
-                        return std::string(entry, matchSize) +
-                            std::string(query.c_str() + matchSize, wordPartSizes[2]);
-                    }
-                    break;
-                case 3:
-                    {
-                        const size_t partSize1 = wordPartSizes[0] + wordPartSizes[1];
-
-                        unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), partSize1);
-                        nErrors += utils::Distance::calcHamming(entry + partSize1,
-                            query.c_str() + partSize1 + wordPartSizes[2], wordPartSizes[3]);
-
-                        if (nErrors <= k)
-                        {
-                            return std::string(entry, partSize1) +
-                                std::string(query.c_str() + partSize1, wordPartSizes[2]) +
-                                std::string(entry + partSize1 + wordPartSizes[2], wordPartSizes[3]);
-                        }
-                    }
-                    break;
-                default:
-                    assert(false);
+                return std::string(entry, matchSize) +
+                    std::string(query.c_str() + matchSize, wordPartSizes[2]);
             }
             break;
-        case 3:
-            assert(k == 3);
+        default:
+            assert(false);
+    }
 
+    return "";
+}
+
+template<>
+inline std::string SplitIndexK<3>::tryMatchPart(const std::string &query, const char *entry,
+    size_t matchSize, size_t iPart) const
+{
+    switch (iPart)
+    {
+        case 0:
+            if (utils::Distance::isHammingAtMostK<3>(entry, query.c_str() + wordPartSizes[0], matchSize))
+            {
+                return std::string(query.c_str(), wordPartSizes[0]) +
+                    std::string(entry, matchSize);
+            }
+            break;
+        case 1:
+            {
+                const size_t partSize2 = wordPartSizes[2] + wordPartSizes[3];
+
+                unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), wordPartSizes[0]);
+                nErrors += utils::Distance::calcHamming(entry + wordPartSizes[0],
+                    query.c_str() + wordPartSizes[0] + wordPartSizes[1], partSize2);
+
+                if (nErrors <= 3)
+                {
+                    return std::string(entry, wordPartSizes[0]) +
+                        std::string(query.c_str() + wordPartSizes[0], wordPartSizes[1]) +
+                        std::string(entry + wordPartSizes[0], partSize2);
+                }
+                break;
+            }
+        case 2:
+            {
+                const size_t partSize1 = wordPartSizes[0] + wordPartSizes[1];
+
+                unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), partSize1);
+                nErrors += utils::Distance::calcHamming(entry + partSize1,
+                    query.c_str() + partSize1 + wordPartSizes[2], wordPartSizes[3]);
+
+                if (nErrors <= 3)
+                {
+                    return std::string(entry, partSize1) +
+                        std::string(query.c_str() + partSize1, wordPartSizes[2]) +
+                        std::string(entry + partSize1 + wordPartSizes[2], wordPartSizes[3]);
+                }
+                break;
+            }
+        case 3:
             if (utils::Distance::isHammingAtMostK<3>(entry, query.c_str(), matchSize))
             {
                 return std::string(entry, matchSize) +
