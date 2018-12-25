@@ -8,6 +8,7 @@
 #include "split_index.hpp"
 
 #include "../hash_map/hash_map_aligned.hpp"
+#include "../utils/distance.hpp"
 
 #ifndef SPLIT_INDEX_K_WHITEBOX
 #define SPLIT_INDEX_K_WHITEBOX
@@ -38,16 +39,18 @@ protected:
 
     inline static size_t getPartSize(size_t wordSize);
 
-    /** Creates a new entry containing a [wordPart] of size [partSize].
-     * This is [iPart] out of [0, k] entries. */
-    static char *createEntry(const char *wordPart, size_t partSize, size_t iPart);
+    /** Creates a new entry containing [wordParts] of size [partsSize].
+     * They are missing [iPart] out of [0, k] parts. */
+    static char *createEntry(const char *wordParts, size_t partsSize, size_t iPart);
 
-    /** Adds a [wordPart] of size [partSize] to an existing entry pointed to by [entryPtr].
-     * This is [iPart] out of [0, k] entries. */
-    static void addToEntry(char **entryPtr, const char *wordPart, size_t partSize, size_t iPart);
+    /** Adds [wordParts] of size [partsSize] to an existing entry pointed to by [entryPtr].
+     * They are missing [iPart] out of [0, k] parts. */
+    void addToEntry(char **entryPtr, const char *wordParts, size_t partsSize, size_t iPart);
+
+    size_t calcEntryNWords(const char *entry) const;
 
     std::string tryMatchPart(const std::string &query, const char *entry,
-                             char matchSize, size_t iPart) const;
+                             size_t matchSize, size_t iPart) const;
 
     /** Sets bits for word index [iWord] and part index [iPart] in [entry].
      * iPart = 0 -> 0,0
@@ -249,34 +252,156 @@ size_t SplitIndexK<k>::getPartSize(size_t wordSize)
 }
 
 template<size_t k>
-char *SplitIndexK<k>::createEntry(const char *wordPart, size_t partSize, size_t iPart)
+char *SplitIndexK<k>::createEntry(const char *wordParts, size_t partsSize, size_t iPart)
 {
-    return nullptr;
+    assert(partsSize > 0 and partsSize < maxWordSize);
+    const size_t newSize = sizeof(uint16_t) + 2 + partsSize + 1; 
+
+    char *entry = static_cast<char *>(malloc(newSize));
+    assert(entry != nullptr);
+
+    // We set the part index byte counter to 1 since there is only a single byte at the beginning.
+    *reinterpret_cast<uint16_t *>(entry) = 0x1u;
+
+    *(entry + sizeof(uint16_t)) = 0x0u; // Originally no bits are set.
+    setPartBits(entry, 0, iPart);
+    
+    entry += sizeof(uint16_t) + 1;
+    *entry = static_cast<char>(partsSize);
+    
+    entry += 1;
+    memcpy(entry, wordParts, partsSize);
+    
+    entry[newSize - 1] = 0;
+    return entry;
 }
 
 template<size_t k>
-void SplitIndexK<k>::addToEntry(char **entryPtr, const char *wordPart, size_t partSize, size_t iPart)
+void SplitIndexK<k>::addToEntry(char **entryPtr, const char *wordParts, size_t partsSize, size_t iPart)
 {
+    assert(partsSize > 0 and partsSize < maxWordSize);
+    const uint16_t nPartBytes = *reinterpret_cast<const uint16_t *>(*entryPtr);
 
+    const size_t oldSize = calcEntrySizeB(*entryPtr);
+    const size_t oldNWords = calcEntryNWords(*entryPtr);
+
+    assert(oldNWords <= nPartBytes * 4);
+
+    size_t newSize = oldSize + 1 + partsSize;
+    bool addNewPartByte = false;
+
+    // This means that all part bytes have been exhausted and we need to add a new one.
+    if (oldNWords == nPartBytes * 4)
+    {
+        newSize += 1;
+        addNewPartByte = true;
+    }
+
+    char *newEntry = static_cast<char *>(realloc(*entryPtr, newSize));
+    assert(newEntry != nullptr);
+
+    // TODO
+}
+
+template<size_t k>
+size_t SplitIndexK<k>::calcEntryNWords(const char *entry) const
+{
+    size_t nWords = 0;
+    entry += sizeof(uint16_t) + *reinterpret_cast<const uint16_t *>(entry);
+
+    while (*entry != 0)
+    {
+        nWords += 1;
+        entry += 1 + *entry;
+    }
+
+    return nWords;
 }
 
 template<size_t k>
 std::string SplitIndexK<k>::tryMatchPart(const std::string &query, const char *entry,
-    char matchSize, size_t iPart) const
+                                         size_t matchSize, size_t iPart) const
 {
-    return { };   
+    switch (iPart)
+    {
+        case 0:
+            if (utils::Distance::isHammingAtMostK<k>(entry, query.c_str() + wordPartSizes[0], matchSize))
+            {
+                return std::string(query.c_str(), wordPartSizes[0]) + std::string(entry, matchSize);
+            }
+        case 1:
+            if (k == 1)
+            {
+
+            }
+            else
+            {
+                assert(k == 2 or k == 3);
+            }
+
+            break;
+        
+        case 2:
+            if (k == 2)
+            {
+
+            }
+            else
+            {
+                assert(k == 3);
+            }
+
+            break;
+
+        case 3:
+            assert(k == 3);
+
+            if (utils::Distance::isHammingAtMostK<k>(entry, query.c_str(), matchSize))
+            {
+                return std::string(entry, matchSize) + std::string(query.c_str(), matchSize);
+            }
+        default:
+            assert(false);
+    }
+
+    return "";
 }
 
 template<size_t k>
 void SplitIndexK<k>::setPartBits(char *entry, size_t iWord, size_t iPart)
 {
+    assert(iPart >= 0 and iPart < k + 1);
 
+    const size_t pos = iWord * 2;
+
+    const size_t iByte = pos / 8; 
+    const size_t iBit = pos % 8;
+
+    entry += sizeof(uint16_t); // Go to the first byte.
+    entry += iByte; // Go to the requested byte.
+
+    const char mask = (iPart << iBit);
+    *entry |= mask;
+
+    assert(retrievePartIndexFromBits(entry - sizeof(uint16_t) - iByte, iWord) == iPart);
 }
 
 template<size_t k>
 size_t SplitIndexK<k>::retrievePartIndexFromBits(const char *entry, size_t iWord)
 {
-    return 0;
+    assert(iPart >= 0 and iPart < k + 1);
+    const size_t pos = iWord * 2;
+
+    const size_t iByte = pos / 8; 
+    const size_t iBit = pos % 8;
+
+    entry += sizeof(uint16_t); // Go to the first byte.
+    entry += iByte; // Go to the requested byte.
+
+    const size_t first = (*entry & (0x1u << iBit)) >> iBit;
+    const size_t second = (*entry & (0x1u << (iBit + 1))) >> iBit;
+
+    return first | second;
 }
 
 } // namespace split_index

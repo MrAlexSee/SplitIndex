@@ -112,10 +112,9 @@ size_t SplitIndex1::calcEntrySizeB(const char *entry) const
     return entry - start + 1; // This includes the terminating 0.
 }
 
-
-int SplitIndex1::calcEntryNWords(const char *entry) const
+size_t SplitIndex1::calcEntryNWords(const char *entry) const
 {
-    int nWords = 0;
+    size_t nWords = 0;
     entry += sizeof(uint16_t); // We jump over the prefix index.
 
     while (*entry != 0)
@@ -250,7 +249,7 @@ void SplitIndex1::searchWithPrefixAsKey(set<string> &results)
         return;
     }
 
-    entry += 2;
+    entry += sizeof(uint16_t); // We jump over the prefix index.
     const char cSuffixSize = static_cast<char>(suffixSize);
 
     if (*prefixIndex != 0)
@@ -266,12 +265,7 @@ void SplitIndex1::searchWithPrefixAsKey(set<string> &results)
             {
                 if (utils::Distance::isHammingAtMostK<1>(entry + 1, suffixBuf, suffixSize))
                 {
-                    const string result = string(prefixBuf, prefixSize) + string(entry + 1, suffixSize);
-
-                    if (results.find(result) == results.end())
-                    {
-                        results.insert(move(result));
-                    }
+                    results.emplace(string(prefixBuf, prefixSize) + string(entry + 1, suffixSize));
                 }
             }
 
@@ -287,12 +281,7 @@ void SplitIndex1::searchWithPrefixAsKey(set<string> &results)
             {
                 if (utils::Distance::isHammingAtMostK<1>(entry + 1, suffixBuf, suffixSize))
                 {
-                    const string result = string(prefixBuf, prefixSize) + string(entry + 1, suffixSize);
-
-                    if (results.find(result) == results.end())
-                    {
-                        results.insert(move(result));
-                    }
+                    results.emplace(string(prefixBuf, prefixSize) + string(entry + 1, suffixSize));
                 }
             }
 
@@ -330,12 +319,7 @@ void SplitIndex1::searchWithSuffixAsKey(set<string> &results)
         {
             if (utils::Distance::isHammingAtMostK<1>(entry + 1, prefixBuf, prefixSize))
             {
-                const string result = string(entry + 1, cPrefixSize) + string(suffixBuf, suffixSize);
-
-                if (results.find(result) == results.end())
-                {
-                    results.insert(move(result));
-                }
+                results.emplace(string(entry + 1, cPrefixSize) + string(suffixBuf, suffixSize));
             }
         }
 
