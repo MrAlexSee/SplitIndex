@@ -176,6 +176,7 @@ void SplitIndex1::addToEntry(char **entryPtr,
     const size_t newEntrySize = oldEntrySize + partSize + 1;
     
     char *newEntry = static_cast<char *>(realloc(*entryPtr, newEntrySize));
+    assert(newEntry != nullptr);
 
     // We act depending on the value of the prefix index.
     // It is a 1-based index over the word count.

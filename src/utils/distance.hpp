@@ -31,6 +31,21 @@ struct Distance
 
         return true;
     }
+
+    static unsigned calcHamming(const char *str1, const char *str2, size_t length)
+    {
+        unsigned nErrors = 0;
+
+        for (size_t i = 0; i < length; ++i)
+        {
+            if (str1[i] != str2[i])
+            {
+                nErrors += 1;
+            }
+        }
+
+        return nErrors;
+    }
 };
 
 } // namespace utils

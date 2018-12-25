@@ -280,27 +280,64 @@ template<size_t k>
 void SplitIndexK<k>::addToEntry(char **entryPtr, const char *wordParts, size_t partsSize, size_t iPart)
 {
     assert(partsSize > 0 and partsSize < maxWordSize);
-    const uint16_t nPartBytes = *reinterpret_cast<const uint16_t *>(*entryPtr);
+    uint16_t *nPartBytes = reinterpret_cast<uint16_t *>(*entryPtr);
 
-    const size_t oldSize = calcEntrySizeB(*entryPtr);
+    const size_t oldEntrySize = calcEntrySizeB(*entryPtr);
     const size_t oldNWords = calcEntryNWords(*entryPtr);
 
-    assert(oldNWords <= nPartBytes * 4);
+    assert(oldNWords <= *nPartBytes * 4);
 
-    size_t newSize = oldSize + 1 + partsSize;
+    size_t newEntrySize = oldEntrySize + 1 + partsSize;
     bool addNewPartByte = false;
 
     // This means that all part bytes have been exhausted and we need to add a new one.
-    if (oldNWords == nPartBytes * 4)
+    if (oldNWords == *nPartBytes * 4)
     {
-        newSize += 1;
+        newEntrySize += 1;
         addNewPartByte = true;
     }
 
-    char *newEntry = static_cast<char *>(realloc(*entryPtr, newSize));
+    char *newEntry = static_cast<char *>(realloc(*entryPtr, newEntrySize));
     assert(newEntry != nullptr);
 
-    // TODO
+    if (addNewPartByte)
+    {
+        const size_t iWordsStart = sizeof(uint16_t) + *nPartBytes;
+        memmove(newEntry + iWordsStart + 1, newEntry + iWordsStart,
+            oldEntrySize - iWordsStart);
+
+        *nPartBytes += 1;
+        // The new part byte is where the words used to begin.
+        newEntry[iWordsStart] = 0x0u;
+
+        // We will start overwriting with the terminating 0.
+        char *newEntryWordStart = newEntry + oldEntrySize;
+        *newEntryWordStart = static_cast<char>(partsSize);
+
+        newEntryWordStart += 1;
+        memcpy(newEntryWordStart, wordParts, partsSize);
+
+        newEntryWordStart[partsSize] = 0;
+    }
+    else
+    {
+        char *newEntryWordStart = newEntry + oldEntrySize - 1;
+        *newEntryWordStart = static_cast<char>(partsSize);
+
+        newEntryWordStart += 1;
+        memcpy(newEntryWordStart, wordParts, partsSize);
+
+        newEntryWordStart[partsSize] = 0;
+    }
+
+    assert(calcEntryNWords(newEntry) == oldNWords + 1);
+
+    // Word index is 0-indexed, hence we use the old #words value here.
+    setPartBits(newEntry, oldNWords, iPart);
+
+    // This is required in the case the memory has been moved by realloc.
+    *entryPtr = newEntry;
+    assert(newEntry[newEntrySize - 1] == 0);
 }
 
 template<size_t k>
@@ -329,37 +366,82 @@ std::string SplitIndexK<k>::tryMatchPart(const std::string &query, const char *e
             {
                 return std::string(query.c_str(), wordPartSizes[0]) + std::string(entry, matchSize);
             }
+            break;
         case 1:
-            if (k == 1)
+            switch (k)
             {
+                case 1:
+                    if (utils::Distance::isHammingAtMostK<1>(entry, query.c_str(), matchSize))
+                    {
+                        return std::string(entry, matchSize) + std::string(query.c_str() + matchSize, wordPartSizes[1]);
+                    }
+                    break;
+                case 2:
+                    {
+                        unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), wordPartSizes[0]);
+                        nErrors += utils::Distance::calcHamming(entry + wordPartSizes[0], query.c_str() + wordPartSizes[0] + wordPartSizes[1], wordPartSizes[2]);
 
-            }
-            else
-            {
-                assert(k == 2 or k == 3);
-            }
+                        if (nErrors <= k)
+                        {
+                            return std::string(entry, wordPartSizes[0]) + std::string(query.c_str() + wordPartSizes[0]) + std::string(entry + wordPartSizes[0], wordPartSizes[2]);
+                        }
+                    }
 
+                    break;
+                case 3:
+                    {
+                        const size_t partSize2 = wordPartSizes[0] + wordPartSizes[1];
+
+                        unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), wordPartSizes[0]);
+                        nErrors += utils::Distance::calcHamming(entry + wordPartSizes[0], query.c_str() + wordPartSizes[0] + wordPartSizes[1], partSize2);
+
+                        if (nErrors <= k)
+                        {
+                            return std::string(entry, wordPartSizes[0]) + std::string(query.c_str() + wordPartSizes[0], wordPartSizes[1]) + std::string(entry + wordPartSizes[0], partSize2);
+                        }
+                    }
+
+                    break;
+                default:
+                    assert(false);
+            }
             break;
-        
         case 2:
-            if (k == 2)
+            switch (k)
             {
+                case 2:
+                    if (utils::Distance::isHammingAtMostK<1>(entry, query.c_str(), matchSize))
+                    {
+                        return std::string(entry, matchSize) + std::string(query.c_str() + matchSize, wordPartSizes[2]);
+                    }
 
-            }
-            else
-            {
-                assert(k == 3);
-            }
+                    break;
+                case 3:
+                    {
+                        const size_t partSize1 = wordPartSizes[0] + wordPartSizes[1];
 
+                        unsigned nErrors = utils::Distance::calcHamming(entry, query.c_str(), partSize1);
+                        nErrors += utils::Distance::calcHamming(entry + partSize1, query.c_str() + partSize1 + wordPartSizes[2], wordPartSizes[3]);
+
+                        if (nErrors <= k)
+                        {
+                            return std::string(entry, partSize1) + std::string(query.c_str() + partSize1, wordPartSizes[2]) + std::string(entry + partSize1 + wordPartSizes[2], wordPartSizes[3]);
+                        }
+                    }
+
+                    break;
+                default:
+                    assert(false);
+            }
             break;
-
         case 3:
             assert(k == 3);
 
-            if (utils::Distance::isHammingAtMostK<k>(entry, query.c_str(), matchSize))
+            if (utils::Distance::isHammingAtMostK<3>(entry, query.c_str(), matchSize))
             {
                 return std::string(entry, matchSize) + std::string(query.c_str(), matchSize);
             }
+            break;
         default:
             assert(false);
     }
