@@ -1,6 +1,7 @@
 #ifndef SPLIT_INDEX_K_HPP
 #define SPLIT_INDEX_K_HPP
 
+#include <cassert>
 #include <cmath>
 #include <cstring>
 #include <stdexcept>
@@ -471,7 +472,6 @@ void SplitIndexK<k>::setPartBits(char *entry, size_t iWord, size_t iPart)
 template<size_t k>
 size_t SplitIndexK<k>::retrievePartIndexFromBits(const char *entry, size_t iWord)
 {
-    assert(iPart >= 0 and iPart < k + 1);
     const size_t pos = iWord * 2;
 
     const size_t iByte = pos / 8;
