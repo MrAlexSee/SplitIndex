@@ -27,6 +27,7 @@ TEST_CASE("is searching empty patterns correct", "[split_index_1_searching]")
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
         new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<1>(wordSet, hashType, 1.0f),
         new SplitIndexK<2>(wordSet, hashType, 1.0f),
         new SplitIndexK<3>(wordSet, hashType, 1.0f) };
 
@@ -54,6 +55,7 @@ TEST_CASE("is searching words exact correct", "[split_index_1_searching]")
         new SplitIndex1({ words.begin(), words.end() }, hashType, 1.0f), 
         new SplitIndex1Comp({ words.begin(), words.end() }, hashType, 1.0f),
         new SplitIndex1CompTriple({ words.begin(), words.end() }, hashType, 1.0f),
+        new SplitIndexK<1>({ words.begin(), words.end() }, hashType, 1.0f),
         new SplitIndexK<2>({ words.begin(), words.end() }, hashType, 1.0f),
         new SplitIndexK<3>({ words.begin(), words.end() }, hashType, 1.0f) };
 
@@ -82,6 +84,7 @@ TEST_CASE("is searching words exact one-by-one correct", "[split_index_1_searchi
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
         new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<1>(wordSet, hashType, 1.0f),
         new SplitIndexK<2>(wordSet, hashType, 1.0f),
         new SplitIndexK<3>(wordSet, hashType, 1.0f) };
 
@@ -117,6 +120,7 @@ TEST_CASE("is searching words for k = 1 correct", "[split_index_1_searching]")
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
         new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<1>(wordSet, hashType, 1.0f),
         new SplitIndexK<2>(wordSet, hashType, 1.0f),
         new SplitIndexK<3>(wordSet, hashType, 1.0f) };
 
@@ -154,6 +158,7 @@ TEST_CASE("is searching words for k = 1 one-by-one correct", "[split_index_1_sea
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
         new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<1>(wordSet, hashType, 1.0f),
         new SplitIndexK<2>(wordSet, hashType, 1.0f),
         new SplitIndexK<3>(wordSet, hashType, 1.0f)  };
 
@@ -194,7 +199,8 @@ TEST_CASE("is searching words for various number of mismatches correct", "[split
     SplitIndex *indexes[] = { 
         new SplitIndex1(wordSet, hashType, 1.0f), 
         new SplitIndex1Comp(wordSet, hashType, 1.0f),
-        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f),
+        new SplitIndexK<1>(wordSet, hashType, 1.0f) };
 
     const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
