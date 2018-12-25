@@ -14,9 +14,9 @@ namespace hash_map
 {
 
 HashMap::HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
-                 float maxLoadFactorArg,
-                 int nBucketsHint,
-                 hash_functions::HashFunctions::HashType hashType)
+        float maxLoadFactorArg,
+        int nBucketsHint,
+        hash_functions::HashFunctions::HashType hashType)
     :calcEntrySizeB(calcEntrySizeBArg),
      maxLoadFactor(maxLoadFactorArg),
      nBuckets(nBucketsHint)

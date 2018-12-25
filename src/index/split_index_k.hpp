@@ -50,7 +50,7 @@ protected:
     size_t calcEntryNWords(const char *entry) const;
 
     std::string tryMatchPart(const std::string &query, const char *entry,
-                             size_t matchSize, size_t iPart) const;
+        size_t matchSize, size_t iPart) const;
 
     /** Sets bits for word index [iWord] and part index [iPart] in [entry].
      * iPart = 0 -> 0,0
@@ -255,7 +255,7 @@ template<size_t k>
 char *SplitIndexK<k>::createEntry(const char *wordParts, size_t partsSize, size_t iPart)
 {
     assert(partsSize > 0 and partsSize < maxWordSize);
-    const size_t newSize = sizeof(uint16_t) + 2 + partsSize + 1; 
+    const size_t newSize = sizeof(uint16_t) + 2 + partsSize + 1;
 
     char *entry = static_cast<char *>(malloc(newSize));
     assert(entry != nullptr);
@@ -265,13 +265,13 @@ char *SplitIndexK<k>::createEntry(const char *wordParts, size_t partsSize, size_
 
     *(entry + sizeof(uint16_t)) = 0x0u; // Originally no bits are set.
     setPartBits(entry, 0, iPart);
-    
+
     entry += sizeof(uint16_t) + 1;
     *entry = static_cast<char>(partsSize);
-    
+
     entry += 1;
     memcpy(entry, wordParts, partsSize);
-    
+
     entry[newSize - 1] = 0;
     return entry;
 }
@@ -320,7 +320,7 @@ size_t SplitIndexK<k>::calcEntryNWords(const char *entry) const
 
 template<size_t k>
 std::string SplitIndexK<k>::tryMatchPart(const std::string &query, const char *entry,
-                                         size_t matchSize, size_t iPart) const
+    size_t matchSize, size_t iPart) const
 {
     switch (iPart)
     {
@@ -374,7 +374,7 @@ void SplitIndexK<k>::setPartBits(char *entry, size_t iWord, size_t iPart)
 
     const size_t pos = iWord * 2;
 
-    const size_t iByte = pos / 8; 
+    const size_t iByte = pos / 8;
     const size_t iBit = pos % 8;
 
     entry += sizeof(uint16_t); // Go to the first byte.
@@ -392,7 +392,7 @@ size_t SplitIndexK<k>::retrievePartIndexFromBits(const char *entry, size_t iWord
     assert(iPart >= 0 and iPart < k + 1);
     const size_t pos = iWord * 2;
 
-    const size_t iByte = pos / 8; 
+    const size_t iByte = pos / 8;
     const size_t iBit = pos % 8;
 
     entry += sizeof(uint16_t); // Go to the first byte.

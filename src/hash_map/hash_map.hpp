@@ -16,9 +16,9 @@ class HashMap
 {
 public:
     HashMap(const std::function<size_t(const char *)> &calcEntrySizeBArg,
-            float maxLoadFactorArg,
-            int nBucketsHint,
-            hash_functions::HashFunctions::HashType hashType);
+        float maxLoadFactorArg,
+        int nBucketsHint,
+        hash_functions::HashFunctions::HashType hashType);
     virtual ~HashMap() { }
 
     virtual std::string toString() const = 0;

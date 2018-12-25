@@ -18,9 +18,9 @@ namespace hash_map
 {
 
 HashMapAligned::HashMapAligned(const std::function<size_t(const char *)> &calcEntrySizeB,
-                               float maxLoadFactor, 
-                               int nBucketsHint,
-                               hash_functions::HashFunctions::HashType hashType)
+        float maxLoadFactor,
+        int nBucketsHint,
+        hash_functions::HashFunctions::HashType hashType)
     :HashMap(calcEntrySizeB,
         maxLoadFactor,
         nBucketsHint,

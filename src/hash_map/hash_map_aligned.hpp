@@ -22,9 +22,9 @@ class HashMapAligned : public HashMap
 {
 public:
     HashMapAligned(const std::function<size_t(const char *)> &calcEntrySizeB,
-                   float maxLoadFactor, 
-                   int nBucketsHint,
-                   hash_functions::HashFunctions::HashType hashType);
+        float maxLoadFactor,
+        int nBucketsHint,
+        hash_functions::HashFunctions::HashType hashType);
     ~HashMapAligned() override;
 
     std::string toString() const override;

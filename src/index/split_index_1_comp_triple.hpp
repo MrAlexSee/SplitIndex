@@ -15,7 +15,8 @@ class SplitIndex1CompTriple : public SplitIndex1Comp
 {
 public:
     SplitIndex1CompTriple(const std::unordered_set<std::string> &wordSet,
-        hash_functions::HashFunctions::HashType hashType, float maxLoadFactor);
+        hash_functions::HashFunctions::HashType hashType,
+        float maxLoadFactor);
     ~SplitIndex1CompTriple();
 
     std::string toString() const override;
