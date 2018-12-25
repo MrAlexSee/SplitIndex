@@ -53,7 +53,7 @@ void StringUtils::filterWordsByMinLength(vector<string> &words, int minWordLengt
 
     for (auto it = words.begin(); it != words.end(); )
     {
-        if (it->size() < minWordLength)
+        if (it->size() < static_cast<size_t>(minWordLength))
         {
             it = words.erase(it);
         }
