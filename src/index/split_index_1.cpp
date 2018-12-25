@@ -27,7 +27,7 @@ SplitIndex1::SplitIndex1(const unordered_set<string> &wordSet,
     prefixBuf = new char[maxWordSize];
     suffixBuf = new char[maxWordSize];
 
-    prefixSizeLUT = new size_t[maxWordSize];
+    prefixSizeLUT = new size_t[maxWordSize + 1];
 }
 
 SplitIndex1::~SplitIndex1()
