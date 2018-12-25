@@ -35,7 +35,7 @@ protected:
     size_t curN2grams = 0, curN3grams = 0, curN4grams = 0;
 
     /** These are all compile-time constants, determined earlier. */
-    static constexpr size_t n2grams = 20, n3grams = 70, n4grams = 10;
+    static constexpr size_t n2grams = 97, n3grams = 2, n4grams = 1;
 
     // We can take advantage of the whitebox class for the base class since functions are overridden here.
     SPLIT_INDEX_1_COMP_WHITEBOX

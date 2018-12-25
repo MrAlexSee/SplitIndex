@@ -145,8 +145,11 @@ void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
 
 char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPartSuffix) const
 {
-    const size_t newSize = 3 + partSize + 1;
+    // 2 = size of word part, terminating 0.
+    const size_t newSize = sizeof(uint16_t) + 2 + partSize;
+
     char *entry = static_cast<char *>(malloc(newSize));
+    assert(entry != nullptr);
 
     // We set the index which points to the first prefix in the entry.
     // It is a 1-based index over the word count.
