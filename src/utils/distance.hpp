@@ -35,6 +35,7 @@ struct Distance
 
     static unsigned calcHamming(const char *str1, const char *str2, size_t length)
     {
+        // With compiler optimizations, this version is faster than any bitwise/avx/sse magic (tested).
         unsigned nErrors = 0;
 
         for (size_t i = 0; i < length; ++i)
