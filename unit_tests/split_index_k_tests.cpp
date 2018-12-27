@@ -198,4 +198,110 @@ TEST_CASE("is part size calculation correct", "[split_index_k]")
     REQUIRE(SplitIndexKWhitebox::getPartSize<2>(10) == 3);
 }
 
+TEST_CASE("is creating entry correct for k = 1", "[split_index_k]")
+{
+    // Word = tyradami
+    char *entry1 = SplitIndexKWhitebox::createEntry<1>("tyra", 4, 0);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
+    REQUIRE(entry1[2] == 0x0u);
+    REQUIRE(memcmp(entry1 + 3, "\4tyra\0", 6) == 0);
+
+    char *entry2 = SplitIndexKWhitebox::createEntry<1>("dami", 4, 1);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry2) == 1u);
+    REQUIRE(entry2[2] == 0x1u);
+    REQUIRE(memcmp(entry2 + 3, "\4dami\0", 6) == 0);
+}
+
+TEST_CASE("is creating entry correct for k = 2", "[split_index_k]")
+{
+    // Word = tyradami
+    char *entry1 = SplitIndexKWhitebox::createEntry<2>("ty", 2, 0);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
+    REQUIRE(entry1[2] == 0x0u);
+    REQUIRE(memcmp(entry1 + 3, "\2ty\0", 4) == 0);
+
+    char *entry2 = SplitIndexKWhitebox::createEntry<2>("ra", 2, 1);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry2) == 1u);
+    REQUIRE(entry2[2] == 0x1u);
+    REQUIRE(memcmp(entry2 + 3, "\2ra\0", 4) == 0);
+
+    char *entry3 = SplitIndexKWhitebox::createEntry<2>("dami", 4, 2);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry3) == 1u);
+    REQUIRE(entry3[2] == 0x2u);
+    REQUIRE(memcmp(entry3 + 3, "\4dami\0", 6) == 0);
+}
+
+TEST_CASE("is creating entry correct for k = 3", "[split_index_k]")
+{
+    // Word = tyradami
+    char *entry1 = SplitIndexKWhitebox::createEntry<3>("ty", 2, 0);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
+    REQUIRE(entry1[2] == 0x0u);
+    REQUIRE(memcmp(entry1 + 3, "\2ty\0", 4) == 0);
+
+    char *entry2 = SplitIndexKWhitebox::createEntry<3>("ra", 2, 1);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry2) == 1u);
+    REQUIRE(entry2[2] == 0x1u);
+    REQUIRE(memcmp(entry2 + 3, "\2ra\0", 4) == 0);
+
+    char *entry3 = SplitIndexKWhitebox::createEntry<3>("da", 2, 2);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry3) == 1u);
+    REQUIRE(entry3[2] == 0x2u);
+    REQUIRE(memcmp(entry3 + 3, "\2da\0", 6) == 0);
+
+    char *entry4 = SplitIndexKWhitebox::createEntry<3>("mi", 2, 3);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry4) == 1u);
+    REQUIRE(entry4[2] == 0x3u);
+    REQUIRE(memcmp(entry4 + 3, "\2mi\0", 4) == 0);
+}
+
+TEST_CASE("is adding to entry correct for k = 1", "[split_index_k]")
+{
+    // TODO
+}
+
+TEST_CASE("is adding to entry correct for k = 2", "[split_index_k]")
+{
+    // TODO
+}
+
+TEST_CASE("is adding to entry correct for k = 3", "[split_index_k]")
+{
+    // TODO
+}
+
+TEST_CASE("is trying match part correct for k = 1", "[split_index_k]")
+{
+    // TODO
+}
+
+TEST_CASE("is trying match part correct for k = 2", "[split_index_k]")
+{
+    // TODO
+}
+
+TEST_CASE("is trying match part correct for k = 3", "[split_index_k]")
+{
+    // TODO
+}
+
+TEST_CASE("is setting part bits correct", "[split_index_k]")
+{
+    // TODO
+}
+
+TEST_CASE("is retrieving part index from bits correct", "[split_index_k]")
+{
+    // TODO
+}
+
 } // namespace split_index
