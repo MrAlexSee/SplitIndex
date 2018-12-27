@@ -16,6 +16,18 @@ struct SplitIndexKWhitebox
     SplitIndexKWhitebox() = delete;
 
     template<size_t k>
+    inline static const char *const *getWordPartBuf(const SplitIndexK<k> &index)
+    {
+        return index.wordPartBuf;
+    }
+
+    template<size_t k>
+    inline static const size_t *getWordPartSizes(const SplitIndexK<k> &index)
+    {
+        return index.wordPartSizes;
+    }
+
+    template<size_t k>
     inline static size_t calcEntrySizeB(const SplitIndexK<k> &index, const char *entry)
     {
         return index.calcEntrySizeB(entry);
@@ -28,11 +40,22 @@ struct SplitIndexKWhitebox
     }
 
     template<size_t k>
-    inline static void addToEntry(const SplitIndexK<k> &index, char **entryPtr ,const char *wordParts, size_t partsSize, size_t iPart)
+    inline static void addToEntry(const SplitIndexK<k> &index, char **entryPtr, const char *wordParts, size_t partsSize, size_t iPart)
     {
         return index.addToEntry(entryPtr, wordParts, partsSize, iPart);
     }
 
+    template<size_t k>
+    inline static size_t calcEntryNWords(const char *entry)
+    {
+        return SplitIndexK<k>::calcEntryNWords(entry);
+    }
+
+    template<size_t k>
+    inline static void storeWordPartsInBuffers(SplitIndexK<k> &index, const std::string &word)
+    {
+        index.storeWordPartsInBuffers(word);
+    }
 
     template<size_t k>
     inline static size_t getPartSize(size_t wordSize)

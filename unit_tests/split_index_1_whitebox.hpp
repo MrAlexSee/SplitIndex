@@ -40,9 +40,9 @@ struct SplitIndex1Whitebox
         return index.calcEntrySizeB(entry);
     }
 
-    inline static int calcEntryNWords(const SplitIndex1 &index, const char *entry)
+    inline static int calcEntryNWords(const char *entry)
     {
-        return index.calcEntryNWords(entry);
+        return SplitIndex1::calcEntryNWords(entry);
     }
 
     inline static void storePrefixSuffixInBuffers(SplitIndex1 &index, const std::string &word)
