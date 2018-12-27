@@ -35,6 +35,9 @@ protected:
 
     size_t calcEntrySizeB(const char *entry) const override;
 
+    /** Returns the number of words (contiguous word parts) stored in [entry]. */
+    static size_t calcEntryNWords(const char *entry);
+
     /** Splits [word] into k + 1 parts and stores these parts in wordPartBuf. */
     void storeWordPartsInBuffers(const std::string &word);
 
@@ -50,9 +53,6 @@ protected:
     /** Adds [wordParts] of size [partsSize] to an existing entry pointed to by [entryPtr].
      * They are missing [iPart] out of [0, k] parts. */
     void addToEntry(char **entryPtr, const char *wordParts, size_t partsSize, size_t iPart) const;
-
-    /** Returns the number of words (contiguous word parts) stored in [entry]. */
-    size_t calcEntryNWords(const char *entry) const;
 
     /** Tries to match a [query] against word parts in [entry].
      * Word parts have [matchSize] characters and are missing [iPart] out of [0, k] parts.
@@ -227,6 +227,21 @@ size_t SplitIndexK<k>::calcEntrySizeB(const char *entry) const
 }
 
 template<size_t k>
+size_t SplitIndexK<k>::calcEntryNWords(const char *entry)
+{
+    size_t nWords = 0;
+    entry += sizeof(uint16_t) + *reinterpret_cast<const uint16_t *>(entry);
+
+    while (*entry != 0)
+    {
+        nWords += 1;
+        entry += 1 + *entry;
+    }
+
+    return nWords;
+}
+
+template<size_t k>
 void SplitIndexK<k>::storeWordPartsInBuffers(const std::string &word)
 {
     const size_t partSize = getPartSize(word.size());
@@ -346,24 +361,11 @@ void SplitIndexK<k>::addToEntry(char **entryPtr, const char *wordParts, size_t p
 }
 
 template<size_t k>
-size_t SplitIndexK<k>::calcEntryNWords(const char *entry) const
-{
-    size_t nWords = 0;
-    entry += sizeof(uint16_t) + *reinterpret_cast<const uint16_t *>(entry);
-
-    while (*entry != 0)
-    {
-        nWords += 1;
-        entry += 1 + *entry;
-    }
-
-    return nWords;
-}
-
-template<size_t k>
 std::string SplitIndexK<k>::tryMatchPart(const std::string &query, const char *entry,
     size_t matchSize, size_t iPart) const
 {
+    // This is an implementation for k = 1.
+    // Template specializations for k = 2 and k = 3 are located below.
     assert(k == 1);
     switch (iPart)
     {

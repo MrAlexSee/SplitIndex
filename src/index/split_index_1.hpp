@@ -31,7 +31,7 @@ protected:
     size_t calcEntrySizeB(const char *entry) const override;
 
     /** Returns the number of words (word parts) stored in [entry]. */
-    virtual size_t calcEntryNWords(const char *entry) const;
+    static size_t calcEntryNWords(const char *entry);
 
     /** Splits [word] into two and stores the parts (prefix and suffix) in prefixBuf and suffixBuf, resp. */
     void storePrefixSuffixInBuffers(const std::string &word);

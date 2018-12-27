@@ -112,7 +112,7 @@ size_t SplitIndex1::calcEntrySizeB(const char *entry) const
     return entry - start + 1; // This includes the terminating 0.
 }
 
-size_t SplitIndex1::calcEntryNWords(const char *entry) const
+size_t SplitIndex1::calcEntryNWords(const char *entry)
 {
     size_t nWords = 0;
     entry += sizeof(uint16_t); // We jump over the prefix index.
