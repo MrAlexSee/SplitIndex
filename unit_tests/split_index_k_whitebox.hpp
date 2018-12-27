@@ -34,18 +34,6 @@ struct SplitIndexKWhitebox
     }
 
     template<size_t k>
-    inline static char *createEntry(const char *wordParts, size_t partsSize, size_t iPart)
-    {
-        return SplitIndexK<k>::createEntry(wordParts, partsSize, iPart);
-    }
-
-    template<size_t k>
-    inline static void addToEntry(const SplitIndexK<k> &index, char **entryPtr, const char *wordParts, size_t partsSize, size_t iPart)
-    {
-        return index.addToEntry(entryPtr, wordParts, partsSize, iPart);
-    }
-
-    template<size_t k>
     inline static size_t calcEntryNWords(const char *entry)
     {
         return SplitIndexK<k>::calcEntryNWords(entry);
@@ -61,6 +49,40 @@ struct SplitIndexKWhitebox
     inline static size_t getPartSize(size_t wordSize)
     {
         return SplitIndexK<k>::getPartSize(wordSize);
+    }
+
+    template<size_t k>
+    inline static char *createEntry(const char *wordParts, size_t partsSize, size_t iPart)
+    {
+        return SplitIndexK<k>::createEntry(wordParts, partsSize, iPart);
+    }
+
+    template<size_t k>
+    inline static void addToEntry(const SplitIndexK<k> &index,
+        char **entryPtr, const char *wordParts,
+        size_t partsSize, size_t iPart)
+    {
+        return index.addToEntry(entryPtr, wordParts, partsSize, iPart);
+    }
+
+    template<size_t k>
+    inline static std::string tryMatchPart(const SplitIndexK<k> &index,
+        const std::string &query, const char *entry,
+        size_t matchSize, size_t iPart)
+    {
+        return index.tryMatchPart(query, entry, matchSize, iPart);
+    }
+
+    template<size_t k>
+    static void setPartBits(char *entry, size_t iWord, size_t iPart)
+    {
+        SplitIndexK<k>::setPartBits(entry, iWord, iPart);
+    }
+
+    template<size_t k>
+    static size_t retrievePartIndexFromBits(const char *entry, size_t iWord)
+    {
+        return SplitIndexK<k>::retrievePartIndexFromBits(entry, iWord);
     }
 };
 

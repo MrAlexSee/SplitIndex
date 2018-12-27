@@ -521,6 +521,7 @@ size_t SplitIndexK<k>::retrievePartIndexFromBits(const char *entry, size_t iWord
     const size_t first = (*entry & (0x1u << iBit)) >> iBit;
     const size_t second = (*entry & (0x1u << (iBit + 1))) >> iBit;
 
+    assert((first | second) < k + 1);
     return first | second;
 }
 

@@ -296,12 +296,75 @@ TEST_CASE("is trying match part correct for k = 3", "[split_index_k]")
 
 TEST_CASE("is setting part bits correct", "[split_index_k]")
 {
-    // TODO
+    const size_t nBytes = 4;
+    char *entry = new char[nBytes];
+
+    memset(entry, 0x0u, nBytes);
+    *reinterpret_cast<uint16_t *>(entry) = 0x2u;
+
+    SplitIndexKWhitebox::setPartBits<3>(entry, 0, 0);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 0x2u);
+    REQUIRE(entry[2] == 0x0u);
+    REQUIRE(entry[3] == 0x0u);
+
+    SplitIndexKWhitebox::setPartBits<3>(entry, 0, 1);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 0x2u);
+    REQUIRE(entry[2] == 0x1u);
+    REQUIRE(entry[3] == 0x0u);
+
+    SplitIndexKWhitebox::setPartBits<3>(entry, 1, 1);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 0x2u);
+    REQUIRE(entry[2] == 0b00000101);
+    REQUIRE(entry[3] == 0x0u);
+
+    SplitIndexKWhitebox::setPartBits<3>(entry, 2, 2);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 0x2u);
+    REQUIRE(entry[2] == 0b00100101);
+    REQUIRE(entry[3] == 0x0u);
+
+    SplitIndexKWhitebox::setPartBits<3>(entry, 5, 3);
+
+    REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 0x2u);
+    REQUIRE(entry[2] == 0b00100101);
+    REQUIRE(entry[3] == 0b00001100);
+
+    delete[] entry;
 }
 
 TEST_CASE("is retrieving part index from bits correct", "[split_index_k]")
 {
-    // TODO
+    const size_t nBytes = 4;
+    char *entry = new char[nBytes];
+
+    memset(entry, 0x0u, nBytes);
+    *reinterpret_cast<uint16_t *>(entry) = 0x2u;
+
+    for (size_t iWord = 0; iWord < 8; ++iWord)
+    {
+        REQUIRE(SplitIndexKWhitebox::retrievePartIndexFromBits<3>(entry, iWord) == 0);
+        REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 0x2u);
+    }
+
+    entry[2] = 0x1u;
+    REQUIRE(SplitIndexKWhitebox::retrievePartIndexFromBits<3>(entry, 0) == 1);
+    REQUIRE(SplitIndexKWhitebox::retrievePartIndexFromBits<3>(entry, 1) == 0);
+
+    entry[2] = 0b00100101;
+    entry[3] = 0b10001100;
+
+    vector<size_t> expected{ 1, 1, 2, 0, 0, 3, 0, 2 };
+
+    for (size_t iWord = 0; iWord < 8; ++iWord)
+    {
+        REQUIRE(SplitIndexKWhitebox::retrievePartIndexFromBits<3>(entry, iWord) == expected[iWord]);
+        REQUIRE(*reinterpret_cast<uint16_t *>(entry) == 0x2u);
+    }
+
+    delete[] entry;
 }
 
 } // namespace split_index
