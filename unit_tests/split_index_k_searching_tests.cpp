@@ -20,7 +20,7 @@ constexpr int maxNIter = 10;
 TEST_CASE("is searching empty patterns correct for k > 1", "[split_index_k_searching]")
 {
     const unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "lubi", "psy" };
-    SplitIndex *indexes[] = { 
+    SplitIndex *indexes[] = {
         new SplitIndexK<2>(wordSet, hashType, 1.0f),
         new SplitIndexK<3>(wordSet, hashType, 1.0f) };
 
@@ -44,7 +44,7 @@ TEST_CASE("is searching words exact correct for k > 1", "[split_index_k_searchin
     const vector<string> words { "jarek", "lubi", "koty" };
     const vector<string> patternsOut { "this", "dict" };
 
-    SplitIndex *indexes[] = { 
+    SplitIndex *indexes[] = {
         new SplitIndexK<2>({ words.begin(), words.end() }, hashType, 1.0f),
         new SplitIndexK<3>({ words.begin(), words.end() }, hashType, 1.0f) };
 
@@ -69,7 +69,7 @@ TEST_CASE("is searching words exact one-by-one correct for k > 1", "[split_index
     const unordered_set<string> wordSet { "jarek", "lubi", "koty" };
     const vector<string> patternsOut { "this", "dict" };
 
-    SplitIndex *indexes[] = { 
+    SplitIndex *indexes[] = {
         new SplitIndexK<2>(wordSet, hashType, 1.0f),
         new SplitIndexK<3>(wordSet, hashType, 1.0f) };
 
@@ -98,9 +98,9 @@ TEST_CASE("is searching words exact one-by-one correct for k > 1", "[split_index
 
 TEST_CASE("is searching for k > 1 for 1 error correct", "[split_index_k_searching]")
 {
-    const unordered_set<string> wordSet{ "ala", "lubi", "kota", "jarek", "psa" };
+    const unordered_set<string> wordSet { "ala", "lubi", "kota", "jarek", "psa" };
 
-    SplitIndex *indexes[] = { 
+    SplitIndex *indexes[] = {
         new SplitIndexK<2>(wordSet, hashType, 1.0f),
         new SplitIndexK<3>(wordSet, hashType, 1.0f) };
 
@@ -119,7 +119,7 @@ TEST_CASE("is searching for k > 1 for 1 error correct", "[split_index_k_searchin
 
                 for (int nIter = 1; nIter <= maxNIter; ++nIter)
                 {
-                    set<string> result = indexes[iIndex]->search({ curWord }, nIter);
+                    const set<string> result = indexes[iIndex]->search({ curWord }, nIter);
 
                     REQUIRE(result.size() == 1);
                     REQUIRE(wordSet.find(*result.begin()) != wordSet.end());
@@ -133,7 +133,7 @@ TEST_CASE("is searching for k > 1 for 1 error correct", "[split_index_k_searchin
 
 TEST_CASE("is searching for k = 2 for 2 errors correct", "[split_index_k_searching]")
 {
-    const unordered_set<string> wordSet{ "ala", "ma", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
+    const unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
 
     SplitIndexK<2> index(wordSet, hashType, 1.0f);
     index.construct();
@@ -156,7 +156,7 @@ TEST_CASE("is searching for k = 2 for 2 errors correct", "[split_index_k_searchi
 
             for (int nIter = 1; nIter <= maxNIter; ++nIter)
             {
-                set<string> result = index.search({ curWord }, nIter);
+                const set<string> result = index.search({ curWord }, nIter);
                 REQUIRE(result.size() == 1);
 
                 for (const string &word : result)
@@ -170,7 +170,7 @@ TEST_CASE("is searching for k = 2 for 2 errors correct", "[split_index_k_searchi
 
 TEST_CASE("is searching words for k = 2 for various number of mismatches correct", "[split_index_k_searching]")
 {
-    const unordered_set<string> wordSet{ "ala", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
+    const unordered_set<string> wordSet { "ala", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
 
     SplitIndexK<2> indexk2(wordSet, hashType, 1.0f);
     indexk2.construct();
@@ -186,7 +186,7 @@ TEST_CASE("is searching words for k = 2 for various number of mismatches correct
 
 TEST_CASE("is searching words for k = 3 for various number of mismatches correct", "[split_index_k_searching]")
 {
-    const unordered_set<string> wordSet{ "ala", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
+    const unordered_set<string> wordSet { "ala", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
 
     SplitIndexK<3> indexk3(wordSet, hashType, 1.0f);
     indexk3.construct();
