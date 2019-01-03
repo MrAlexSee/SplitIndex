@@ -203,6 +203,8 @@ TEST_CASE("is searching words for k = 1 for various number of mismatches correct
             REQUIRE(indexes[iIndex]->search({ "osa", "ada" }, nIter) == set<string>{ "ala", "psa" });
             REQUIRE(indexes[iIndex]->search({ "bbb", "ccc", "ddd" }, nIter).empty());
 
+            REQUIRE(indexes[iIndex]->search({ "darek" }, nIter) == set<string>{ "jarek" });
+            REQUIRE(indexes[iIndex]->search({ "barek" }, nIter) == set<string>{ "jarek" });
             REQUIRE(indexes[iIndex]->search({ "darek", "japek", "jacek", "barek" }, nIter) == set<string>{ "jarek" });
             REQUIRE(indexes[iIndex]->search({ "czarek", "bapek", "kapek" }, nIter).empty());
 

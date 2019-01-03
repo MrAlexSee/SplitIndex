@@ -180,7 +180,17 @@ TEST_CASE("is searching words for k = 2 for various number of mismatches correct
         REQUIRE(indexk2.search({ "ada", "pzz" }, nIter) == set<string>{ "ala", "psa" });
         REQUIRE(indexk2.search({ "ccc", "zzz" }, nIter).empty());
 
-        // TODO
+        REQUIRE(indexk2.search({ "jacek" }, nIter) == set<string>{ "jarek" });
+        REQUIRE(indexk2.search({ "gacek" }, nIter) == set<string>{ "jarek" });
+        REQUIRE(indexk2.search({ "jacek", "jadek", "japek", "gacek" }, nIter) == set<string>{ "jarek" });
+
+        REQUIRE(indexk2.search({ "pacek", "kacek", "jaxyz" }, nIter).empty());
+
+        REQUIRE(indexk2.search({ "bardzo" }, nIter) == set<string>{ "bardzo" });
+        REQUIRE(indexk2.search({ "barczo" }, nIter) == set<string>{ "bardzo" });
+        REQUIRE(indexk2.search({ "darczo" }, nIter) == set<string>{ "bardzo" });
+        REQUIRE(indexk2.search({ "barczo", "dardzo", "aardzo" }, nIter) == set<string>{ "bardzo" });
+        REQUIRE(indexk2.search({ "darcza",  }, nIter).empty());
     }
 }
 
@@ -193,7 +203,17 @@ TEST_CASE("is searching words for k = 3 for various number of mismatches correct
 
     for (int nIter = 1; nIter <= maxNIter; ++nIter)
     {
-        // TODO
+        REQUIRE(indexk3.search({ "aaa" }, nIter) == set<string>{ "ala", "psa" });
+        REQUIRE(indexk3.search({ "ccc" }, nIter) == set<string>{ "ala", "psa" });
+
+        REQUIRE(indexk3.search({ "owoce" }, nIter) == set<string>{ "owoce" });
+        REQUIRE(indexk3.search({ "owode" }, nIter) == set<string>{ "owoce" });
+        REQUIRE(indexk3.search({ "owccc" }, nIter) == set<string>{ "owoce" });
+        REQUIRE(indexk3.search({ "occcc" }, nIter).empty());
+
+        REQUIRE(indexk3.search({ "jaddd" }, nIter) == set<string>{ "jarek" });
+        REQUIRE(indexk3.search({ "barccc" }, nIter) == set<string>{ "bardzo" });
+        REQUIRE(indexk3.search({ "aaaaa" }, nIter).empty());
     }
 }
 
