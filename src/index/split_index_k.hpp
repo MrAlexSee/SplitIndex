@@ -328,6 +328,8 @@ void SplitIndexK<k>::addToEntry(char **entryPtr, const char *wordParts, size_t p
 
     if (addNewPartByte)
     {
+        nPartBytes = reinterpret_cast<uint16_t *>(newEntry);
+
         const size_t iWordsStart = sizeof(uint16_t) + *nPartBytes;
         memmove(newEntry + iWordsStart + 1, newEntry + iWordsStart,
             oldEntrySize - iWordsStart);
