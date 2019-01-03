@@ -202,67 +202,67 @@ TEST_CASE("is part size calculation correct", "[split_index_k]")
 TEST_CASE("is creating entry correct for k = 1", "[split_index_k]")
 {
     // Word = tyradami
-    char *entry1 = SplitIndexKWhitebox::createEntry<1>("tyra", 4, 0);
+    char *entry1 = SplitIndexKWhitebox::createEntry<1>("dami", 4, 0);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
     REQUIRE(entry1[2] == 0x0u);
-    REQUIRE(memcmp(entry1 + 3, "\4tyra\0", 6) == 0);
+    REQUIRE(memcmp(entry1 + 3, "\4dami\0", 6) == 0);
 
-    char *entry2 = SplitIndexKWhitebox::createEntry<1>("dami", 4, 1);
+    char *entry2 = SplitIndexKWhitebox::createEntry<1>("tyra", 4, 1);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry2) == 1u);
     REQUIRE(entry2[2] == 0x1u);
-    REQUIRE(memcmp(entry2 + 3, "\4dami\0", 6) == 0);
+    REQUIRE(memcmp(entry2 + 3, "\4tyra\0", 6) == 0);
 }
 
 TEST_CASE("is creating entry correct for k = 2", "[split_index_k]")
 {
     // Word = tyradami
-    char *entry1 = SplitIndexKWhitebox::createEntry<2>("ty", 2, 0);
+    char *entry1 = SplitIndexKWhitebox::createEntry<2>("radami", 6, 0);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
     REQUIRE(entry1[2] == 0x0u);
-    REQUIRE(memcmp(entry1 + 3, "\2ty\0", 4) == 0);
+    REQUIRE(memcmp(entry1 + 3, "\6radami\0", 8) == 0);
 
-    char *entry2 = SplitIndexKWhitebox::createEntry<2>("ra", 2, 1);
+    char *entry2 = SplitIndexKWhitebox::createEntry<2>("tydami", 6, 1);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry2) == 1u);
     REQUIRE(entry2[2] == 0x1u);
-    REQUIRE(memcmp(entry2 + 3, "\2ra\0", 4) == 0);
+    REQUIRE(memcmp(entry2 + 3, "\6tydami\0", 8) == 0);
 
-    char *entry3 = SplitIndexKWhitebox::createEntry<2>("dami", 4, 2);
+    char *entry3 = SplitIndexKWhitebox::createEntry<2>("tyra", 4, 2);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry3) == 1u);
     REQUIRE(entry3[2] == 0x2u);
-    REQUIRE(memcmp(entry3 + 3, "\4dami\0", 6) == 0);
+    REQUIRE(memcmp(entry3 + 3, "\4tyra\0", 6) == 0);
 }
 
 TEST_CASE("is creating entry correct for k = 3", "[split_index_k]")
 {
     // Word = tyradami
-    char *entry1 = SplitIndexKWhitebox::createEntry<3>("ty", 2, 0);
+    char *entry1 = SplitIndexKWhitebox::createEntry<3>("radami", 6, 0);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
     REQUIRE(entry1[2] == 0x0u);
-    REQUIRE(memcmp(entry1 + 3, "\2ty\0", 4) == 0);
+    REQUIRE(memcmp(entry1 + 3, "\6radami\0", 8) == 0);
 
-    char *entry2 = SplitIndexKWhitebox::createEntry<3>("ra", 2, 1);
+    char *entry2 = SplitIndexKWhitebox::createEntry<3>("tydami", 6, 1);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry2) == 1u);
     REQUIRE(entry2[2] == 0x1u);
-    REQUIRE(memcmp(entry2 + 3, "\2ra\0", 4) == 0);
+    REQUIRE(memcmp(entry2 + 3, "\6tydami\0", 8) == 0);
 
-    char *entry3 = SplitIndexKWhitebox::createEntry<3>("da", 2, 2);
+    char *entry3 = SplitIndexKWhitebox::createEntry<3>("tyrami", 6, 2);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry3) == 1u);
     REQUIRE(entry3[2] == 0x2u);
-    REQUIRE(memcmp(entry3 + 3, "\2da\0", 6) == 0);
+    REQUIRE(memcmp(entry3 + 3, "\6tyrami\0", 8) == 0);
 
-    char *entry4 = SplitIndexKWhitebox::createEntry<3>("mi", 2, 3);
+    char *entry4 = SplitIndexKWhitebox::createEntry<3>("tyrada", 6, 3);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry4) == 1u);
     REQUIRE(entry4[2] == 0x3u);
-    REQUIRE(memcmp(entry4 + 3, "\2mi\0", 4) == 0);
+    REQUIRE(memcmp(entry4 + 3, "\6tyrada\0", 8) == 0);
 }
 
 TEST_CASE("is adding to entry correct for k = 1", "[split_index_k]")
@@ -270,13 +270,13 @@ TEST_CASE("is adding to entry correct for k = 1", "[split_index_k]")
     SplitIndexK<1> indexk1({ "index" }, hashType, 1.0f);
 
     // Word = psami
-    char *entry1 = SplitIndexKWhitebox::createEntry<1>("ps", 2, 0);
-    SplitIndexKWhitebox::addToEntry(indexk1, &entry1, "ami", 3, 1);
+    char *entry1 = SplitIndexKWhitebox::createEntry<1>("ami", 3, 0);
+    SplitIndexKWhitebox::addToEntry(indexk1, &entry1, "ps", 2, 1);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
 
     REQUIRE(entry1[2] == 0b00000100);
-    REQUIRE(memcmp(entry1 + 3, "\2ps\3ami\0", 8) == 0);
+    REQUIRE(memcmp(entry1 + 3, "\3ami\2ps\0", 8) == 0);
 }
 
 TEST_CASE("is adding to entry correct for k = 2", "[split_index_k]")
@@ -284,14 +284,14 @@ TEST_CASE("is adding to entry correct for k = 2", "[split_index_k]")
     SplitIndexK<2> indexk2({ "index" }, hashType, 1.0f);
 
     // Word = tyradami
-    char *entry1 = SplitIndexKWhitebox::createEntry<2>("ty", 2, 0);
+    char *entry1 = SplitIndexKWhitebox::createEntry<2>("radami", 6, 0);
 
-    SplitIndexKWhitebox::addToEntry(indexk2, &entry1, "ra", 2, 1);
-    SplitIndexKWhitebox::addToEntry(indexk2, &entry1, "dami", 4, 2);
+    SplitIndexKWhitebox::addToEntry(indexk2, &entry1, "tydami", 6, 1);
+    SplitIndexKWhitebox::addToEntry(indexk2, &entry1, "tyra", 4, 2);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
     REQUIRE(entry1[2] == 0b00100100);
-    REQUIRE(memcmp(entry1 + 3, "\2ty\2ra\4dami\0", 12) == 0);
+    REQUIRE(memcmp(entry1 + 3, "\6radami\6tydami\4tyra\0", 20) == 0);
 }
 
 TEST_CASE("is adding to entry correct for k = 3", "[split_index_k]")
@@ -299,15 +299,15 @@ TEST_CASE("is adding to entry correct for k = 3", "[split_index_k]")
     SplitIndexK<3> indexk3({ "index" }, hashType, 1.0f);
 
     // Word = tyradami
-    char *entry1 = SplitIndexKWhitebox::createEntry<3>("ty", 2, 0);
+    char *entry1 = SplitIndexKWhitebox::createEntry<3>("radami", 6, 0);
 
-    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "ra", 2, 1);
-    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "da", 2, 2);
-    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "mi", 2, 3);
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tydami", 6, 1);
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tyrami", 6, 2);
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tyrada", 6, 3);
 
     REQUIRE(*reinterpret_cast<uint16_t *>(entry1) == 1u);
     REQUIRE(entry1[2] == 0b11100100);
-    REQUIRE(memcmp(entry1 + 3, "\2ty\2ra\2da\2mi\0", 13) == 0);
+    REQUIRE(memcmp(entry1 + 3, "\6radami\6tydami\6tyrami\6tyrada\0", 29) == 0);
 }
 
 TEST_CASE("is trying match part correct empty for k = 1", "[split_index_k]")
@@ -315,17 +315,17 @@ TEST_CASE("is trying match part correct empty for k = 1", "[split_index_k]")
     SplitIndexK<1> indexk1({ "index" }, hashType, 1.0f);
 
     // Word = psami
-    char *entry1 = SplitIndexKWhitebox::createEntry<1>("ps", 2, 0);
-    SplitIndexKWhitebox::addToEntry(indexk1, &entry1, "ami", 3, 1);
+    char *entry1 = SplitIndexKWhitebox::createEntry<1>("ami", 3, 0);
+    SplitIndexKWhitebox::addToEntry(indexk1, &entry1, "ps", 2, 1);
 
     entry1 += 3;
-   
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, "ccami", entry1 + 1, 2, 1);
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, "pscci", entry1 + 1, 3, 0);
     REQUIRE(ret1.empty());
 
-    entry1 += 3;
+    entry1 += 4;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, "pscci", entry1 + 1, 3, 0);
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, "ccami", entry1 + 1, 2, 1);
     REQUIRE(ret2.empty());
 }
 
@@ -334,28 +334,59 @@ TEST_CASE("is trying match part correct matches for k = 1", "[split_index_k]")
     SplitIndexK<1> indexk1({ "index" }, hashType, 1.0f);
 
     // Word = psami
-    char *entry1 = SplitIndexKWhitebox::createEntry<1>("ps", 2, 0);
-    SplitIndexKWhitebox::addToEntry(indexk1, &entry1, "ami", 3, 1);
+    char *entry1 = SplitIndexKWhitebox::createEntry<1>("ami", 3, 0);
+    SplitIndexKWhitebox::addToEntry(indexk1, &entry1, "ps", 2, 1);
 
     entry1 += 3;
-   
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, "paami", entry1 + 1, 2, 1);
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, "psamk", entry1 + 1, 3, 0);
     REQUIRE(ret1 == string("psami"));
 
-    entry1 += 3;
+    entry1 += 4;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, "psamk", entry1 + 1, 3, 0);
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, "paami", entry1 + 1, 2, 1);
     REQUIRE(ret2 == string("psami"));
 }
 
-TEST_CASE("is trying match part correct for k = 2", "[split_index_k]")
+TEST_CASE("is trying match part correct empty for k = 2", "[split_index_k]")
+{
+    SplitIndexK<2> indexk2({ "index" }, hashType, 1.0f);
+
+    // Word = tyradami
+    char *entry1 = SplitIndexKWhitebox::createEntry<2>("radami", 6, 0);
+
+    SplitIndexKWhitebox::addToEntry(indexk2, &entry1, "tydami", 6, 1);
+    SplitIndexKWhitebox::addToEntry(indexk2, &entry1, "tyra", 4, 2);
+
+    entry1 += 3;
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradacc", entry1 + 1, 6, 0);
+    REQUIRE(ret1.empty());
+
+    entry1 += 7;
+
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradacc", entry1 + 1, 6, 1);
+    REQUIRE(ret2.empty());
+
+    entry1 += 7;
+
+    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tcccdami", entry1 + 1, 4, 2);
+    REQUIRE(ret3.empty());
+}
+
+TEST_CASE("is trying match part correct matches for k = 2", "[split_index_k]")
 {
     // TODO
 }
 
-TEST_CASE("is trying match part correct for k = 3", "[split_index_k]")
+TEST_CASE("is trying match part correct empty for k = 3", "[split_index_k]")
 {
     // TODO
+}
+
+TEST_CASE("is trying match part correct matches for k = 3", "[split_index_k]")
+{
+
 }
 
 TEST_CASE("is setting part bits correct", "[split_index_k]")
