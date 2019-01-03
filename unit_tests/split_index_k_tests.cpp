@@ -340,12 +340,12 @@ TEST_CASE("is trying match part correct matches for k = 1", "[split_index_k]")
     entry1 += 3;
 
     string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, "psamk", entry1 + 1, 3, 0);
-    REQUIRE(ret1 == string("psami"));
+    REQUIRE(ret1 == "psami");
 
     entry1 += 4;
 
     string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, "paami", entry1 + 1, 2, 1);
-    REQUIRE(ret2 == string("psami"));
+    REQUIRE(ret2 == "psami");
 }
 
 TEST_CASE("is trying match part correct empty for k = 2", "[split_index_k]")
@@ -360,12 +360,12 @@ TEST_CASE("is trying match part correct empty for k = 2", "[split_index_k]")
 
     entry1 += 3;
 
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradacc", entry1 + 1, 6, 0);
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradccc", entry1 + 1, 6, 0);
     REQUIRE(ret1.empty());
 
     entry1 += 7;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradacc", entry1 + 1, 6, 1);
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradccc", entry1 + 1, 6, 1);
     REQUIRE(ret2.empty());
 
     entry1 += 7;
@@ -376,17 +376,92 @@ TEST_CASE("is trying match part correct empty for k = 2", "[split_index_k]")
 
 TEST_CASE("is trying match part correct matches for k = 2", "[split_index_k]")
 {
-    // TODO
+    SplitIndexK<2> indexk2({ "index" }, hashType, 1.0f);
+
+    // Word = tyradami
+    char *entry1 = SplitIndexKWhitebox::createEntry<2>("radami", 6, 0);
+
+    SplitIndexKWhitebox::addToEntry(indexk2, &entry1, "tydami", 6, 1);
+    SplitIndexKWhitebox::addToEntry(indexk2, &entry1, "tyra", 4, 2);
+
+    entry1 += 3;
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradacc", entry1 + 1, 6, 0);
+    REQUIRE(ret1 == "tyradami");
+
+    entry1 += 7;
+
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradacc", entry1 + 1, 6, 1);
+    REQUIRE(ret2 == "tyradami");
+
+    entry1 += 7;
+
+    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyccdami", entry1 + 1, 4, 2);
+    REQUIRE(ret3 == "tyradami");
 }
 
 TEST_CASE("is trying match part correct empty for k = 3", "[split_index_k]")
 {
-    // TODO
+    SplitIndexK<3> indexk3({ "index" }, hashType, 1.0f);
+
+    // Word = tyradami
+    char *entry1 = SplitIndexKWhitebox::createEntry<3>("radami", 6, 0);
+
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tydami", 6, 1);
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tyrami", 6, 2);
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tyrada", 6, 3);
+
+    entry1 += 3;
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyracccc", entry1 + 1, 6, 0);
+    REQUIRE(ret1.empty());
+
+    entry1 += 7;
+
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyracccc", entry1 + 1, 6, 1);
+    REQUIRE(ret2.empty());
+
+    entry1 += 7;
+
+    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyccdacc", entry1 + 1, 6, 2);
+    REQUIRE(ret3.empty());
+
+    entry1 += 7;
+
+    string ret4 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyccccmi", entry1 + 1, 6, 3);
+    REQUIRE(ret4.empty());
 }
 
 TEST_CASE("is trying match part correct matches for k = 3", "[split_index_k]")
 {
+    SplitIndexK<3> indexk3({ "index" }, hashType, 1.0f);
 
+    // Word = tyradami
+    char *entry1 = SplitIndexKWhitebox::createEntry<3>("radami", 6, 0);
+
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tydami", 6, 1);
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tyrami", 6, 2);
+    SplitIndexKWhitebox::addToEntry(indexk3, &entry1, "tyrada", 6, 3);
+
+    entry1 += 3;
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyradccc", entry1 + 1, 6, 0);
+    REQUIRE(ret1 == "tyradami");
+
+    entry1 += 7;
+
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyradccc", entry1 + 1, 6, 1);
+    REQUIRE(ret2 == "tyradami");
+
+    entry1 += 7;
+
+    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyrcdacc", entry1 + 1, 6, 2);
+    REQUIRE(ret3 == "tyradami");
+
+    entry1 += 7;
+
+    string ret4 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyrcccmi", entry1 + 1, 6, 3);
+    REQUIRE(ret4 == "tyradami");
 }
 
 TEST_CASE("is setting part bits correct", "[split_index_k]")
