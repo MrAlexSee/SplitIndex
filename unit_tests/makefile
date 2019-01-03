@@ -13,12 +13,12 @@ OBJ        = main_tests.o hash_map_aligned_tests.o split_index_1_tests.o split_i
 
 HASH_FUNCTION_LIB  = hash_function.a
 HASH_MAP_LIB       = hash_map.a
-INDEX_DIR 		   = index.a
-UTILS_LIB  	       = utils.a
+INDEX_LIB          = index.a
+UTILS_LIB          = utils.a
 
 LIB_DIR = "../build/libs"
 
-LIBS = $(HASH_MAP_LIB) $(HASH_FUNCTION_LIB) $(INDEX_DIR) $(UTILS_LIB)
+LIBS = $(HASH_MAP_LIB) $(HASH_FUNCTION_LIB) $(INDEX_LIB) $(UTILS_LIB)
 LIBS := $(addprefix $(LIB_DIR)/,$(LIBS))
 
 all: $(EXE)
@@ -50,10 +50,10 @@ split_index_1_comp_tests.o: split_index_1_comp_tests.cpp ../src/index/split_inde
 split_index_1_comp_triple_tests.o: split_index_1_comp_triple_tests.cpp ../src/index/split_index.* ../src/index/split_index_1.* split_index_1_comp_whitebox.hpp $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c split_index_1_comp_triple_tests.cpp
 
-split_index_k_tests.o: split_index_k_tests.cpp ../src/index/split_index.* ../src/index/split_index_1.* split_index_k_whitebox.hpp $(TEST_FILES)
+split_index_k_tests.o: split_index_k_tests.cpp ../src/index/split_index.* ../src/index/split_index_k.hpp split_index_k_whitebox.hpp $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c split_index_k_tests.cpp
 
-split_index_k_searching_tests.o: split_index_k_searching_tests.cpp ../src/index/split_index.* ../src/index/split_index_1.* split_index_k_whitebox.hpp $(TEST_FILES)
+split_index_k_searching_tests.o: split_index_k_searching_tests.cpp ../src/index/split_index.* ../src/index/split_index_k.hpp split_index_k_whitebox.hpp $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c split_index_k_searching_tests.cpp
 
 utils_distance_tests.o: utils_distance_tests.cpp ../src/utils/distance.hpp $(TEST_FILES)
