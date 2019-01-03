@@ -367,6 +367,7 @@ std::string SplitIndexK<k>::tryMatchPart(const std::string &query, const char *e
     // This is an implementation for k = 1.
     // Template specializations for k = 2 and k = 3 are located below.
     assert(k == 1);
+
     switch (iPart)
     {
         case 0:
@@ -458,8 +459,8 @@ inline std::string SplitIndexK<3>::tryMatchPart(const std::string &query, const 
                         std::string(query.c_str() + wordPartSizes[0], wordPartSizes[1]) +
                         std::string(entry + wordPartSizes[0], partSize2);
                 }
-                break;
             }
+            break;
         case 2:
             {
                 const size_t partSize1 = wordPartSizes[0] + wordPartSizes[1];
@@ -474,8 +475,8 @@ inline std::string SplitIndexK<3>::tryMatchPart(const std::string &query, const 
                         std::string(query.c_str() + partSize1, wordPartSizes[2]) +
                         std::string(entry + partSize1 + wordPartSizes[2], wordPartSizes[3]);
                 }
-                break;
             }
+            break;
         case 3:
             if (utils::Distance::isHammingAtMostK<3>(entry, query.c_str(), matchSize))
             {
