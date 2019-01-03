@@ -68,6 +68,7 @@ TEST_CASE("is k entry word count calculation correct", "[split_index_k]")
     SplitIndexK<1> indexk1({ "index" }, hashType, 1.0f);
 
     char *entry = SplitIndexKWhitebox::createEntry<1>("ala", 3, 0);
+
     SplitIndexKWhitebox::addToEntry(indexk1, &entry, "ada", 3, 0);
     SplitIndexKWhitebox::addToEntry(indexk1, &entry, "index", 5, 1);
     SplitIndexKWhitebox::addToEntry(indexk1, &entry, "pies", 4, 1);
@@ -165,7 +166,7 @@ TEST_CASE("is storing word parts in buffers correct for odd size for k = 2", "[s
     REQUIRE(wordPartSizes[2] == 3);
 
     REQUIRE(memcmp(wordPartBuf[0], "ow", 2) == 0);
-    REQUIRE(memcmp(wordPartBuf[1], "oc", 3) == 0);
+    REQUIRE(memcmp(wordPartBuf[1], "oc", 2) == 0);
     REQUIRE(memcmp(wordPartBuf[2], "ami", 3) == 0);
 }
 
