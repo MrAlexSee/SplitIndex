@@ -25,30 +25,50 @@ TEST_CASE("does split index 1 comp triple throw for empty words", "[split_index_
     REQUIRE_THROWS(SplitIndex1CompTriple({ }, hashType, 1.0f));
 }
 
-TEST_CASE("is calculating 2- and 3-grams ordered by frequency correct", "[split_index_1_comp_triple]")
+TEST_CASE("is calculating 2-,3-,4- grams ordered by frequency correct", "[split_index_1_comp_triple]")
 {
     const unordered_set<string> wordSet{ "ala", "dla", "kotala", "jarek", "lubi", "psy" };    
     SplitIndex1CompTriple index1(wordSet, hashType, 1.0f);
-    
+
+    // 2-grams
     vector<string> qgrams2 = SplitIndex1CompWhitebox::calcQGramsOrderedByFrequency(index1, 100, 2);
     const vector<string> expected2 { "al", "la", "dl", "ko", "ot", "ta", "ja", "ar", "re", "ek", "lu",
         "ub", "bi", "ps", "sy" };
 
     REQUIRE(qgrams2.size() == expected2.size());
 
-    for (const string &qgram : expected2)
+    for (const string &qgram2 : expected2)
     {
-        REQUIRE(find(qgrams2.begin(), qgrams2.end(), qgram) != qgrams2.end());
+        REQUIRE(find(qgrams2.begin(), qgrams2.end(), qgram2) != qgrams2.end());
     }
 
     // "la" occurs twice so it should be the first one.
     REQUIRE(qgrams2.front() == "la");
 
+    // 3-grams
     vector<string> qgrams3 = SplitIndex1CompWhitebox::calcQGramsOrderedByFrequency(index1, 100, 3);
     const vector<string> expected3 { "ala", "dla", "kot", "ota", "tal", "jar", "are", "rek", "lub", "ubi", "psy" };
 
+    REQUIRE(qgrams3.size() == expected3.size());
+
+    for (const string &qgram3 : expected3)
+    {
+        REQUIRE(find(qgrams3.begin(), qgrams3.end(), qgram3) != qgrams3.end());
+    }
+
     // "ala" occurs twice so it should be the first one.
     REQUIRE(qgrams3.front() == "ala");
+
+    // 4-grams
+    vector<string> qgrams4 = SplitIndex1CompWhitebox::calcQGramsOrderedByFrequency(index1, 100, 4);
+    const vector<string> expected4 { "kota", "otal", "tala", "jare", "arek", "lubi" };
+
+    REQUIRE(qgrams4.size() == expected4.size());
+
+    for (const string &qgram4 : expected4)
+    {
+        REQUIRE(find(qgrams4.begin(), qgrams4.end(), qgram4) != qgrams4.end());
+    }
 }
 
 TEST_CASE("is filling 2,3,4-gram maps correct", "[split_index_1_comp_triple]")
@@ -58,18 +78,17 @@ TEST_CASE("is filling 2,3,4-gram maps correct", "[split_index_1_comp_triple]")
     SplitIndex1CompTriple index1(wordSet, hashType, 1.0f);
     SplitIndex1CompWhitebox::calcQgramsAndFillMaps(index1);
 
-    // This assumes that the compile-time number of 2-,3-,4-grams is >= than the number of q-grams extracted from words.
-    const vector<string> expected { "al", "la", "dl", "ko", "ot", "ta", "ja", "ar", "re", "ek", "lu",
-        "ub", "bi", "ps", "sy",
-        "ala", "dla", "kot", "ota", "tal", "jar", "are", "rek", "lub", "ubi", "psy",
-        "kota", "otal", "tala", "jare", "arek", "lubi" };
+    // The (maximum) compile-time number of 3-,4- grams is usually low, so we check only if all 2-grams
+    // and some 3-,4- grams are extracted.
+    const vector<string> expected2 { "al", "la", "dl", "ko", "ot", "ta", "ja", "ar", "re", "ek", "lu",
+        "ub", "bi", "ps", "sy" };
 
     const map<string, char> qgramToChar = SplitIndex1CompWhitebox::getQGramToCharMap(index1);
-    REQUIRE(qgramToChar.size() == expected.size());
+    REQUIRE(qgramToChar.size() > expected2.size());
 
-    for (const string &qgram : expected)
+    for (const string &qgram2 : expected2)
     {
-        REQUIRE(qgramToChar.find(qgram) != qgramToChar.end());
+        REQUIRE(qgramToChar.find(qgram2) != qgramToChar.end());
     }
 
     for (const string &qgramOut : { "aa", "cc", "dota" })
@@ -78,11 +97,14 @@ TEST_CASE("is filling 2,3,4-gram maps correct", "[split_index_1_comp_triple]")
     }
 
     const map<char, string> charToQgram = SplitIndex1CompWhitebox::getCharToQgramMap(index1);
-    REQUIRE(qgramToChar.size() == expected.size());
+    REQUIRE(charToQgram.size() > expected2.size());
 
     for (const auto &kv : charToQgram)
     {
-        REQUIRE(find(expected.begin(), expected.end(), kv.second) != expected.end());
+        if (kv.second.size() == 2)
+        {
+            REQUIRE(find(expected2.begin(), expected2.end(), kv.second) != expected2.end());
+        }
     }
 }
 
@@ -93,6 +115,7 @@ TEST_CASE("is triple encoding to buffer correct", "[split_index_1_comp_triple]")
     SplitIndex1CompTriple index1(wordSet, hashType, 1.0f);
     SplitIndex1CompWhitebox::calcQgramsAndFillMaps(index1);
 
+    // This assumes that compile-time numbers of q-grams allow at least these counts.
     // 2-grams used for encoding: al, la, ma, ko, ot, ta.
     // 3-grams used for encoding: ala, kot, ota.
     // 4-grams used for encoding: kota.
@@ -126,6 +149,7 @@ TEST_CASE("is triple decoding to buffer correct", "[split_index_1_comp_triple]")
     SplitIndex1CompTriple index1(wordSet, hashType, 1.0f);
     SplitIndex1CompWhitebox::calcQgramsAndFillMaps(index1);
 
+    // This assumes that compile-time numbers of q-grams allow at least these counts.
     // 2-grams used for encoding: al, la, ma, ko, ot, ta.
     // 3-grams used for encoding: ala, kot, ota.
     // 4-grams used for encoding: kota.
