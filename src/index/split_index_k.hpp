@@ -285,14 +285,16 @@ char *SplitIndexK<k>::createEntry(const char *wordParts, size_t partsSize, size_
     // We set the part index byte counter to 1 since there is only a single byte at the beginning.
     *reinterpret_cast<uint16_t *>(entry) = 0x1u;
 
-    *(entry + sizeof(uint16_t)) = 0x0u; // Originally no bits are set.
+    char *it = entry + sizeof(uint16_t);
+    *it = 0x0u; // Originally no bits are set.
+
     setPartBits(entry, 0, iPart);
 
-    entry += sizeof(uint16_t) + 1;
-    *entry = static_cast<char>(partsSize);
+    it += 1;
+    *it = static_cast<char>(partsSize);
 
-    entry += 1;
-    memcpy(entry, wordParts, partsSize);
+    it += 1;
+    memcpy(it, wordParts, partsSize);
 
     entry[newSize - 1] = 0;
     return entry;
