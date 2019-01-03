@@ -25,11 +25,11 @@ do
 
         # k = 2
         ./split_index --index-type k2 --hash-type $hType --max-load-factor $maxLF -i dict_test.txt -I queries_test.txt --min-word-length 3 > $outFile
-        python check_result.py 4
+        python check_result.py 5
 
         # k = 3
         ./split_index --index-type k3 --hash-type $hType --max-load-factor $maxLF -i dict_test.txt -I queries_test.txt --min-word-length 4 > $outFile
-        python check_result.py 5
+        python check_result.py 2
     done
 done
 
