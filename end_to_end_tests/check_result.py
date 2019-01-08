@@ -18,8 +18,10 @@ def main():
 
     if nMatches == nExpected:
         print "OK (#matches = {0})".format(nMatches)
+        sys.exit(0)
     else:
         print "ERROR: {0} != {1}".format(nMatches, nExpected)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
