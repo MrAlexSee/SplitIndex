@@ -477,7 +477,7 @@ inline std::string SplitIndexK<3>::tryMatchPart(const std::string &query, const 
                 {
                     return std::string(entry, partSize1) +
                         std::string(query.c_str() + partSize1, wordPartSizes[2]) +
-                        std::string(entry + partSize1 + wordPartSizes[2], wordPartSizes[3]);
+                        std::string(entry + partSize1, wordPartSizes[3]);
                 }
             }
             break;
