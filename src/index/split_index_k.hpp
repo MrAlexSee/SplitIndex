@@ -31,7 +31,7 @@ public:
 
 protected:
     void initEntry(const std::string &word) override;
-    void processQuery(const std::string &query, std::set<std::string> &results) override;
+    void processQuery(const std::string &query, ResultSetType &results) override;
 
     size_t calcEntrySizeB(const char *entry) const override;
 
@@ -171,7 +171,7 @@ void SplitIndexK<k>::initEntry(const std::string &word)
 }
 
 template<size_t k>
-void SplitIndexK<k>::processQuery(const std::string &query, std::set<std::string> &results)
+void SplitIndexK<k>::processQuery(const std::string &query, ResultSetType &results)
 {
     assert(constructed);
     assert(query.size() > k and query.size() <= maxWordSize);

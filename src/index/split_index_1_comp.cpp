@@ -162,7 +162,7 @@ void SplitIndex1Comp::initEntry(const string &word)
     }
 }
 
-void SplitIndex1Comp::searchWithPrefixAsKey(set<string> &results)
+void SplitIndex1Comp::searchWithPrefixAsKey(ResultSetType &results)
 {
     char **entryPtr = hashMap->retrieve(prefixBuf, prefixSize);
 
@@ -239,7 +239,7 @@ void SplitIndex1Comp::searchWithPrefixAsKey(set<string> &results)
     }
 }
 
-void SplitIndex1Comp::searchWithSuffixAsKey(set<string> &results)
+void SplitIndex1Comp::searchWithSuffixAsKey(ResultSetType &results)
 {
     char **entryPtr = hashMap->retrieve(suffixBuf, suffixSize);
 

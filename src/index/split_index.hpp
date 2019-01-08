@@ -16,6 +16,9 @@ namespace split_index
 class SplitIndex
 {
 public:
+    /** Defines the type containing all matches reported by the split index. */
+    using ResultSetType = std::unordered_set<std::string>;
+
     SplitIndex(const std::unordered_set<std::string> &wordSetArg);
     virtual ~SplitIndex();
 
@@ -23,11 +26,11 @@ public:
     virtual std::string toString() const;
 
     /** Performs a search for [queries] and returns the set of matching words, iterates [nIter] times. */
-    std::set<std::string> search(const std::vector<std::string> &queries, int nIter = 1);
+    ResultSetType search(const std::vector<std::string> &queries, int nIter = 1);
 
     /** Performs a search for [queries] and returns the set of matching words.
      * The number of matches for each query is dumped to standard output. Time measurement is not performed. */
-    std::set<std::string> searchAndDumpMatchCounts(const std::vector<std::string> &queries);
+    ResultSetType searchAndDumpMatchCounts(const std::vector<std::string> &queries);
 
     /** Returns the total size of stored words in bytes. */
     long calcWordsSizeB() const;
@@ -41,7 +44,7 @@ protected:
     virtual void initEntry(const std::string &word) = 0;
 
     /** Processes a query, adding matches to [results]. */
-    virtual void processQuery(const std::string &query, std::set<std::string> &results) = 0;
+    virtual void processQuery(const std::string &query, ResultSetType &results) = 0;
 
     /** Returns the size of an entry in bytes, including the terminating '\0' if present. */
     virtual size_t calcEntrySizeB(const char *entry) const = 0;

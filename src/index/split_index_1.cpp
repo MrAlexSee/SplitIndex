@@ -88,7 +88,7 @@ void SplitIndex1::initEntry(const string &word)
     }
 }
 
-void SplitIndex1::processQuery(const string &query, set<string> &results)
+void SplitIndex1::processQuery(const string &query, ResultSetType &results)
 {
     assert(constructed);
     assert(query.size() > 0 and query.size() <= maxWordSize);
@@ -233,7 +233,7 @@ void SplitIndex1::appendToEntry(char *entry, size_t oldEntrySize,
     entry[oldEntrySize + partSize] = 0;
 }
 
-void SplitIndex1::searchWithPrefixAsKey(set<string> &results)
+void SplitIndex1::searchWithPrefixAsKey(ResultSetType &results)
 {
     char **entryPtr = hashMap->retrieve(prefixBuf, prefixSize);
 
@@ -294,7 +294,7 @@ void SplitIndex1::searchWithPrefixAsKey(set<string> &results)
     }
 }
 
-void SplitIndex1::searchWithSuffixAsKey(set<string> &results)
+void SplitIndex1::searchWithSuffixAsKey(ResultSetType &results)
 {
     char **entryPtr = hashMap->retrieve(suffixBuf, suffixSize);
 

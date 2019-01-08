@@ -34,8 +34,8 @@ protected:
 
     void initEntry(const std::string &word) override;
 
-    void searchWithPrefixAsKey(std::set<std::string> &results) override;
-    void searchWithSuffixAsKey(std::set<std::string> &results) override;
+    void searchWithPrefixAsKey(ResultSetType &results) override;
+    void searchWithSuffixAsKey(ResultSetType &results) override;
 
     /** Encodes [word] of size [wordSize] into codingBuf. Returns the size of encoded word. */
     virtual size_t encodeToBuf(const char *word, size_t wordSize);

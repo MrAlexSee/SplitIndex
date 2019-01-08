@@ -206,7 +206,7 @@ void runSearch(const vector<string> &dict, const vector<string> &queries)
     cout << endl << "Index constructed:" << endl;
     cout << index->toString() << endl;
 
-    set<string> results;
+    SplitIndex::ResultSetType results;
 
     if (params.dumpAllMatches)
     {

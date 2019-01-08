@@ -61,10 +61,10 @@ string SplitIndex::toString() const
     return ret;
 }
 
-set<string> SplitIndex::search(const vector<string> &queries, int nIter)
+SplitIndex::ResultSetType SplitIndex::search(const vector<string> &queries, int nIter)
 {
     assert(constructed);
-    set<string> ret;
+    ResultSetType ret;
 
     clock_t start = std::clock();
 
@@ -84,14 +84,14 @@ set<string> SplitIndex::search(const vector<string> &queries, int nIter)
     return ret;
 }
 
-set<string> SplitIndex::searchAndDumpMatchCounts(const vector<string> &queries)
+SplitIndex::ResultSetType SplitIndex::searchAndDumpMatchCounts(const vector<string> &queries)
 {
     assert(constructed);
-    set<string> ret;
+    ResultSetType ret;
 
     for (const string &query : queries)
     {
-        set<string> curResults;
+        ResultSetType curResults;
         processQuery(query, curResults);
 
         cout << query << " -> " << curResults.size() << endl;

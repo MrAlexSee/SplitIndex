@@ -26,7 +26,7 @@ public:
 
 protected:
     void initEntry(const std::string &word) override;
-    void processQuery(const std::string &query, std::set<std::string> &results) override;
+    void processQuery(const std::string &query, ResultSetType &results) override;
 
     size_t calcEntrySizeB(const char *entry) const override;
 
@@ -51,8 +51,8 @@ protected:
     virtual void appendToEntry(char *entry, size_t oldEntrySize,
         const char *wordPart, size_t partSize) const;
 
-    virtual void searchWithPrefixAsKey(std::set<std::string> &results);
-    virtual void searchWithSuffixAsKey(std::set<std::string> &results);
+    virtual void searchWithPrefixAsKey(ResultSetType &results);
+    virtual void searchWithSuffixAsKey(ResultSetType &results);
 
     /** Returns a pointer pointing [nWords] further within the [entry],
      * which must point towards a word size byte. */
