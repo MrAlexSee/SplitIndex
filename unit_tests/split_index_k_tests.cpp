@@ -321,12 +321,18 @@ TEST_CASE("is trying match part correct empty for k = 1", "[split_index_k]")
 
     entry1 += 3;
 
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, "pscci", entry1 + 1, 3, 0);
+    const string query1 = "pscci";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk1, query1);
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, query1, entry1 + 1, 3, 0);
     REQUIRE(ret1.empty());
 
     entry1 += 4;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, "ccami", entry1 + 1, 2, 1);
+    const string query2 = "ccami";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk1, query2);
+
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, query2, entry1 + 1, 2, 1);
     REQUIRE(ret2.empty());
 }
 
@@ -340,12 +346,18 @@ TEST_CASE("is trying match part correct matches for k = 1", "[split_index_k]")
 
     entry1 += 3;
 
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, "psamk", entry1 + 1, 3, 0);
+    const string query1 = "psamk";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk1, query1);
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk1, query1, entry1 + 1, 3, 0);
     REQUIRE(ret1 == "psami");
 
     entry1 += 4;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, "paami", entry1 + 1, 2, 1);
+    const string query2 = "paami";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk1, query2);
+
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk1, query2, entry1 + 1, 2, 1);
     REQUIRE(ret2 == "psami");
 }
 
@@ -361,17 +373,23 @@ TEST_CASE("is trying match part correct empty for k = 2", "[split_index_k]")
 
     entry1 += 3;
 
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradccc", entry1 + 1, 6, 0);
+    const string query1 = "tyradccc";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk2, query1);
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk2, query1, entry1 + 1, 6, 0);
     REQUIRE(ret1.empty());
 
     entry1 += 7;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradccc", entry1 + 1, 6, 1);
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk2, query1, entry1 + 1, 6, 1);
     REQUIRE(ret2.empty());
 
     entry1 += 7;
 
-    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tcccdami", entry1 + 1, 4, 2);
+    const string query2 = "tcccdami";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk2, query2);
+
+    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk2, query2, entry1 + 1, 4, 2);
     REQUIRE(ret3.empty());
 }
 
@@ -387,17 +405,23 @@ TEST_CASE("is trying match part correct matches for k = 2", "[split_index_k]")
 
     entry1 += 3;
 
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradacc", entry1 + 1, 6, 0);
+    const string query1 = "tyradacc";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk2, query1);
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk2, query1, entry1 + 1, 6, 0);
     REQUIRE(ret1 == "tyradami");
 
     entry1 += 7;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyradacc", entry1 + 1, 6, 1);
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk2, query1, entry1 + 1, 6, 1);
     REQUIRE(ret2 == "tyradami");
 
     entry1 += 7;
 
-    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk2, "tyccdami", entry1 + 1, 4, 2);
+    const string query2 = "tyccdami";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk2, query2);
+
+    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk2, query2, entry1 + 1, 4, 2);
     REQUIRE(ret3 == "tyradami");
 }
 
@@ -414,22 +438,31 @@ TEST_CASE("is trying match part correct empty for k = 3", "[split_index_k]")
 
     entry1 += 3;
 
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyracccc", entry1 + 1, 6, 0);
+    const string query1 = "tyracccc";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk3, query1);
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk3, query1, entry1 + 1, 6, 0);
     REQUIRE(ret1.empty());
 
     entry1 += 7;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyracccc", entry1 + 1, 6, 1);
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk3, query1, entry1 + 1, 6, 1);
     REQUIRE(ret2.empty());
 
     entry1 += 7;
 
-    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyccdacc", entry1 + 1, 6, 2);
+    const string query2 = "tyccdacc";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk3, query2);
+
+    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk3, query2, entry1 + 1, 6, 2);
     REQUIRE(ret3.empty());
 
     entry1 += 7;
 
-    string ret4 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyccccmi", entry1 + 1, 6, 3);
+    const string query3 = "tyccccmi";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk3, query3);
+
+    string ret4 = SplitIndexKWhitebox::tryMatchPart(indexk3, query3, entry1 + 1, 6, 3);
     REQUIRE(ret4.empty());
 }
 
@@ -446,22 +479,31 @@ TEST_CASE("is trying match part correct matches for k = 3", "[split_index_k]")
 
     entry1 += 3;
 
-    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyradccc", entry1 + 1, 6, 0);
+    const string query1 = "tyradccc";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk3, query1);
+
+    string ret1 = SplitIndexKWhitebox::tryMatchPart(indexk3, query1, entry1 + 1, 6, 0);
     REQUIRE(ret1 == "tyradami");
 
     entry1 += 7;
 
-    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyradccc", entry1 + 1, 6, 1);
+    string ret2 = SplitIndexKWhitebox::tryMatchPart(indexk3, query1, entry1 + 1, 6, 1);
     REQUIRE(ret2 == "tyradami");
 
     entry1 += 7;
 
-    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyrcdacc", entry1 + 1, 6, 2);
+    const string query2 = "tyrcdacc";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk3, query2);
+
+    string ret3 = SplitIndexKWhitebox::tryMatchPart(indexk3, query2, entry1 + 1, 6, 2);
     REQUIRE(ret3 == "tyradami");
 
     entry1 += 7;
 
-    string ret4 = SplitIndexKWhitebox::tryMatchPart(indexk3, "tyrcccmi", entry1 + 1, 6, 3);
+    const string query3 = "tyrcccmi";
+    SplitIndexKWhitebox::storeWordPartsInBuffers(indexk3, query3);
+
+    string ret4 = SplitIndexKWhitebox::tryMatchPart(indexk3, query3, entry1 + 1, 6, 3);
     REQUIRE(ret4 == "tyradami");
 }
 
