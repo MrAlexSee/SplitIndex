@@ -63,7 +63,7 @@ TEST_CASE("is searching words exact correct", "[split_index_1_searching]")
 
         for (int nIter = 1; nIter <= maxNIter; ++nIter)
         {
-            REQUIRE(indexes[iIndex]->search(words, nIter) == set<string>(words.begin(), words.end()));
+            REQUIRE(indexes[iIndex]->search(words, nIter) == SplitIndex::ResultSetType(words.begin(), words.end()));
             REQUIRE(indexes[iIndex]->search(patternsOut, nIter).empty());
         }
 
@@ -92,7 +92,7 @@ TEST_CASE("is searching words exact one-by-one correct", "[split_index_1_searchi
         {
             for (const string &word : wordSet)
             {
-                REQUIRE(indexes[iIndex]->search({ word }, nIter) == set<string>{ word });
+                REQUIRE(indexes[iIndex]->search({ word }, nIter) == SplitIndex::ResultSetType{ word });
             }
 
             for (const string &patternOut : patternsOut)
@@ -135,7 +135,7 @@ TEST_CASE("is searching words for k = 1 for 1 error correct", "[split_index_1_se
 
         for (int nIter = 1; nIter <= maxNIter; ++nIter)
         {
-            REQUIRE(indexes[iIndex]->search(patternsIn, nIter) == set<string>(wordSet.begin(), wordSet.end()));
+            REQUIRE(indexes[iIndex]->search(patternsIn, nIter) == SplitIndex::ResultSetType(wordSet.begin(), wordSet.end()));
         }
 
         delete indexes[iIndex];
@@ -167,7 +167,7 @@ TEST_CASE("is searching words for k = 1 for 1 error one-by-one correct", "[split
 
                 for (int nIter = 1; nIter <= maxNIter; ++nIter)
                 {
-                    const set<string> result = indexes[iIndex]->search({ curWord }, nIter);
+                    const SplitIndex::ResultSetType result = indexes[iIndex]->search({ curWord }, nIter);
 
                     REQUIRE(result.size() == 1);
                     REQUIRE(wordSet.find(*result.begin()) != wordSet.end());
@@ -197,20 +197,20 @@ TEST_CASE("is searching words for k = 1 for various number of mismatches correct
 
         for (int nIter = 1; nIter <= maxNIter; ++nIter)
         {
-            REQUIRE(indexes[iIndex]->search({ "da", "la", "fa" }, nIter) == set<string>{ "ma" });
+            REQUIRE(indexes[iIndex]->search({ "da", "la", "fa" }, nIter) == SplitIndex::ResultSetType{ "ma" });
             REQUIRE(indexes[iIndex]->search({ "bb", "cc" }, nIter).empty());
 
-            REQUIRE(indexes[iIndex]->search({ "osa", "ada" }, nIter) == set<string>{ "ala", "psa" });
+            REQUIRE(indexes[iIndex]->search({ "osa", "ada" }, nIter) == SplitIndex::ResultSetType{ "ala", "psa" });
             REQUIRE(indexes[iIndex]->search({ "bbb", "ccc", "ddd" }, nIter).empty());
 
-            REQUIRE(indexes[iIndex]->search({ "darek" }, nIter) == set<string>{ "jarek" });
-            REQUIRE(indexes[iIndex]->search({ "barek" }, nIter) == set<string>{ "jarek" });
-            REQUIRE(indexes[iIndex]->search({ "darek", "japek", "jacek", "barek" }, nIter) == set<string>{ "jarek" });
+            REQUIRE(indexes[iIndex]->search({ "darek" }, nIter) == SplitIndex::ResultSetType{ "jarek" });
+            REQUIRE(indexes[iIndex]->search({ "barek" }, nIter) == SplitIndex::ResultSetType{ "jarek" });
+            REQUIRE(indexes[iIndex]->search({ "darek", "japek", "jacek", "barek" }, nIter) == SplitIndex::ResultSetType{ "jarek" });
             REQUIRE(indexes[iIndex]->search({ "czarek", "bapek", "kapek" }, nIter).empty());
 
-            REQUIRE(indexes[iIndex]->search({ "bardzo" }, nIter) == set<string>{ "bardzo" });
-            REQUIRE(indexes[iIndex]->search({ "barzzo" }, nIter) == set<string>{ "bardzo" });
-            REQUIRE(indexes[iIndex]->search({ "kardzo" }, nIter) == set<string>{ "bardzo" });
+            REQUIRE(indexes[iIndex]->search({ "bardzo" }, nIter) == SplitIndex::ResultSetType{ "bardzo" });
+            REQUIRE(indexes[iIndex]->search({ "barzzo" }, nIter) == SplitIndex::ResultSetType{ "bardzo" });
+            REQUIRE(indexes[iIndex]->search({ "kardzo" }, nIter) == SplitIndex::ResultSetType{ "bardzo" });
             REQUIRE(indexes[iIndex]->search({ "karzzo", "bordza" }, nIter).empty());
         }
 

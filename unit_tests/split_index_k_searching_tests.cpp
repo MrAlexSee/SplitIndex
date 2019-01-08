@@ -56,7 +56,7 @@ TEST_CASE("is searching words exact correct for k > 1", "[split_index_k_searchin
 
         for (int nIter = 1; nIter <= maxNIter; ++nIter)
         {
-            REQUIRE(indexes[iIndex]->search(words, nIter) == set<string>(words.begin(), words.end()));
+            REQUIRE(indexes[iIndex]->search(words, nIter) == SplitIndex::ResultSetType(words.begin(), words.end()));
             REQUIRE(indexes[iIndex]->search(patternsOut, nIter).empty());
         }
 
@@ -83,7 +83,7 @@ TEST_CASE("is searching words exact one-by-one correct for k > 1", "[split_index
         {
             for (const string &word : wordSet)
             {
-                REQUIRE(indexes[iIndex]->search({ word }, nIter) == set<string>{ word });
+                REQUIRE(indexes[iIndex]->search({ word }, nIter) == SplitIndex::ResultSetType{ word });
             }
 
             for (const string &patternOut : patternsOut)
@@ -119,7 +119,7 @@ TEST_CASE("is searching for k > 1 for 1 error correct", "[split_index_k_searchin
 
                 for (int nIter = 1; nIter <= maxNIter; ++nIter)
                 {
-                    const set<string> result = indexes[iIndex]->search({ curWord }, nIter);
+                    const SplitIndex::ResultSetType result = indexes[iIndex]->search({ curWord }, nIter);
 
                     REQUIRE(result.size() == 1);
                     REQUIRE(wordSet.find(*result.begin()) != wordSet.end());
@@ -156,7 +156,7 @@ TEST_CASE("is searching for k = 2 for 2 errors correct", "[split_index_k_searchi
 
             for (int nIter = 1; nIter <= maxNIter; ++nIter)
             {
-                const set<string> result = index.search({ curWord }, nIter);
+                SplitIndexK<2>::ResultSetType result = index.search({ curWord }, nIter);
                 REQUIRE(result.size() >= 1);
 
                 for (const string &word : result)
@@ -177,19 +177,19 @@ TEST_CASE("is searching words for k = 2 for various number of mismatches correct
 
     for (int nIter = 1; nIter <= maxNIter; ++nIter)
     {
-        REQUIRE(indexk2.search({ "ada", "pzz" }, nIter) == set<string>{ "ala", "psa" });
+        REQUIRE(indexk2.search({ "ada", "pzz" }, nIter) == SplitIndexK<2>::ResultSetType{ "ala", "psa" });
         REQUIRE(indexk2.search({ "ccc", "zzz" }, nIter).empty());
 
-        REQUIRE(indexk2.search({ "jacek" }, nIter) == set<string>{ "jarek" });
-        REQUIRE(indexk2.search({ "gacek" }, nIter) == set<string>{ "jarek" });
-        REQUIRE(indexk2.search({ "jacek", "jadek", "japek", "gacek" }, nIter) == set<string>{ "jarek" });
+        REQUIRE(indexk2.search({ "jacek" }, nIter) == SplitIndexK<2>::ResultSetType{ "jarek" });
+        REQUIRE(indexk2.search({ "gacek" }, nIter) == SplitIndexK<2>::ResultSetType{ "jarek" });
+        REQUIRE(indexk2.search({ "jacek", "jadek", "japek", "gacek" }, nIter) == SplitIndexK<2>::ResultSetType{ "jarek" });
 
         REQUIRE(indexk2.search({ "pccek", "jaxyz" }, nIter).empty());
 
-        REQUIRE(indexk2.search({ "bardzo" }, nIter) == set<string>{ "bardzo" });
-        REQUIRE(indexk2.search({ "barczo" }, nIter) == set<string>{ "bardzo" });
-        REQUIRE(indexk2.search({ "darczo" }, nIter) == set<string>{ "bardzo" });
-        REQUIRE(indexk2.search({ "barczo", "dardzo", "aardzo" }, nIter) == set<string>{ "bardzo" });
+        REQUIRE(indexk2.search({ "bardzo" }, nIter) == SplitIndexK<2>::ResultSetType{ "bardzo" });
+        REQUIRE(indexk2.search({ "barczo" }, nIter) == SplitIndexK<2>::ResultSetType{ "bardzo" });
+        REQUIRE(indexk2.search({ "darczo" }, nIter) == SplitIndexK<2>::ResultSetType{ "bardzo" });
+        REQUIRE(indexk2.search({ "barczo", "dardzo", "aardzo" }, nIter) == SplitIndexK<2>::ResultSetType{ "bardzo" });
         REQUIRE(indexk2.search({ "darcza",  }, nIter).empty());
     }
 }
@@ -203,16 +203,16 @@ TEST_CASE("is searching words for k = 3 for various number of mismatches correct
 
     for (int nIter = 1; nIter <= maxNIter; ++nIter)
     {
-        REQUIRE(indexk3.search({ "kott" }, nIter) == set<string>{ "kota" });
-        REQUIRE(indexk3.search({ "ccca" }, nIter) == set<string>{ "kota" });
+        REQUIRE(indexk3.search({ "kott" }, nIter) == SplitIndexK<3>::ResultSetType{ "kota" });
+        REQUIRE(indexk3.search({ "ccca" }, nIter) == SplitIndexK<3>::ResultSetType{ "kota" });
 
-        REQUIRE(indexk3.search({ "owoce" }, nIter) == set<string>{ "owoce" });
-        REQUIRE(indexk3.search({ "owode" }, nIter) == set<string>{ "owoce" });
-        REQUIRE(indexk3.search({ "owddd" }, nIter) == set<string>{ "owoce" });
+        REQUIRE(indexk3.search({ "owoce" }, nIter) == SplitIndexK<3>::ResultSetType{ "owoce" });
+        REQUIRE(indexk3.search({ "owode" }, nIter) == SplitIndexK<3>::ResultSetType{ "owoce" });
+        REQUIRE(indexk3.search({ "owddd" }, nIter) == SplitIndexK<3>::ResultSetType{ "owoce" });
         REQUIRE(indexk3.search({ "odddd" }, nIter).empty());
 
-        REQUIRE(indexk3.search({ "jaddd" }, nIter) == set<string>{ "jarek" });
-        REQUIRE(indexk3.search({ "barccc" }, nIter) == set<string>{ "bardzo" });
+        REQUIRE(indexk3.search({ "jaddd" }, nIter) == SplitIndexK<3>::ResultSetType{ "jarek" });
+        REQUIRE(indexk3.search({ "barccc" }, nIter) == SplitIndexK<3>::ResultSetType{ "bardzo" });
         REQUIRE(indexk3.search({ "aaaaa" }, nIter).empty());
     }
 }
