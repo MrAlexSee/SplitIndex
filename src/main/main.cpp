@@ -89,7 +89,7 @@ int handleParams(int argc, const char **argv)
        ("in-pattern-file,I", po::value<string>(&params.inPatternFile)->required(), "input pattern file path (positional arg 2)")
        ("iter", po::value<int>(&params.nIter)->default_value(1), "number of iterations per pattern lookup")
        ("max-load-factor", po::value<float>(&params.maxLoadFactor)->default_value(2.0f), "maximum load factor which causes rehashing when crossed")
-       ("min-word-length", po::value<int>(&params.minWordLength)->default_value(4), "minimum word length from the input dictionary (shorter words are ignored)")
+       ("min-word-length", po::value<int>(&params.minWordLength)->default_value(4), "minimum word length from input dictionary and queries (shorter words are ignored)")
        ("out-file,o", po::value<string>(&params.outFile)->default_value("res.txt"), "output file path")
        // Not using a default value from Boost for separator because it literally prints a newline.
        ("separator,s", po::value<string>(&params.separator), "input data (dictionary and patterns) separator (default = newline)")

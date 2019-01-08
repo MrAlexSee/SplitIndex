@@ -44,7 +44,7 @@ Short name | Long name                | Parameter description
 `-I`       | `--in-pattern-file arg`  | input pattern file path (positional arg 2)
 &nbsp;     | `--iter arg`             | number of iterations per pattern lookup (default = 1)
 &nbsp;     | `--max-load-factor arg`  | maximum load factor which causes rehashing when crossed (default = 2)
-&nbsp;     | `--min-word-length arg`  | minimum word length from the input dictionary (shorter words are ignored) (default = 4)
+&nbsp;     | `--min-word-length arg`  | minimum word length from input dictionary and queries (shorter words are ignored) (default = 4)
 `-o`       | `--out-file arg`         | output file path (default = res.txt)
 `-s`       | `--separator arg`        | input data (dictionary and patterns) separator (default = newline)
 `-v`       | `--version`              | display version info
