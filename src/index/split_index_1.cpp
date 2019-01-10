@@ -128,19 +128,19 @@ size_t SplitIndex1::calcEntryNWords(const char *entry)
 
 void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
 {
+    assert(word.size() > 1 and word.size() <= maxWordSize);
+
     prefixSize = prefixSizeLUT[word.size()];
-    assert(prefixSize > 0 and prefixSize <= word.size() - 1);
+    assert(prefixSize > 0 and prefixSize < word.size());
 
     suffixSize = word.size() - prefixSize;
-    assert(suffixSize > 0 and suffixSize <= word.size() - 1);
+    assert(suffixSize > 0 and suffixSize < word.size());
 
     assert(abs(static_cast<int>(prefixSize) - static_cast<int>(suffixSize)) <= 1);
+    assert(prefixSize + suffixSize == word.size());
 
-    strncpy(prefixBuf, word.c_str(), prefixSize);
-    prefixBuf[prefixSize] = 0;
-
-    strcpy(suffixBuf, word.c_str() + prefixSize);
-    assert(suffixBuf[suffixSize] == 0);
+    memcpy(prefixBuf, word.c_str(), prefixSize);
+    memcpy(suffixBuf, word.c_str() + prefixSize, suffixSize);
 }
 
 char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPartSuffix) const
