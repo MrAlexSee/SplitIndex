@@ -49,6 +49,9 @@ protected:
     /** Returns the size of an entry in bytes, including the terminating '\0' if present. */
     virtual size_t calcEntrySizeB(const char *entry) const = 0;
 
+    /** Returns the minimum word size which can be processed by a split index. */
+    virtual size_t getMinWordSize() const = 0;
+
     /** True if index has been constructed, false otherwise. */
     bool constructed = false;
 
@@ -59,10 +62,11 @@ protected:
     std::unordered_set<std::string> wordSet;
 
     /** The number of words is multiplied by this factor and passed as a bucket count hint to the hash map. */
-    static constexpr float nBucketsHintFactor = 0.1;
+    const float nBucketsHintFactor = 0.1;
     /** Maximum word size, set to 127 because we use 8-bit counters.
-     * Can be set to 255 if using unsigned char when compiling. */
-    static constexpr size_t maxWordSize = 127;
+     * Could be possibly set to 255 if using unsigned char when compiling,
+     * with caveats for compression-based encoding. */
+    const size_t maxWordSize = 127;
 };
 
 } // namespace split_index

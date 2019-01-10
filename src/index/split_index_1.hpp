@@ -30,6 +30,8 @@ protected:
 
     size_t calcEntrySizeB(const char *entry) const override;
 
+    size_t getMinWordSize() const override { return 2; }
+
     /** Returns the number of words (word parts) stored in [entry]. */
     static size_t calcEntryNWords(const char *entry);
 

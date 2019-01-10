@@ -35,9 +35,17 @@ void SplitIndex::construct()
     cout << "Set a hash map with hint #buckets = " << nBucketsHint << endl << endl;
     int i = 1;
 
+    const size_t minWordSize = getMinWordSize();
+
     for (const string &word : wordSet)
     {
         utils::StringUtils::printProgress(string("Constructing the hash map"), i++, wordSet.size());
+
+        if (word.size() < minWordSize or word.size() > maxWordSize)
+        {
+            throw runtime_error((boost::format("bad word size: %1% not in [%2%, %3%]")
+                % word.size() % minWordSize % maxWordSize).str());
+        }
 
         assert(word.size() > 0 and word.size() <= maxWordSize);
         initEntry(word);
@@ -65,6 +73,19 @@ SplitIndex::ResultSetType SplitIndex::search(const vector<string> &queries, int 
 {
     assert(constructed);
     ResultSetType ret;
+
+    // We check whether all supplied queries are of sufficient length before
+    // performing the search and time measurement.
+    const size_t minWordSize = getMinWordSize();
+
+    for (const string &query : queries)
+    {
+        if (query.size() < minWordSize or query.size() > maxWordSize)
+        {
+            throw runtime_error((boost::format("bad query size: %1% not in [%2%, %3%]")
+                % query.size() % minWordSize % maxWordSize).str());
+        }
+    }
 
     clock_t start = std::clock();
 
