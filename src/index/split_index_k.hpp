@@ -281,7 +281,7 @@ char *SplitIndexK<k>::createEntry(const char *wordParts, size_t partsSize, size_
     // 3 = part byte, size of word parts, terminating 0.
     const size_t newSize = sizeof(uint16_t) + 3 + partsSize;
 
-    char *entry = static_cast<char *>(malloc(newSize));
+    char *entry = static_cast<char *>(malloc(newSize * sizeof(char)));
     assert(entry != nullptr);
 
     // We set the part index byte counter to 1 since there is only a single byte at the beginning.
@@ -323,7 +323,7 @@ void SplitIndexK<k>::addToEntry(char **entryPtr, const char *wordParts, size_t p
         addNewPartByte = true;
     }
 
-    char *newEntry = static_cast<char *>(realloc(*entryPtr, newEntrySize));
+    char *newEntry = static_cast<char *>(realloc(*entryPtr, newEntrySize * sizeof(char)));
     assert(newEntry != nullptr);
 
     char *newEntryWordStart;

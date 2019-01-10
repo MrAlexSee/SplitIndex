@@ -136,8 +136,8 @@ void SplitIndex1::storePrefixSuffixInBuffers(const string &word)
     suffixSize = word.size() - prefixSize;
     assert(suffixSize > 0 and suffixSize < word.size());
 
-    assert(abs(static_cast<int>(prefixSize) - static_cast<int>(suffixSize)) <= 1);
     assert(prefixSize + suffixSize == word.size());
+    assert(abs(static_cast<int>(prefixSize) - static_cast<int>(suffixSize)) <= 1);
 
     memcpy(prefixBuf, word.c_str(), prefixSize);
     memcpy(suffixBuf, word.c_str() + prefixSize, suffixSize);
@@ -148,7 +148,7 @@ char *SplitIndex1::createEntry(const char *wordPart, size_t partSize, bool isPar
     // 2 = size of word part, terminating 0.
     const size_t newSize = sizeof(uint16_t) + 2 + partSize;
 
-    char *entry = static_cast<char *>(malloc(newSize));
+    char *entry = static_cast<char *>(malloc(newSize * sizeof(char)));
     assert(entry != nullptr);
 
     // We set the index which points to the first prefix in the entry.
@@ -178,7 +178,7 @@ void SplitIndex1::addToEntry(char **entryPtr,
     const size_t oldEntrySize = calcEntrySizeB(*entryPtr);
     const size_t newEntrySize = oldEntrySize + partSize + 1;
     
-    char *newEntry = static_cast<char *>(realloc(*entryPtr, newEntrySize));
+    char *newEntry = static_cast<char *>(realloc(*entryPtr, newEntrySize * sizeof(char)));
     assert(newEntry != nullptr);
 
     // We act depending on the value of the prefix index.

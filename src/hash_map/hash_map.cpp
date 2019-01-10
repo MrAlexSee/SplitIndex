@@ -43,7 +43,7 @@ void HashMap::clear(int nBucketsHint)
 void HashMap::insert(const char *key, size_t keySize, char *entry)
 {
     assert(key != nullptr and entry != nullptr);
-    assert(keySize > 0 and keySize < 128);
+    assert(keySize > 0);
 
     insertEntry(key, keySize, entry);
     nEntries += 1;

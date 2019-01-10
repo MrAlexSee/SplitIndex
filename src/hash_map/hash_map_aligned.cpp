@@ -45,7 +45,7 @@ string HashMapAligned::toString() const
 
 char **HashMapAligned::retrieve(const char *key, size_t keySize) const
 {
-    assert(keySize > 0 and keySize < 128);
+    assert(keySize > 0);
     const size_t index = hash(key, keySize) % nBuckets;
 
     if (buckets[index] == nullptr)
@@ -171,7 +171,7 @@ char *HashMapAligned::copyEntry(const char *entry) const
 {
     // We do not use strdup here because there might be zeros inside the entry.
     const size_t entrySize = calcEntrySizeB(entry);
-    char *newEntry = static_cast<char *>(malloc(entrySize));
+    char *newEntry = static_cast<char *>(malloc(entrySize * sizeof(char)));
 
     memcpy(newEntry, entry, entrySize);
     return newEntry;
@@ -180,7 +180,7 @@ char *HashMapAligned::copyEntry(const char *entry) const
 char *HashMapAligned::createBucket(const char *key, size_t keySize, char *entry) const
 {
     const size_t bucketSize = 1 + keySize + sizeof(char *) + 1;
-    char *bucket = static_cast<char *>(malloc(bucketSize));
+    char *bucket = static_cast<char *>(malloc(bucketSize * sizeof(char)));
 
     *bucket = keySize;
     memcpy(bucket + 1, key, keySize);
@@ -197,8 +197,8 @@ void HashMapAligned::addToBucket(char **bucket, const char *key, size_t keySize,
     const size_t oldSize = calcBucketSizeB(*bucket);
     const size_t newSize = oldSize + keySize + sizeof(char *) + 1; // This includes the terminating 0.
 
-    void *ptr = realloc(*bucket, newSize);
-    *bucket = static_cast<char *>(ptr);
+    *bucket = static_cast<char *>(realloc(*bucket, newSize * sizeof(char)));
+    assert(newSize > oldSize and *bucket != nullptr);
     
     (*bucket)[oldSize - 1] = keySize;
     memcpy(*bucket + oldSize, key, keySize);
