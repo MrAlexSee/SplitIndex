@@ -52,9 +52,9 @@ struct SplitIndexKWhitebox
     }
 
     template<size_t k>
-    inline static char *createEntry(const char *wordParts, size_t partsSize, size_t iPart)
+    inline static char *createEntry(const SplitIndexK<k> &index, const char *wordParts, size_t partsSize, size_t iPart)
     {
-        return SplitIndexK<k>::createEntry(wordParts, partsSize, iPart);
+        return index.createEntry(wordParts, partsSize, iPart);
     }
 
     template<size_t k>

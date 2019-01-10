@@ -25,6 +25,40 @@ TEST_CASE("does split index 1 throw for empty words", "[split_index_1]")
     REQUIRE_THROWS(SplitIndex1({ }, hashType, 1.0f));
 }
 
+TEST_CASE("does split index 1 throw for words with bad size when constructing", "[split_index_1]")
+{
+    SplitIndex1 index1({ "ala", "ma", "kota" }, hashType, 1.0f);
+    REQUIRE_NOTHROW(index1.construct());
+
+    SplitIndex1 index2({ "ala", "m", "kota" }, hashType, 1.0f);
+    REQUIRE_THROWS(index2.construct());
+
+    SplitIndex1 index3({ "ala", "", "kota" }, hashType, 1.0f);
+    REQUIRE_THROWS(index3.construct());
+
+    // This will certainly be beyond the maximum word size limit.
+    const string veryLongWord = string(10000, 'a');
+
+    SplitIndex1 index4({ "ala", veryLongWord, "kota" }, hashType, 1.0f);
+    REQUIRE_THROWS(index4.construct());
+}
+
+TEST_CASE("does split index 1 throw for words with bad size when searching", "[split_index_1]")
+{
+    SplitIndex1 index1({ "ala", "ma", "kota" }, hashType, 1.0f);
+    index1.construct();
+
+    REQUIRE_NOTHROW(index1.search({ "jarek", "da", "psa" }));
+
+    REQUIRE_THROWS(index1.search({ "jarek", "d", "psa" }));
+    REQUIRE_THROWS(index1.search({ "jarek", "", "psa" }));
+
+    // This will certainly be beyond the maximum word size limit.
+    const string veryLongWord = string(10000, 'a');
+
+    REQUIRE_THROWS(index1.search({ "jarek", veryLongWord, "psa" }));
+}
+
 TEST_CASE("is word size correctly initialized", "[split_index_1]")
 {
     SplitIndex1 index1({ "ala" }, hashType, 1.0f);

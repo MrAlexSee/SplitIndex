@@ -50,7 +50,7 @@ protected:
 
     /** Creates a new entry containing [wordParts] of size [partsSize].
      * They are missing [iPart] out of [0, k] parts. */
-    static char *createEntry(const char *wordParts, size_t partsSize, size_t iPart);
+    char *createEntry(const char *wordParts, size_t partsSize, size_t iPart) const;
 
     /** Adds [wordParts] of size [partsSize] to an existing entry pointed to by [entryPtr].
      * They are missing [iPart] out of [0, k] parts. */
@@ -275,7 +275,7 @@ size_t SplitIndexK<k>::getPartSize(size_t wordSize)
 }
 
 template<size_t k>
-char *SplitIndexK<k>::createEntry(const char *wordParts, size_t partsSize, size_t iPart)
+char *SplitIndexK<k>::createEntry(const char *wordParts, size_t partsSize, size_t iPart) const
 {
     assert(partsSize > 0 and partsSize < maxWordSize);
     // 3 = part byte, size of word parts, terminating 0.
