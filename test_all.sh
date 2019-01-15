@@ -19,6 +19,6 @@ do
         done
 
         # DNA dictionary.
-        ./build/split_index --index-type $iType --hash-type $hType --max-load-factor $maxLF --iter $nIter -i ${inputDir}/dict_dna_fruitfly.txt -I ${inputDir}/queries_dna_fruitfly.txt -o $outFile -d
+        ./build/split_index --index-type $iType --hash-type $hType --max-load-factor $maxLF --iter $nIter -i ${inputDir}/dict_dna_danio_rerio.txt -I ${inputDir}/queries_dna_danio_rerio.txt -o $outFile -d
     done
 done
