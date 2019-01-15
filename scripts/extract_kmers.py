@@ -7,12 +7,15 @@ import sys
 # Length of each k-mer.
 pKmerLength = 20
 # Jump size between consecutive k-mers.
-pJumpSize = 500
+pJumpSize = 1000
 # Should we strip the FASTA header?
-pHasFastaHeader = True
+pHasFastaHeader = False
+
+# All extracted k-mers with these characters will be excluded.
+pExcludedCharacters = set("n")
 
 # Input file path.
-pInFilePath = "fruitfly.fa"
+pInFilePath = "danio_rerio_chr1.fa"
 # Output file path.
 pOutFilePath = "dict.txt"
 
@@ -33,26 +36,32 @@ def filterData(data, hasFastaHeader):
 
     return data
 
-def processAndDump(data, kmerLength, jumpSize, outFile):
+def extract(data, kmerLength, jumpSize, excludedCharacters):
     end = len(data) - kmerLength + 1
     i = 0
 
-    nWords = 0
+    words = set()
 
-    with open(outFile, "w") as f:
-        while i < end:
-            perc = round(100.0 * i / end)
+    while i < end:
+        perc = round(100.0 * i / end)
 
-            sys.stdout.write("\r{0}/{1} ({2:.2f}%)".format(i, end, perc))
-            sys.stdout.flush()
+        sys.stdout.write("\r{0}/{1} ({2:.2f}%)".format(i, end, perc))
+        sys.stdout.flush()
 
-            word = data[i : i + kmerLength]
-            f.write(word + "\n")
+        word = data[i : i + kmerLength]
+        isOK = True
 
-            i += jumpSize
-            nWords += 1
+        for excluded in excludedCharacters:
+            if excluded in word:
+                isOK = False
+                break
 
-    print "\nDumped #words = {0} to: {1}".format(nWords, outFile)
+        if isOK:
+            words.add(word)
+
+        i += jumpSize
+
+    return words
 
 def main():
     with open(pInFilePath, "r") as f:
@@ -62,7 +71,11 @@ def main():
     print "Read data from: {0}, size = {1:.2f} MB".format(pInFilePath, sizeMB)
 
     data = filterData(data, pHasFastaHeader)
-    processAndDump(data, pKmerLength, pJumpSize, pOutFilePath)
+    words = extract(data, pKmerLength, pJumpSize, pExcludedCharacters)
+
+    with open(pOutFilePath, "w") as f:
+        f.write("\n".join(words))
+        print "\nDumped #words = {0} to: {1}".format(len(words), pOutFilePath)
 
 if __name__ == "__main__":
     main()
