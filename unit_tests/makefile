@@ -9,7 +9,7 @@ INCLUDE    = -I$(BOOST_DIR)
 TEST_FILES = catch.hpp repeat.hpp
 
 EXE 	   = main_tests
-OBJ        = main_tests.o hash_map_aligned_tests.o split_index_1_tests.o split_index_1_searching_tests.o split_index_1_comp_tests.o split_index_1_comp_triple_tests.o split_index_k_tests.o split_index_k_searching_tests.o utils_distance_tests.o utils_file_io_tests.o utils_string_utils_tests.o
+OBJ        = main_tests.o hash_map_aligned_tests.o split_index_1_tests.o split_index_1_searching_tests.o split_index_1_comp_searching_tests.o split_index_1_comp_tests.o split_index_1_comp_triple_tests.o split_index_k_tests.o split_index_k_searching_tests.o utils_distance_tests.o utils_file_io_tests.o utils_string_utils_tests.o
 
 HASH_FUNCTION_LIB  = hash_function.a
 HASH_MAP_LIB       = hash_map.a
@@ -43,6 +43,9 @@ split_index_1_tests.o: split_index_1_tests.cpp ../src/index/split_index.* ../src
 
 split_index_1_searching_tests.o: split_index_1_searching_tests.cpp ../src/index/split_index.* ../src/index/split_index_1.* $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c split_index_1_searching_tests.cpp
+
+split_index_1_comp_searching_tests.o: split_index_1_comp_searching_tests.cpp ../src/index/split_index.* ../src/index/split_index_1.* $(TEST_FILES)
+	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c split_index_1_comp_searching_tests.cpp
 
 split_index_1_comp_tests.o: split_index_1_comp_tests.cpp ../src/index/split_index.* ../src/index/split_index_1.* split_index_1_comp_whitebox.hpp $(TEST_FILES)
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(INCLUDE) -c split_index_1_comp_tests.cpp

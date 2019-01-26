@@ -170,4 +170,9 @@ TEST_CASE("is triple decoding to buffer correct", "[split_index_1_comp_triple]")
     REQUIRE(size2 == 0); // Exceeded expected max word size.
 }
 
+TEST_CASE("is triple decoding to buffer with decreasing word length correct", "[split_index_1_comp_triple]")
+{
+    // TODO
+}
+
 } // namespace split_index

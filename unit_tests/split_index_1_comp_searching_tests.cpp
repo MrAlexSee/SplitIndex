@@ -1,8 +1,8 @@
 #include "catch.hpp"
 #include "repeat.hpp"
 
-#include "../src/index/split_index_1.hpp"
-#include "../src/index/split_index_k.hpp"
+#include "../src/index/split_index_1_comp.hpp"
+#include "../src/index/split_index_1_comp_triple.hpp"
 
 using namespace split_index;
 using namespace std;
@@ -18,15 +18,16 @@ constexpr int maxNIter = 10;
 
 }
 
-// Note that words for these tests have at least 2 characters.
-// This is a prerequisite for splitting into 2 parts.
+// Note that words for these tests have at least 3 characters.
+// This is a prerequisite for 2-gram coding.
+// 3-,4-gram coding is handled automatically, since word length checks are anyway required in their case.
 
-TEST_CASE("is searching empty patterns correct", "[split_index_1_searching]")
+TEST_CASE("is searching compression empty patterns correct", "[split_index_1_comp_searching]")
 {
-    const unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "lubi", "psy" };
+    const unordered_set<string> wordSet { "ala", "kota", "jarek", "lubi", "psy" };
     SplitIndex *indexes[] = { 
-        new SplitIndex1(wordSet, hashType, 1.0f), 
-        new SplitIndexK<1>(wordSet, hashType, 1.0f) };
+        new SplitIndex1Comp(wordSet, hashType, 1.0f),
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
 
     const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
@@ -43,14 +44,14 @@ TEST_CASE("is searching empty patterns correct", "[split_index_1_searching]")
     }
 }
 
-TEST_CASE("is searching words exact correct", "[split_index_1_searching]")
+TEST_CASE("is searching compression words exact correct", "[split_index_1_comp_searching]")
 {
-    const vector<string> words { "ala", "ma", "kota", "jarek", "lubi", "psy" };
-    const vector<string> patternsOut { "not", "in", "this", "dict" };
+    const vector<string> words { "ala", "kota", "jarek", "lubi", "psy" };
+    const vector<string> patternsOut { "not", "this", "dict" };
 
     SplitIndex *indexes[] = { 
-        new SplitIndex1({ words.begin(), words.end() }, hashType, 1.0f), 
-        new SplitIndexK<1>({ words.begin(), words.end() }, hashType, 1.0f) };
+        new SplitIndex1Comp({ words.begin(), words.end() }, hashType, 1.0f),
+        new SplitIndex1CompTriple({ words.begin(), words.end() }, hashType, 1.0f) };
 
     const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
@@ -68,14 +69,14 @@ TEST_CASE("is searching words exact correct", "[split_index_1_searching]")
     }
 }
 
-TEST_CASE("is searching words exact one-by-one correct", "[split_index_1_searching]")
+TEST_CASE("is searching compression words exact one-by-one correct", "[split_index_1_comp_searching]")
 {
-    const unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "lubi", "psy" };
-    const vector<string> patternsOut { "not", "in", "this", "dict" };
+    const unordered_set<string> wordSet { "ala", "kota", "jarek", "lubi", "psy" };
+    const vector<string> patternsOut { "not", "this", "dict" };
 
     SplitIndex *indexes[] = { 
-        new SplitIndex1(wordSet, hashType, 1.0f), 
-        new SplitIndexK<1>(wordSet, hashType, 1.0f) };
+        new SplitIndex1Comp(wordSet, hashType, 1.0f),
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
 
     const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
@@ -100,14 +101,14 @@ TEST_CASE("is searching words exact one-by-one correct", "[split_index_1_searchi
     }
 }
 
-TEST_CASE("is searching words for k = 1 for 1 error correct", "[split_index_1_searching]")
+TEST_CASE("is searching compression words for k = 1 for 1 error correct", "[split_index_1_comp_searching]")
 {
-    const unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "psa" };
+    const unordered_set<string> wordSet { "ala", "kota", "jarek", "psa" };
     vector<string> patternsIn;
 
     SplitIndex *indexes[] = { 
-        new SplitIndex1(wordSet, hashType, 1.0f), 
-        new SplitIndexK<1>(wordSet, hashType, 1.0f) };
+        new SplitIndex1Comp(wordSet, hashType, 1.0f),
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
 
     const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
@@ -135,13 +136,13 @@ TEST_CASE("is searching words for k = 1 for 1 error correct", "[split_index_1_se
     }
 }
 
-TEST_CASE("is searching words for k = 1 for 1 error one-by-one correct", "[split_index_1_searching]")
+TEST_CASE("is searching compression words for k = 1 for 1 error one-by-one correct", "[split_index_1_comp_searching]")
 {
-    const unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "psa" };
+    const unordered_set<string> wordSet { "ala", "kota", "jarek", "psa" };
 
     SplitIndex *indexes[] = { 
-        new SplitIndex1(wordSet, hashType, 1.0f), 
-        new SplitIndexK<1>(wordSet, hashType, 1.0f) };
+        new SplitIndex1Comp(wordSet, hashType, 1.0f),
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
 
     const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
@@ -167,16 +168,16 @@ TEST_CASE("is searching words for k = 1 for 1 error one-by-one correct", "[split
         }
 
         delete indexes[iIndex];
-    }
+    }    
 }
 
-TEST_CASE("is searching words for k = 1 for various number of mismatches correct", "[split_index_1_searching]")
+TEST_CASE("is searching compression words for k = 1 for various number of mismatches correct", "[split_index_1_comp_searching]")
 {
-    const unordered_set<string> wordSet { "ala", "ma", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
+    const unordered_set<string> wordSet { "ala", "kota", "jarek", "psa", "bardzo", "lubie", "owoce" };
 
     SplitIndex *indexes[] = { 
-        new SplitIndex1(wordSet, hashType, 1.0f), 
-        new SplitIndexK<1>(wordSet, hashType, 1.0f) };
+        new SplitIndex1Comp(wordSet, hashType, 1.0f),
+        new SplitIndex1CompTriple(wordSet, hashType, 1.0f) };
 
     const int nIndexes = sizeof(indexes) / sizeof(indexes[0]);
 
@@ -186,9 +187,6 @@ TEST_CASE("is searching words for k = 1 for various number of mismatches correct
 
         for (int nIter = 1; nIter <= maxNIter; ++nIter)
         {
-            REQUIRE(indexes[iIndex]->search({ "da", "la", "fa" }, nIter) == SplitIndex::ResultSetType{ "ma" });
-            REQUIRE(indexes[iIndex]->search({ "bb", "cc" }, nIter).empty());
-
             REQUIRE(indexes[iIndex]->search({ "osa", "ada" }, nIter) == SplitIndex::ResultSetType{ "ala", "psa" });
             REQUIRE(indexes[iIndex]->search({ "bbb", "ccc", "ddd" }, nIter).empty());
 
@@ -205,6 +203,25 @@ TEST_CASE("is searching words for k = 1 for various number of mismatches correct
 
         delete indexes[iIndex];
     }
+}
+
+TEST_CASE("is searching words equal to triple q-gram size correct", "[split_index_1_comp_searching]")
+{
+    const unordered_set<string> wordSet{ "ma", "ala", "tion" };
+
+    // This assumes that there is at least one 4-gram used for encoding.
+
+    SplitIndex1CompTriple index1(wordSet, hashType, 1.0f);
+    index1.construct();
+
+    REQUIRE(index1.search({ "ma" }, 1) == SplitIndex::ResultSetType{ "ma" });
+    REQUIRE(index1.search({ "da" }, 1) == SplitIndex::ResultSetType{ "ma" });
+
+    REQUIRE(index1.search({ "ala" }, 1) == SplitIndex::ResultSetType{ "ala" });
+    REQUIRE(index1.search({ "ada" }, 1) == SplitIndex::ResultSetType{ "ala" });
+    
+    REQUIRE(index1.search({ "tion" }, 1) == SplitIndex::ResultSetType{ "tion" });
+    REQUIRE(index1.search({ "twon" }, 1) == SplitIndex::ResultSetType{ "tion" });
 }
 
 } // namespace split_index
