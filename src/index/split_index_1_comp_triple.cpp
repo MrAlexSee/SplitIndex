@@ -50,19 +50,19 @@ void SplitIndex1CompTriple::calcQgramsAndFillMaps()
     vector<string> q2grams = calcQGramsOrderedByFrequency(n2grams, 2);
     curN2grams = q2grams.size();
 
-    fillQgramMaps(q2grams, curFirstChar);
+    fillQgramMaps(q2grams, curFirstChar); // Invalidates insides of the qgrams vector.
     curFirstChar += curN2grams;
     
     vector<string> q3grams = calcQGramsOrderedByFrequency(n3grams, 3);
     curN3grams = q3grams.size();
 
-    fillQgramMaps(q3grams, curFirstChar);
+    fillQgramMaps(q3grams, curFirstChar); // Invalidates insides of the qgrams vector.
     curFirstChar += curN3grams;
 
     vector<string> q4grams = calcQGramsOrderedByFrequency(n4grams, 4);
     curN4grams = q4grams.size();
 
-    fillQgramMaps(q4grams, curFirstChar);
+    fillQgramMaps(q4grams, curFirstChar); // Invalidates insides of the qgrams vector.
 
     assert(qgramToChar.size() == curN2grams + curN3grams + curN4grams);
     assert(charToQgram.size() == curN2grams + curN3grams + curN4grams);
@@ -70,25 +70,48 @@ void SplitIndex1CompTriple::calcQgramsAndFillMaps()
 
 size_t SplitIndex1CompTriple::encodeToBuf(const char *word, size_t wordSize)
 {        
-    // Note that the chars which are used for encoding do not appear in input text,
+    // Note that the chars which are used for encoding do not appear in the input text,
     // so such sequential encoding should not run into any unintended q-gram overlap issues.
 
-    // We start with the longest q-grams.
-    size_t newSize1 = encodeToBuf(encodingTmpBuf1, word, wordSize, 4);
-    size_t newSize2 = encodeToBuf(encodingTmpBuf2, encodingTmpBuf1, newSize1, 3);
+    const char *curSrc = word;
+    size_t curWordSize = wordSize;
 
-    return encodeToBuf(codingBuf, encodingTmpBuf2, newSize2, 2);
+    // We start with the longest q-grams.
+    if (curWordSize >= 4)
+    {
+        curWordSize = encodeToBuf(encodingTmpBuf1, word, wordSize, 4);
+        curSrc = encodingTmpBuf1;
+    }
+
+    if (curWordSize >= 3)
+    {
+        curWordSize = encodeToBuf(encodingTmpBuf2, curSrc, curWordSize, 3);
+        curSrc = encodingTmpBuf2;
+    }
+
+    if (curWordSize >= 2)
+    {
+        return encodeToBuf(codingBuf, curSrc, curWordSize, 2);
+    }
+    else
+    {
+        memcpy(codingBuf, curSrc, curWordSize);
+        return curWordSize;
+    }
 }
 
 size_t SplitIndex1CompTriple::encodeToBuf(char *dstBuf, const char *word, size_t curWordSize, size_t curQgramSize)
 {
-    size_t iBuf = 0;
+    assert(curQgramSize <= curWordSize);
+
     const size_t qgramEnd = curWordSize - curQgramSize + 1;
+    size_t iBuf = 0;
 
     for (size_t iW = 0; iW < curWordSize; ++iW)
     {
         if (iW < qgramEnd)
         {
+            assert(iW + curQgramSize <= curWordSize);
             auto it = qgramToChar.find(string(word + iW, curQgramSize));
 
             if (it != qgramToChar.end())

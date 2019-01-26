@@ -31,10 +31,11 @@ protected:
     char *encodingTmpBuf2 = nullptr;
 
     /** These are actual q-gram counts extracted from the text.
-     * Cannot be greater than the constants below. */
+     * They cannot be greater than the constants below. */
     size_t curN2grams = 0, curN3grams = 0, curN4grams = 0;
 
-    /** These are all compile-time constants, determined earlier. */
+    /** These are all compile-time constants.
+     * They should be determined earlier for specific (expected) data. */
     static constexpr size_t n2grams = 96, n3grams = 3, n4grams = 1;
 
     // We can take advantage of the whitebox class for the base class since functions are overridden here.

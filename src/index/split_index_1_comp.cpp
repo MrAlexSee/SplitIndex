@@ -48,7 +48,7 @@ void SplitIndex1Comp::calcQgramsAndFillMaps()
     charToQgram.clear();
 
     vector<string> qgrams = calcQGramsOrderedByFrequency(nQgrams, qgramSize);
-    fillQgramMaps(qgrams, firstChar);
+    fillQgramMaps(qgrams, firstChar); // Invalidates insides of the qgrams vector.
 
     assert(qgramToChar.size() == qgrams.size());
     assert(charToQgram.size() == qgrams.size());
@@ -286,13 +286,16 @@ void SplitIndex1Comp::searchWithSuffixAsKey(ResultSetType &results)
 
 size_t SplitIndex1Comp::encodeToBuf(const char *word, size_t wordSize)
 {
-    size_t iBuf = 0;
+    assert(qgramSize <= wordSize);
+
     const size_t qgramEnd = wordSize - qgramSize + 1;
+    size_t iBuf = 0;
 
     for (size_t iW = 0; iW < wordSize; ++iW)
     {
         if (iW < qgramEnd)
         {
+            assert(iW + qgramSize <= wordSize);
             auto it = qgramToChar.find(string(word + iW, qgramSize));
 
             if (it != qgramToChar.end())
