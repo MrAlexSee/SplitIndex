@@ -16,12 +16,14 @@ HASH_MAP_LIB       = hash_map.a
 INDEX_LIB          = index.a
 UTILS_LIB          = utils.a
 
-LIB_DIR = "../build/libs"
+BUILD_DIR = ../build
+LIB_DIR   = $(BUILD_DIR)/libs
+OBJ_DIR   = $(BUILD_DIR)/obj
 
 LIBS = $(HASH_MAP_LIB) $(HASH_FUNCTION_LIB) $(INDEX_LIB) $(UTILS_LIB)
 LIBS := $(addprefix $(LIB_DIR)/,$(LIBS))
 
-all: $(EXE)
+all: create_dirs $(EXE)
 
 $(EXE): $(OBJ) libs
 	$(CC) $(CCFLAGS) $(OPTFLAGS) $(OBJ) $(LIBS) -o $@
@@ -71,8 +73,12 @@ utils_string_utils_tests.o: utils_string_utils_tests.cpp ../src/utils/string_uti
 run: all
 	./$(EXE)
 
-.PHONY: clean
+.PHONY: create_dirs
+create_dirs:
+	mkdir -p $(LIB_DIR)
+	mkdir -p $(OBJ_DIR)
 
+.PHONY: clean
 clean:
 	rm -f $(EXE) $(OBJ)
 

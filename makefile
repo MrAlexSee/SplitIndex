@@ -16,9 +16,8 @@ libs:
 	$(MAKE) -C src/main
 	$(MAKE) -C src/utils
 
-.PHONY: dirs
+.PHONY: create_dirs
 create_dirs:
-	mkdir -p $(BUILD_DIR)
 	mkdir -p $(LIB_DIR)
 	mkdir -p $(OBJ_DIR)
 
