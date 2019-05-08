@@ -29,7 +29,9 @@ Input dictionary file (positional parameter 1 or named parameter `-i` or `--in-d
 Input pattern file (positional parameter 2 or named parameter `-I` or `--in-pattern-file`) should contain the list of patterns, separated with newline characters.
 Attached as part of this package is a script `test_all.sh` for processing multiple dictionaries.
 
-Unit tests are located in the `unit_tests` folder and they can be run by issuing the `make run` command in that folder (requires support for the C++14 standard).
+* End-to-end tests are located in the `end_to_end_tests` folder and they can be run using the `run_tests.sh` script in that folder.
+* Unit tests are located in the `unit_tests` folder and they can be run by issuing the `make run` command in that folder (requires support for the C++14 standard).
+* The `scripts` directory contains some helpful Python 2 tools.
 
 #### Command-line parameter description
 
@@ -48,3 +50,22 @@ Short name | Long name                | Parameter description
 `-o`       | `--out-file arg`         | output file path (default = res.txt)
 `-s`       | `--separator arg`        | input data (dictionary and patterns) separator (default = newline)
 `-v`       | `--version`              | display version info
+
+#### Data files description
+
+All files listed below are located in the `data` folder.
+
+File name                           | Description
+----------------------------------- | -------------------
+`dict_dna_danio_rerio.txt`          | words of length 20 extracted from the Danio rerio (zebrafish) genome, 578,964 words
+`dict_english_foster.txt`           | English dictionary, 349,900 words
+`dict_english_iamerican_insane.txt` | English dictionary, 350,518 words
+`queries_dna_danio_rerio.txt`       | queries of length 20 extracted from the Danio rerio (zebrafish) genome, 11,802 words
+`queries_english_misspellings.txt`  | a list of common English misspellings, 4,278 words
+
+References:
+
+* Danio rerio genome: https://www.ensembl.org/Danio_rerio/Info/Index
+* foster: http://www.math.sjsu.edu/~foster/dictionary.txt
+* iamerican-insane: Ubuntu package
+* English misspellings: https://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings/For_machines
