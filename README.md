@@ -6,7 +6,7 @@ It is based on the Dirichlet principle, which is realized by storing substrings 
 Authors: Aleksander Cisłak, Szymon Grabowski.
 
 Published as *A Practical Index for Approximate Dictionary Matching with Few Mismatches* (Cisłak and Grabowski), Computing and Informatics, 05/2017, pp. 1088–1106.
-Also available as a preprint at the following link: http://arxiv.org/abs/1501.04948.
+Available under the following link: http://www.cai.sk/ojs/index.php/cai/article/view/2017_5_1088.
 
 ## Compilation
 
